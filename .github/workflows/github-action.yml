@@ -32,6 +32,8 @@ jobs:
 
       - name: Inject application.yml
         run: |
+          pwd
+          ls
           echo "${{ secrets.TEST_APPLICATION_YML }}" > src/main/resources/application.yml
           echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }} > ./docker-compose.yml
 
