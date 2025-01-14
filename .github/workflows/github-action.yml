@@ -21,6 +21,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Check platform
+        run: uname -m
+
       - name: get repository code
         uses: actions/checkout@v4
 
