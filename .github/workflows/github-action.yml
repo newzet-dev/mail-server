@@ -32,7 +32,7 @@ jobs:
 
       - name: Inject application.yml
         run: |
-          ls -R src/
+          mkdir -p src/main/resources
           echo "${{ secrets.TEST_APPLICATION_YML }}" > src/main/resources/application.yml
           echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }} > ./docker-compose.yml
 
