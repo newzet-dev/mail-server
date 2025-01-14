@@ -36,7 +36,7 @@ jobs:
       - name: Inject application.yml
         run: |
           mkdir -p src/main/resources
-          echo "${{ secrets.TEST_APPLICATION_YML }}" > src/main/resources/application.yml
+          echo "${{ secrets.TEST_APPLICATION_YML }}" | base64 -d | sed 's/\r$//' > src/main/resources/application.yml
           echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" | base64 -d | sed 's/\r$//' > docker-compose.yml
 
       - name: Start Container
@@ -48,6 +48,12 @@ jobs:
             sleep 1
           done
         timeout-minutes: 1
+
+      - name: Check container status
+        run: docker ps
+
+      - name: Test database connection
+        run: docker exec newzet-test-postgres psql -U test_user -d test_db -c "\l"
 
       - name: build code and test
         run: ./gradlew clean build
