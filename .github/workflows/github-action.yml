@@ -37,24 +37,20 @@ jobs:
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.TEST_APPLICATION_YML }}" > src/main/resources/application.yml
-          echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" > docker-compose.yml
+          echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" | base64 -d | sed 's/\r$//' > docker-compose.yml
 
-      - name: Validate YAML
-        run: |
-          yamllint docker-compose.yml
+      - name: Start Container
+        run: docker compose -f docker-compose.yml up -d
 
-      - name: Set file permissions
+      - name: Wait for database
         run: |
-          chmod 644 docker-compose.yml
+          while ! docker exec newzet-test-postgres pg_isready; do
+            sleep 1
+          done
+        timeout-minutes: 1
 
-      - name: Verify file content
-        run: |
-          echo "=== docker-compose.yml content ==="
-          cat docker-compose.yml
-          echo "================================="
+      - name: build code and test
+        run: ./gradlew clean build
 
-      - name: Build and Test with Gradle
-        run: |
-          docker compose -f docker-compose.yml up -d
-          ./gradlew clean build
-          docker compose -f docker-compose.yml down
+      - name: Quit Container
+        run: docker compose -f docker-compose.yml down
