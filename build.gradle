@@ -1,38 +1,105 @@
 plugins {
-	id 'java'
-	id 'org.springframework.boot' version '3.4.1'
-	id 'io.spring.dependency-management' version '1.1.7'
+    id 'java'
+    id 'org.springframework.boot' version '3.4.1'
+    id 'io.spring.dependency-management' version '1.1.7'
+    id 'jacoco'
 }
 
 group = 'com.newzet'
 version = '0.0.1-SNAPSHOT'
 
 java {
-	toolchain {
-		languageVersion = JavaLanguageVersion.of(17)
-	}
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+}
+
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory = layout.buildDirectory.dir('jacocoReport')
+}
+
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        html.required = true
+    }
 }
 
 configurations {
-	compileOnly {
-		extendsFrom annotationProcessor
-	}
+    compileOnly {
+        extendsFrom annotationProcessor
+    }
 }
 
 repositories {
-	mavenCentral()
+    mavenCentral()
 }
 
 dependencies {
-	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
-	implementation 'org.springframework.boot:spring-boot-starter-web'
-	compileOnly 'org.projectlombok:lombok'
-	runtimeOnly 'org.postgresql:postgresql'
-	annotationProcessor 'org.projectlombok:lombok'
-	testImplementation 'org.springframework.boot:spring-boot-starter-test'
-	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    compileOnly 'org.projectlombok:lombok'
+    runtimeOnly 'org.postgresql:postgresql'
+    annotationProcessor 'org.projectlombok:lombok'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 }
 
-tasks.named('test') {
-	useJUnitPlatform()
+test {
+    useJUnitPlatform()
+    finalizedBy jacocoTestCoverageVerification
+//    finalizedBy jacocoTestReport
+}
+
+jacocoTestReport {
+    reports {
+        xml.required = false
+        csv.required = false
+        html.required = true
+    }
+
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, excludes: [
+                        '**/*Application*',
+                        '*.test.*'
+                ])
+            })
+    )
+
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            enabled = true;
+            element = 'CLASS'
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 0.90
+            }
+
+            limit {
+                counter = 'LINE'
+                value = 'COVEREDRATIO'
+                minimum = 0.80
+            }
+
+            // 빈 줄을 제외한 코드의 라인수를 최대 200라인으로 제한합니다.
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 200
+            }
+
+            excludes = [
+                    '*.*Application',
+                    '*.test.*'
+            ]
+        }
+    }
 }
