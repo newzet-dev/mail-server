@@ -17,7 +17,7 @@ on:
 
 jobs:
   build-and-test:
-    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    #    if: github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
 
     steps:
