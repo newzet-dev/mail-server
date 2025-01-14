@@ -37,7 +37,7 @@ jobs:
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.TEST_APPLICATION_YML }}" > src/main/resources/application.yml
-          echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" | base64 -d > docker-compose.yml
+          echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" | base64 -d | sed 's/\r$//' > docker-compose.yml
 
       - name: Validate YAML
         run: |
