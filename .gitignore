@@ -37,3 +37,11 @@ out/
 .vscode/
 
 .DS_Store
+application.yml
+application-test.yml
+application-dev.yml
+application-prod.yml
+
+
+docker-compose.test.yml
+docker-compose.dev.yml
