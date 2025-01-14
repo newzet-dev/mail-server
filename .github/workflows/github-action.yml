@@ -37,7 +37,21 @@ jobs:
         run: |
           mkdir -p src/main/resources
           echo "${{ secrets.TEST_APPLICATION_YML }}" > src/main/resources/application.yml
-          echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" > docker-compose.yml
+          echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" | base64 -d > docker-compose.yml
+
+      - name: Validate YAML
+        run: |
+          yamllint docker-compose.yml
+
+      - name: Set file permissions
+        run: |
+          chmod 644 docker-compose.yml
+
+      - name: Verify file content
+        run: |
+          echo "=== docker-compose.yml content ==="
+          cat docker-compose.yml
+          echo "================================="
 
       - name: Build and Test with Gradle
         run: |
