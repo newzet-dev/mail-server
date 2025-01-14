@@ -36,9 +36,6 @@ jobs:
           echo "${{ secrets.TEST_APPLICATION_YML }}" > src/main/resources/application.yml
           echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" > docker-compose.yml
 
-      - name: debug docker-compose.yml
-        run: cat docker-compose.yml
-
       - name: Build and Test with Gradle
         run: |
           docker compose -f docker-compose.yml up -d
