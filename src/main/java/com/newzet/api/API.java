@@ -1,5 +1,5 @@
 package com.newzet.api;
 
 public class API {
-	private int ijkhklo;
+	private int ijkhkllo;
 }

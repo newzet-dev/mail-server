@@ -1,11 +1,6 @@
 name: Java CI with Gradle
 
 on:
-  push:
-    branches:
-      - dev
-    paths:
-      - 'src/**'
   pull_request:
     branches:
       - main
@@ -13,11 +8,11 @@ on:
     types:
       - opened
       - synchronize
-#      - closed
+      - closed
 
 jobs:
   build-and-test:
-    #    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+    if: github.event.action == 'opened' || github.event.action == 'synchronize'
     runs-on: ubuntu-latest
 
     steps:
