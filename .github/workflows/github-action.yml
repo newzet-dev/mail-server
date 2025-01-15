@@ -42,19 +42,6 @@ jobs:
       - name: Start Container
         run: docker compose -f docker-compose.yml up -d
 
-      - name: Wait for database
-        run: |
-          while ! docker exec newzet-test-postgres pg_isready; do
-            sleep 1
-          done
-        timeout-minutes: 1
-
-      - name: Check container status
-        run: docker ps
-
-      - name: Test database connection
-        run: docker exec newzet-test-postgres psql -U test_user -d test_db -c "\l"
-
       - name: build code and test
         run: ./gradlew clean build
 
