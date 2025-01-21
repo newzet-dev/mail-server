@@ -5,10 +5,11 @@ on:
     branches:
       - main
       - dev
+    paths:
+      - 'src/*'
     types:
       - opened
       - synchronize
-      - closed
 
 jobs:
   build-and-test:
