@@ -10,7 +10,6 @@ on:
     types:
       - opened
       - synchronize
-      - closed
 
 jobs:
   build-and-test:
