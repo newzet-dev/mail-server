@@ -9,17 +9,6 @@ import com.newzet.api.newsletter.Newsletter;
 import com.newzet.api.newsletter.RegisteredNewsletter;
 
 class ActiveUserTest {
-
-	@Test
-	@DisplayName("활성 유저는 검증 시 아무것도 일어나지 않음")
-	void verify() {
-		//given
-		User user = new ActiveUser();
-
-		//when
-		user.verify();
-	}
-
 	@Test
 	@DisplayName("처음 구독하는 뉴스레터는 구독 목록에 추가됨")
 	public void 구독하지_않은_뉴스레터_구독() {
