@@ -6,8 +6,10 @@ import java.util.List;
 import com.newzet.api.newsletter.Newsletter;
 
 import lombok.AccessLevel;
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
+@Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveUser implements User, Subscribable {
 
@@ -34,4 +36,5 @@ public class ActiveUser implements User, Subscribable {
 	public int countSubscription() {
 		return subscribedNewsletterList.size();
 	}
+
 }
