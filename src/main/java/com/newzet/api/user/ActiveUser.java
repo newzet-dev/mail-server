@@ -7,7 +7,7 @@ import com.newzet.api.newsletter.Newsletter;
 
 public class ActiveUser implements User, Subscribable {
 
-	private List<Newsletter> subscribedNewsletterList = new ArrayList<>();
+	private final List<Newsletter> subscribedNewsletterList = new ArrayList<>();
 
 	@Override
 	public void verify() {
@@ -23,11 +23,11 @@ public class ActiveUser implements User, Subscribable {
 
 	@Override
 	public boolean isSubscribed(Newsletter newsletter) {
-		return false;
+		return subscribedNewsletterList.contains(newsletter);
 	}
 
 	@Override
 	public int countSubscription() {
-		return 0;
+		return subscribedNewsletterList.size();
 	}
 }
