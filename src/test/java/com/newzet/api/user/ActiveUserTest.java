@@ -25,14 +25,15 @@ class ActiveUserTest {
 	public void 구독하지_않은_뉴스레터_구독() {
 		//given
 		ActiveUser activeUser = new ActiveUser();
-		activeUser.subscribe(new RegisteredNewsletter());
-		int beforeSize = activeUser.getSubscribedNewsletterList().size();
+		int numberOfSubscription = activeUser.countSubscription();
 
 		//when
-		activeUser.subscribe(new RegisteredNewsletter());
+		Newsletter newsletter = new RegisteredNewsletter();
+		activeUser.subscribe(newsletter);
 
 		//then
-		assertEquals(beforeSize + 1, activeUser.getSubscribedNewsletterList().size());
+		assertTrue(activeUser.isSubscribed(newsletter));
+		assertEquals(activeUser.countSubscription(), numberOfSubscription + 1);
 	}
 
 	@Test
@@ -42,12 +43,13 @@ class ActiveUserTest {
 		ActiveUser activeUser = new ActiveUser();
 		Newsletter newsletter = new RegisteredNewsletter();
 		activeUser.subscribe(newsletter);
-		int beforeSize = activeUser.getSubscribedNewsletterList().size();
+		int numberOfSubscription = activeUser.countSubscription();
 
 		//when
 		activeUser.subscribe(newsletter);
 
 		//then
-		assertEquals(beforeSize, activeUser.getSubscribedNewsletterList().size());
+		assertTrue(activeUser.isSubscribed(newsletter));
+		assertEquals(activeUser.countSubscription(), numberOfSubscription);
 	}
 }

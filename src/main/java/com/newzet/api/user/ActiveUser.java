@@ -5,9 +5,6 @@ import java.util.List;
 
 import com.newzet.api.newsletter.Newsletter;
 
-import lombok.Getter;
-
-@Getter
 public class ActiveUser implements User, Activable {
 
 	private List<Newsletter> subscribedNewsletterList = new ArrayList<>();
@@ -19,6 +16,18 @@ public class ActiveUser implements User, Activable {
 
 	@Override
 	public void subscribe(Newsletter newsletter) {
-		subscribedNewsletterList.add(newsletter);
+		if (!subscribedNewsletterList.contains(newsletter)) {
+			subscribedNewsletterList.add(newsletter);
+		}
+	}
+
+	@Override
+	public boolean isSubscribed(Newsletter newsletter) {
+		return false;
+	}
+
+	@Override
+	public int countSubscription() {
+		return 0;
 	}
 }
