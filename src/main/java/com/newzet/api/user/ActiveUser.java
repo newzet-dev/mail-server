@@ -1,8 +1,24 @@
 package com.newzet.api.user;
 
-public class ActiveUser implements User {
+import java.util.ArrayList;
+import java.util.List;
+
+import com.newzet.api.newsletter.Newsletter;
+
+import lombok.Getter;
+
+@Getter
+public class ActiveUser implements User, Activable {
+
+	private List<Newsletter> subscribedNewsletterList = new ArrayList<>();
+
 	@Override
 	public void verify() {
 		// 활성 상태는 검증이 필요 없음
+	}
+
+	@Override
+	public void subscribe(Newsletter newsletter) {
+		subscribedNewsletterList.add(newsletter);
 	}
 }
