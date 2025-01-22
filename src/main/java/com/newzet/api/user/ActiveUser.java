@@ -5,9 +5,18 @@ import java.util.List;
 
 import com.newzet.api.newsletter.Newsletter;
 
+import lombok.AccessLevel;
+import lombok.RequiredArgsConstructor;
+
+@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveUser implements User, Subscribable {
 
-	private final List<Newsletter> subscribedNewsletterList = new ArrayList<>();
+	private final String email;
+	private final List<Newsletter> subscribedNewsletterList;
+
+	public static ActiveUser create(String email) {
+		return new ActiveUser(email, new ArrayList<>());
+	}
 
 	@Override
 	public void subscribe(Newsletter newsletter) {
