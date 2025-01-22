@@ -5,7 +5,7 @@ import java.util.List;
 
 import com.newzet.api.newsletter.Newsletter;
 
-public class ActiveUser implements User, Activable {
+public class ActiveUser implements User, Subscribable {
 
 	private List<Newsletter> subscribedNewsletterList = new ArrayList<>();
 
