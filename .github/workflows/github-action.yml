@@ -6,7 +6,7 @@ on:
       - main
       - dev
     paths:
-      - 'src/*'
+      - 'src/**'
     types:
       - opened
       - synchronize
