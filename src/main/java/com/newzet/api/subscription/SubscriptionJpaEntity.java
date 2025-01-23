@@ -9,8 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
 
 @Entity
+@Getter
+@AllArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubscriptionJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
