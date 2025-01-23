@@ -7,6 +7,5 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface SubscriptionJpaRepository extends JpaRepository<SubscriptionJpaEntity, Long> {
-
-	List<SubscriptionJpaEntity> fineAllByUserId(Long userId);
+	List<SubscriptionJpaEntity> findAllByUserId(Long userId);
 }
