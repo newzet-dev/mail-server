@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 
 import com.newzet.api.exception.NewsletterNotFoundException;
 import com.newzet.api.exception.user.NoActiveUserException;
+import com.newzet.api.newsletter.Newsletter;
 import com.newzet.api.newsletter.NewsletterJpaEntity;
 import com.newzet.api.newsletter.NewsletterJpaRepository;
 import com.newzet.api.subscription.SubscriptionJpaEntity;
@@ -35,7 +36,9 @@ public class UserRepositoryImpl implements UserRepository {
 				.orElseThrow(() -> new NewsletterNotFoundException("id에 해당하는 뉴스레터가 없습니다")))
 			.toList();
 
-		// TODO User 조립
-		return null;
+		List<Newsletter> newsletterList = newsletterJpaEntityList.stream()
+			.map(NewsletterJpaEntity::toNewsletter)
+			.toList();
+		return null
 	}
 }
