@@ -1,6 +1,5 @@
 package com.newzet.api.user;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import com.newzet.api.newsletter.Newsletter;
@@ -16,8 +15,8 @@ public class ActiveUser implements User, Subscribable {
 	private final String email;
 	private final List<Newsletter> subscribedNewsletterList;
 
-	public static ActiveUser create(String email) {
-		return new ActiveUser(email, new ArrayList<>());
+	public static ActiveUser create(String email, List<Newsletter> subscribedNewsletterList) {
+		return new ActiveUser(email, subscribedNewsletterList);
 	}
 
 	@Override
