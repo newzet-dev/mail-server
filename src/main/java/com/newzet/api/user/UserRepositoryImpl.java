@@ -39,6 +39,6 @@ public class UserRepositoryImpl implements UserRepository {
 		List<Newsletter> newsletterList = newsletterJpaEntityList.stream()
 			.map(NewsletterJpaEntity::toNewsletter)
 			.toList();
-		return null
+		return userJpaEntity.toActiveUser(newsletterList);
 	}
 }

@@ -1,5 +1,9 @@
 package com.newzet.api.user;
 
+import java.util.List;
+
+import com.newzet.api.newsletter.Newsletter;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -24,4 +28,8 @@ public class UserJpaEntity {
 
 	@Enumerated(EnumType.STRING)
 	private UserStatus status;
+
+	public ActiveUser toActiveUser(List<Newsletter> newsletterList) {
+		return ActiveUser.create(email, newsletterList);
+	}
 }
