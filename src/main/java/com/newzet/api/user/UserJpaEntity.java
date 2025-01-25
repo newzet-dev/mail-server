@@ -1,9 +1,5 @@
 package com.newzet.api.user;
 
-import java.util.List;
-
-import com.newzet.api.newsletter.Newsletter;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -11,13 +7,12 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 @Entity
 @Getter
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class UserJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,8 +23,4 @@ public class UserJpaEntity {
 
 	@Enumerated(EnumType.STRING)
 	private UserStatus status;
-
-	public ActiveUser toActiveUser(List<Newsletter> newsletterList) {
-		return ActiveUser.create(email, newsletterList);
-	}
 }

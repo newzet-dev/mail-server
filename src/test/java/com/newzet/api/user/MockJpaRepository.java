@@ -10,17 +10,15 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 
-import com.newzet.api.exception.user.NoActiveUserException;
-
 public class MockJpaRepository implements UserJpaRepository {
-	private static final String TEST_EMAIL = "exist@example.com";
+	private static final String EXIST_EMAIL = "exist@example.com";
 
 	@Override
 	public Optional<UserJpaEntity> findByEmailAndStatus(String email, UserStatus status) {
-		if (email.equals(TEST_EMAIL) && status == UserStatus.ACTIVE) {
-			return Optional.of(new UserJpaEntity());
+		if (email.equals(EXIST_EMAIL) && status == UserStatus.ACTIVE) {
+			return Optional.of(new UserJpaEntity(1L, EXIST_EMAIL, UserStatus.ACTIVE));
 		}
-		throw new NoActiveUserException();
+		return Optional.empty();
 	}
 
 	@Override
