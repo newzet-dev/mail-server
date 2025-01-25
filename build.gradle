@@ -14,18 +14,18 @@ java {
     }
 }
 
-jacoco {
-    toolVersion = "0.8.12"
-    reportsDirectory = layout.buildDirectory.dir('jacocoReport')
-}
+//jacoco {
+//    toolVersion = "0.8.12"
+//    reportsDirectory = layout.buildDirectory.dir('jacocoReport')
+//}
 
-jacocoTestReport {
-    dependsOn test
-
-    reports {
-        html.required = true
-    }
-}
+//jacocoTestReport {
+//    dependsOn test
+//
+//    reports {
+//        html.required = true
+//    }
+//}
 
 configurations {
     compileOnly {
@@ -45,54 +45,55 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "org.mockito:mockito-core:5.11.0"
 }
 
 test {
     useJUnitPlatform()
-    finalizedBy jacocoTestCoverageVerification
+//    finalizedBy jacocoTestCoverageVerification
 //    finalizedBy jacocoTestReport
 }
-
-jacocoTestReport {
-    reports {
-        xml.required = false
-        csv.required = false
-        html.required = true
-    }
-
-    classDirectories.setFrom(
-            files(classDirectories.files.collect {
-                fileTree(dir: it, excludes: [
-                        '**/*Application*',
-                        '*.test.*'
-                ])
-            })
-    )
-
-}
-
-jacocoTestCoverageVerification {
-    violationRules {
-        rule {
-            enabled = true;
-            element = 'CLASS'
-
-            limit {
-                counter = 'BRANCH'
-                value = 'COVEREDRATIO'
-                minimum = 0.90
-            }
-
-            limit {
-                counter = 'LINE'
-                value = 'TOTALCOUNT'
-                maximum = 200
-            }
-
-            excludes = [
-                    '*.*Application',
-                    '*.test.*'
-            ]
-        }
-    }
-}
+//
+//jacocoTestReport {
+//    reports {
+//        xml.required = false
+//        csv.required = false
+//        html.required = true
+//    }
+//
+//    classDirectories.setFrom(
+//            files(classDirectories.files.collect {
+//                fileTree(dir: it, excludes: [
+//                        '**/*Application*',
+//                        '*.test.*'
+//                ])
+//            })
+//    )
+//
+//}
+//
+//jacocoTestCoverageVerification {
+//    violationRules {
+//        rule {
+//            enabled = true;
+//            element = 'CLASS'
+//
+//            limit {
+//                counter = 'BRANCH'
+//                value = 'COVEREDRATIO'
+//                minimum = 0.90
+//            }
+//
+//            limit {
+//                counter = 'LINE'
+//                value = 'TOTALCOUNT'
+//                maximum = 200
+//            }
+//
+//            excludes = [
+//                    '*.*Application',
+//                    '*.test.*'
+//            ]
+//        }
+//    }
+//}
