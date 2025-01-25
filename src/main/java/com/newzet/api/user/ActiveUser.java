@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ActiveUser implements User, Subscribable {
+public class ActiveUser implements User, MailReciepient {
 
 	private final String email;
 	private final List<Newsletter> subscribedNewsletterList;

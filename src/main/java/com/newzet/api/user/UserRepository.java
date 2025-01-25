@@ -1,5 +1,5 @@
 package com.newzet.api.user;
 
 public interface UserRepository {
-	ActiveUser findActiveUserByEmail(String email);
+	MailReciepient findMailRecipientByEmail(String email);
 }
