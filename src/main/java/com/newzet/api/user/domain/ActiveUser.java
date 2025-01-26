@@ -8,9 +8,10 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ActiveUser {
 
+	private final Long id;
 	private final String email;
 
-	public static ActiveUser create(String email) {
-		return new ActiveUser(email);
+	public static ActiveUser create(Long id, String email) {
+		return new ActiveUser(id, email);
 	}
 }
