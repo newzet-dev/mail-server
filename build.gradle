@@ -45,42 +45,66 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    testImplementation "org.mockito:mockito-core:5.11.0"
+
+    // querydsl 추가
+    implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
+    annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
+    annotationProcessor "jakarta.annotation:jakarta.annotation-api"
+    annotationProcessor "jakarta.persistence:jakarta.persistence-api"
+
 }
 
 test {
     useJUnitPlatform()
     finalizedBy jacocoTestCoverageVerification
-//    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestReport
 }
 
 jacocoTestReport {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, excludes: [
+                        '**/*Application*',
+                        '**/Q*.class',
+                        '**/*Exception.class'
+                ])
+            })
+    )
+
     reports {
         xml.required = false
         csv.required = false
         html.required = true
     }
+}
 
+jacocoTestCoverageVerification {
     classDirectories.setFrom(
             files(classDirectories.files.collect {
                 fileTree(dir: it, excludes: [
                         '**/*Application*',
-                        '*.test.*'
+                        '**/Q*.class',
+                        '**/*Exception.class'
                 ])
             })
     )
 
-}
-
-jacocoTestCoverageVerification {
     violationRules {
         rule {
             enabled = true;
             element = 'CLASS'
 
+//            limit {
+//                counter = 'LINE'
+//                value = 'COVEREDRATIO'
+//                minimum = 0.80
+//            }
+
             limit {
                 counter = 'BRANCH'
                 value = 'COVEREDRATIO'
-                minimum = 0.90
+                minimum = 1.0
             }
 
             limit {
@@ -88,11 +112,6 @@ jacocoTestCoverageVerification {
                 value = 'TOTALCOUNT'
                 maximum = 200
             }
-
-            excludes = [
-                    '*.*Application',
-                    '*.test.*'
-            ]
         }
     }
 }

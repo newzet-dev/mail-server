@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter;
+package com.newzet.api.newsletter.domain;
 
 public class RegisteredNewsletter implements Newsletter {
 }
