@@ -1,5 +1,6 @@
 package com.newzet.api.user.repository;
 
+import com.newzet.api.user.domain.ActiveUser;
 import com.newzet.api.user.domain.UserStatus;
 
 import jakarta.persistence.Column;
@@ -27,4 +28,8 @@ public class UserJpaEntity {
 
 	@Enumerated(EnumType.STRING)
 	private UserStatus status;
+
+	public ActiveUser toActiveUser() {
+		return null;
+	}
 }
