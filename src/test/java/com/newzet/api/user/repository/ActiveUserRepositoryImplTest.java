@@ -1,14 +1,15 @@
 package com.newzet.api.user.repository;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
+import com.newzet.api.exception.user.NoActiveUserException;
 import com.newzet.api.user.domain.ActiveUser;
 import com.newzet.api.user.domain.UserStatus;
 
@@ -34,7 +35,18 @@ class ActiveUserRepositoryImplTest {
 		ActiveUser activeUser = activeUserRepository.findActiveUserByEmail(existEmail);
 
 		//Then
-		Assertions.assertEquals(existEmail, activeUser.getEmail());
-		Assertions.assertEquals(ActiveUser.class, activeUser.getClass());
+		assertEquals(existEmail, activeUser.getEmail());
+		assertEquals(ActiveUser.class, activeUser.getClass());
+	}
+
+	@Test
+	public void email과_일치하는_활성_유저가_없는_경우_NoActiveUserException_예외_발생() {
+		String noExistEmail = "noExist@example.com";
+		when(userJpaRepository.findByEmailAndStatus(noExistEmail, UserStatus.ACTIVE))
+			.thenReturn(Optional.empty());
+
+		//When
+		assertThrows(NoActiveUserException.class, () ->
+			activeUserRepository.findActiveUserByEmail(noExistEmail));
 	}
 }
