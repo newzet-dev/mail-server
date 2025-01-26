@@ -2,7 +2,7 @@ plugins {
     id 'java'
     id 'org.springframework.boot' version '3.4.1'
     id 'io.spring.dependency-management' version '1.1.7'
-//    id 'jacoco'
+    id 'jacoco'
 }
 
 group = 'com.newzet'
@@ -14,18 +14,18 @@ java {
     }
 }
 
-//jacoco {
-//    toolVersion = "0.8.12"
-//    reportsDirectory = layout.buildDirectory.dir('jacocoReport')
-//}
+jacoco {
+    toolVersion = "0.8.12"
+    reportsDirectory = layout.buildDirectory.dir('jacocoReport')
+}
 
-//jacocoTestReport {
-//    dependsOn test
-//
-//    reports {
-//        html.required = true
-//    }
-//}
+jacocoTestReport {
+    dependsOn test
+
+    reports {
+        html.required = true
+    }
+}
 
 configurations {
     compileOnly {
@@ -57,50 +57,61 @@ dependencies {
 
 test {
     useJUnitPlatform()
-//    finalizedBy jacocoTestCoverageVerification
-//    finalizedBy jacocoTestReport
+    finalizedBy jacocoTestCoverageVerification
+    finalizedBy jacocoTestReport
 }
 
-//jacocoTestReport {
-//    reports {
-//        xml.required = false
-//        csv.required = false
-//        html.required = true
-//    }
-//
-//    classDirectories.setFrom(
-//            files(classDirectories.files.collect {
-//                fileTree(dir: it, excludes: [
-//                        '**/*Application*',
-//                        '*.test.*'
-//                ])
-//            })
-//    )
-//
-//}
-//
-//jacocoTestCoverageVerification {
-//    violationRules {
-//        rule {
-//            enabled = true;
-//            element = 'CLASS'
-//
-//            limit {
-//                counter = 'BRANCH'
-//                value = 'COVEREDRATIO'
-//                minimum = 0.90
-//            }
-//
+jacocoTestReport {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, excludes: [
+                        '**/*Application*',
+                        '**/Q*.class',
+                        '**/*Exception.class'
+                ])
+            })
+    )
+
+    reports {
+        xml.required = false
+        csv.required = false
+        html.required = true
+    }
+}
+
+jacocoTestCoverageVerification {
+    classDirectories.setFrom(
+            files(classDirectories.files.collect {
+                fileTree(dir: it, excludes: [
+                        '**/*Application*',
+                        '**/Q*.class',
+                        '**/*Exception.class'
+                ])
+            })
+    )
+
+    violationRules {
+        rule {
+            enabled = true;
+            element = 'CLASS'
+
 //            limit {
 //                counter = 'LINE'
-//                value = 'TOTALCOUNT'
-//                maximum = 200
+//                value = 'COVEREDRATIO'
+//                minimum = 0.80
 //            }
-//
-//            excludes = [
-//                    '*.*Application',
-//                    '*.test.*'
-//            ]
-//        }
-//    }
-//}
+
+            limit {
+                counter = 'BRANCH'
+                value = 'COVEREDRATIO'
+                minimum = 1.0
+            }
+
+            limit {
+                counter = 'LINE'
+                value = 'TOTALCOUNT'
+                maximum = 200
+            }
+        }
+    }
+}
