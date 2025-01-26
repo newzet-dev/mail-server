@@ -7,8 +7,9 @@ import java.util.ArrayList;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 
-import com.newzet.api.newsletter.Newsletter;
-import com.newzet.api.newsletter.RegisteredNewsletter;
+import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.RegisteredNewsletter;
+import com.newzet.api.user.domain.ActiveUser;
 
 class ActiveUserTest {
 	@Test

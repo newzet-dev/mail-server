@@ -10,6 +10,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.repository.query.FluentQuery;
 
+import com.newzet.api.user.domain.UserStatus;
+import com.newzet.api.user.repository.UserJpaEntity;
+import com.newzet.api.user.repository.UserJpaRepository;
+
 public class MockJpaRepository implements UserJpaRepository {
 	private static final String EXIST_EMAIL = "exist@example.com";
 

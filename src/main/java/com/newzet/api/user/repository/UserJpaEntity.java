@@ -1,4 +1,6 @@
-package com.newzet.api.user;
+package com.newzet.api.user.repository;
+
+import com.newzet.api.user.domain.UserStatus;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

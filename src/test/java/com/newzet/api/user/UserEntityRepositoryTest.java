@@ -5,6 +5,8 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import com.newzet.api.exception.user.InvalidUserException;
+import com.newzet.api.user.repository.UserEntityRepository;
+import com.newzet.api.user.repository.UserJpaEntity;
 
 class UserEntityRepositoryTest {
 

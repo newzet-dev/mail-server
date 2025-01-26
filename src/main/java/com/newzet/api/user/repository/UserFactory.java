@@ -1,12 +1,14 @@
-package com.newzet.api.user;
+package com.newzet.api.user.repository;
 
 import java.util.List;
 
 import org.springframework.stereotype.Component;
 
-import com.newzet.api.newsletter.Newsletter;
-import com.newzet.api.newsletter.NewsletterEntityRepository;
-import com.newzet.api.newsletter.NewsletterJpaEntity;
+import com.newzet.api.newsletter.repository.NewsletterEntityRepository;
+import com.newzet.api.newsletter.repository.NewsletterJpaEntity;
+import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.user.domain.ActiveUser;
+import com.newzet.api.user.domain.MailReciepient;
 
 import lombok.RequiredArgsConstructor;
 

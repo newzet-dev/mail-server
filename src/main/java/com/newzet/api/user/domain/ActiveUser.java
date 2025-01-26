@@ -1,8 +1,8 @@
-package com.newzet.api.user;
+package com.newzet.api.user.domain;
 
 import java.util.List;
 
-import com.newzet.api.newsletter.Newsletter;
+import com.newzet.api.newsletter.domain.Newsletter;
 
 import lombok.AccessLevel;
 import lombok.Getter;

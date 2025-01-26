@@ -1,8 +1,9 @@
-package com.newzet.api.user;
+package com.newzet.api.user.repository;
 
 import org.springframework.stereotype.Component;
 
 import com.newzet.api.exception.user.NoActiveUserException;
+import com.newzet.api.user.domain.UserStatus;
 
 import lombok.RequiredArgsConstructor;
 

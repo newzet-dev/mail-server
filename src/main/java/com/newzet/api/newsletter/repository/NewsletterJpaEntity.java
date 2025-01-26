@@ -1,4 +1,9 @@
-package com.newzet.api.newsletter;
+package com.newzet.api.newsletter.repository;
+
+import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.RegisteredNewsletter;
+import com.newzet.api.newsletter.domain.UnregisteredNewsletter;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
