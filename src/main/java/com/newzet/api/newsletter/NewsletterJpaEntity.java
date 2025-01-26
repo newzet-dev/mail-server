@@ -17,4 +17,11 @@ public class NewsletterJpaEntity {
 
 	@Enumerated(EnumType.STRING)
 	private NewsletterStatus status;
+
+	public Newsletter toNewsletter() {
+		if (this.status == NewsletterStatus.REGISTERED) {
+			return new RegisteredNewsletter();
+		}
+		return new UnregisteredNewsletter();
+	}
 }
