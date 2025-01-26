@@ -6,11 +6,10 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 
 @Entity
-@AllArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 public class NewsletterJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -18,11 +17,4 @@ public class NewsletterJpaEntity {
 
 	@Enumerated(EnumType.STRING)
 	private NewsletterStatus status;
-
-	public Newsletter toNewsletter() {
-		if (status == NewsletterStatus.REGISTERED) {
-			return new RegisteredNewsletter();
-		}
-		return new UnregisteredNewsletter();
-	}
 }
