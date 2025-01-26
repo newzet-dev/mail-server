@@ -30,6 +30,6 @@ public class UserJpaEntity {
 	private UserStatus status;
 
 	public ActiveUser toActiveUser() {
-		return null;
+		return ActiveUser.create(id, email);
 	}
 }
