@@ -1,7 +1,7 @@
 package com.newzet.api.newsletter.repository;
 
-import static com.newzet.api.newsletter.QNewsletterJpaEntity.*;
-import static com.newzet.api.subscription.QSubscriptionJpaEntity.*;
+import static com.newzet.api.newsletter.repository.QNewsletterJpaEntity.*;
+import static com.newzet.api.subscription.repository.QSubscriptionJpaEntity.*;
 
 import java.util.List;
 
@@ -9,16 +9,13 @@ import org.springframework.stereotype.Component;
 
 import com.querydsl.jpa.impl.JPAQueryFactory;
 
-import jakarta.persistence.EntityManager;
+import lombok.RequiredArgsConstructor;
 
 @Component
+@RequiredArgsConstructor
 public class NewsletterJpaRepositoryCustomImpl implements NewsletterJpaRepositoryCustom {
 
 	private final JPAQueryFactory queryFactory;
-
-	public NewsletterJpaRepositoryCustomImpl(EntityManager entityManager) {
-		this.queryFactory = new JPAQueryFactory(entityManager);
-	}
 
 	@Override
 	public List<NewsletterJpaEntity> findAllByUserId(Long userId) {
