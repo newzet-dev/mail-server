@@ -9,11 +9,13 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class UserJpaEntity {
 	@Id
@@ -25,9 +27,4 @@ public class UserJpaEntity {
 
 	@Enumerated(EnumType.STRING)
 	private UserStatus status;
-
-	public UserJpaEntity(String email, UserStatus status) {
-		this.email = email;
-		this.status = status;
-	}
 }
