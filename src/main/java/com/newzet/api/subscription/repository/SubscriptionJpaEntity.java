@@ -9,12 +9,13 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
-import lombok.AllArgsConstructor;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class SubscriptionJpaEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -27,4 +28,9 @@ public class SubscriptionJpaEntity {
 	@ManyToOne
 	@JoinColumn(name = "newsletter_id")
 	private NewsletterJpaEntity newsletter;
+
+	public SubscriptionJpaEntity(UserJpaEntity user, NewsletterJpaEntity newsletter) {
+		this.user = user;
+		this.newsletter = newsletter;
+	}
 }

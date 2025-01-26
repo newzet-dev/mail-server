@@ -27,10 +27,10 @@ class NewsletterEntityRepositoryTest {
 		// Given
 		Long userId = 1L;
 		List<NewsletterJpaEntity> expectedNewsletters = List.of(
-			new NewsletterJpaEntity(1L, NewsletterStatus.REGISTERED),
-			new NewsletterJpaEntity(1L, NewsletterStatus.UNREGISTERED),
-			new NewsletterJpaEntity(2L, NewsletterStatus.REGISTERED),
-			new NewsletterJpaEntity(2L, NewsletterStatus.UNREGISTERED));
+			new NewsletterJpaEntity(NewsletterStatus.REGISTERED),
+			new NewsletterJpaEntity(NewsletterStatus.UNREGISTERED),
+			new NewsletterJpaEntity(NewsletterStatus.REGISTERED),
+			new NewsletterJpaEntity(NewsletterStatus.UNREGISTERED));
 		when(newsletterJpaRepository.findAllByUserId(userId)).thenReturn(expectedNewsletters);
 
 		// When
@@ -44,7 +44,7 @@ class NewsletterEntityRepositoryTest {
 	}
 
 	@Test
-	void findNewsletterListByUserId_ShouldReturnEmptyListWhenNoData() {
+	void findAllByUserId_호출_시_구독한_뉴스레터가_없다면_빈_리스트_반환() {
 		// Given
 		Long userId = 3L;
 		when(newsletterJpaRepository.findAllByUserId(userId)).thenReturn(List.of());

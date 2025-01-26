@@ -20,7 +20,7 @@ public class MockJpaRepository implements UserJpaRepository {
 	@Override
 	public Optional<UserJpaEntity> findByEmailAndStatus(String email, UserStatus status) {
 		if (email.equals(EXIST_EMAIL) && status == UserStatus.ACTIVE) {
-			return Optional.of(new UserJpaEntity(1L, EXIST_EMAIL, UserStatus.ACTIVE));
+			return Optional.of(new UserJpaEntity(EXIST_EMAIL, UserStatus.ACTIVE));
 		}
 		return Optional.empty();
 	}
