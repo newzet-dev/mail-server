@@ -14,7 +14,7 @@ class NewsletterJpaEntityTest {
 	public void 등록된_뉴스레터일때_RegisteredNewsletter_객체로_변환() {
 		//Given
 		NewsletterJpaEntity newsletterJpaEntity =
-			new NewsletterJpaEntity(NewsletterStatus.REGISTERED);
+			new NewsletterJpaEntity(1L, NewsletterStatus.REGISTERED);
 
 		//When
 		Newsletter newsletter = newsletterJpaEntity.toNewsletter();
@@ -27,7 +27,7 @@ class NewsletterJpaEntityTest {
 	public void 등록되지_않은_뉴스레터일때_UnRegisteredNewsletter_객체로_변환() {
 		//Given
 		NewsletterJpaEntity newsletterJpaEntity =
-			new NewsletterJpaEntity(NewsletterStatus.UNREGISTERED);
+			new NewsletterJpaEntity(1L, NewsletterStatus.UNREGISTERED);
 
 		//When
 		Newsletter newsletter = newsletterJpaEntity.toNewsletter();

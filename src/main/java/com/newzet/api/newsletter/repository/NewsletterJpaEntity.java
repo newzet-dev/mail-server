@@ -12,9 +12,11 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.NoArgsConstructor;
 
 @Entity
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NewsletterJpaEntity {
 	@Id
@@ -23,10 +25,6 @@ public class NewsletterJpaEntity {
 
 	@Enumerated(EnumType.STRING)
 	private NewsletterStatus status;
-
-	public NewsletterJpaEntity(NewsletterStatus status) {
-		this.status = status;
-	}
 
 	public Newsletter toNewsletter() {
 		if (this.status == NewsletterStatus.REGISTERED) {

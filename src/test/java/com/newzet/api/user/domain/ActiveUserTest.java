@@ -11,7 +11,7 @@ class ActiveUserTest {
 		String email = "test@example.com";
 
 		//When
-		ActiveUser activeUser = ActiveUser.create(email);
+		ActiveUser activeUser = ActiveUser.create(1L, email);
 
 		//Then
 		Assertions.assertEquals(email, activeUser.getEmail());
