@@ -20,7 +20,7 @@ class ActiveUserRepositoryImplTest {
 
 	@BeforeEach
 	void setUp() {
-		userJpaRepository = Mockito.mock(userJpaRepository.getClass());
+		userJpaRepository = Mockito.mock(UserJpaRepository.class);
 		activeUserRepository = new ActiveUserRepositoryImpl(userJpaRepository);
 	}
 
