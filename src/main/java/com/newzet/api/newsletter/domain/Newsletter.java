@@ -2,7 +2,9 @@ package com.newzet.api.newsletter.domain;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Getter;
 
+@Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Newsletter {
 	private final Long id;
