@@ -4,18 +4,45 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
+import com.newzet.api.newsletter.domain.Newsletter;
+
 class NewsletterEntityTest {
 
 	@Test
 	public void 뉴스레터_엔티티_생성() {
 		//When
-		NewsletterEntity newsletterEntity = NewsletterEntity.create("test", "test@example.com",
-			"test123", NewsletterEntityStatus.REGISTERED);
+		NewsletterEntity newsletterEntity = NewsletterEntity.builder()
+			.name("test")
+			.domain("test@example.com")
+			.maillingList("test123")
+			.status(NewsletterEntityStatus.REGISTERED)
+			.build();
 
 		//Then
 		assertEquals("test", newsletterEntity.getName());
 		assertEquals("test@example.com", newsletterEntity.getDomain());
 		assertEquals("test123", newsletterEntity.getMaillingList());
 		assertEquals(NewsletterEntityStatus.REGISTERED, newsletterEntity.getStatus());
+	}
+
+	@Test
+	public void 뉴스레터_엔티티를_모델로_변환() {
+		//Given
+		NewsletterEntity newsletterEntity = NewsletterEntity.builder()
+			.id(1L)
+			.name("test")
+			.domain("test@example.com")
+			.maillingList("test123")
+			.status(NewsletterEntityStatus.REGISTERED)
+			.build();
+
+		//When
+		Newsletter newsletter = newsletterEntity.toModel();
+
+		//Then
+		assertEquals(1L, newsletter.getId());
+		assertEquals("test@example.com", newsletter.getDomain());
+		assertEquals("test123", newsletter.getMaillingList());
+		assertEquals(NewsletterEntityStatus.REGISTERED, newsletter.getStatus());
 	}
 }
