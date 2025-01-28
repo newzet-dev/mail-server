@@ -18,7 +18,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class NewsletterEntity {
@@ -36,6 +36,16 @@ public class NewsletterEntity {
 
 	@Enumerated(EnumType.STRING)
 	private NewsletterEntityStatus status;
+
+	public static NewsletterEntity create(String name, String domain,
+		String maillingList, NewsletterEntityStatus status) {
+		return NewsletterEntity.builder()
+			.name(name)
+			.domain(domain)
+			.maillingList(maillingList)
+			.status(status)
+			.build();
+	}
 
 	public Newsletter toModel() {
 		return Newsletter.create(id, name, domain, maillingList,

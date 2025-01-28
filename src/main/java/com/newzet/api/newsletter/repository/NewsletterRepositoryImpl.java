@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.newsletter.business.NewsletterRepository;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
-import com.newzet.api.newsletter.dto.NewsletterReadDbDto;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,20 +21,16 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 	@Transactional
 	public Newsletter save(String name, String domain, String maillingList,
 		NewsletterStatus status) {
-		NewsletterEntity newsletterEntity = NewsletterEntity.builder()
-			.name(name)
-			.domain(domain)
-			.maillingList(maillingList)
-			.status(NewsletterEntityStatus.valueOf(status.name()))
-			.build();
+		NewsletterEntity newsletterEntity = NewsletterEntity.create(name, domain, maillingList,
+			NewsletterEntityStatus.valueOf(status.name()));
 		return newsletterJpaRepository.save(newsletterEntity).toModel();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Optional<NewsletterReadDbDto> findByDomainOrMaillingList(String domain,
+	public Optional<Newsletter> findByDomainOrMaillingList(String domain,
 		String maillingList) {
 		return newsletterJpaRepository.findNewsletterByDomainOrMaillingList(domain, maillingList)
-			.map(NewsletterEntity::toReadDto);
+			.map(NewsletterEntity::toModel);
 	}
 }
