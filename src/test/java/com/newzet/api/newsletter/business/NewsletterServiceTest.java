@@ -44,4 +44,29 @@ class NewsletterServiceTest {
 			.findByDomainOrMaillingList(domain, maillingList);
 		verify(newsletterRepository, never()).save(any(), any(), any(), any());
 	}
+
+	@Test
+	void findOrCreateNewsletter_WhenNewsletterDoesNotExist_SaveAndReturnNewsletter() {
+		// Given
+		String name = "test";
+		String domain = "test@example.com";
+		String maillingList = "test123";
+		Newsletter savedNewsletter = Newsletter.create(1L, name, domain, maillingList,
+			NewsletterStatus.UNREGISTERED);
+		when(newsletterRepository.findByDomainOrMaillingList(domain, maillingList))
+			.thenReturn(Optional.empty());
+		when(newsletterRepository.save(name, domain, maillingList, NewsletterStatus.UNREGISTERED))
+			.thenReturn(savedNewsletter);
+
+		// When
+		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain,
+			maillingList);
+
+		// Then
+		assertEquals(savedNewsletter, newsletter);
+		verify(newsletterRepository, times(1))
+			.findByDomainOrMaillingList(domain, maillingList);
+		verify(newsletterRepository, times(1))
+			.save(name, domain, maillingList, NewsletterStatus.UNREGISTERED);
+	}
 }
