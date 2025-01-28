@@ -1,6 +1,7 @@
 package com.newzet.api.newsletter.domain;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 class NewsletterTest {
@@ -12,9 +13,10 @@ class NewsletterTest {
 			"test@example.com", "test123", NewsletterStatus.UNREGISTERED);
 
 		//Then
-		Assertions.assertEquals(1L, newsletter.getId());
-		Assertions.assertEquals("test", newsletter.getName());
-		Assertions.assertEquals("test@example.com", newsletter.getMaillingList());
-		Assertions.assertEquals(NewsletterStatus.UNREGISTERED, newsletter.getStatus());
+		assertEquals(1L, newsletter.getId());
+		assertEquals("test", newsletter.getName());
+		assertEquals("test@example.com", newsletter.getDomain());
+		assertEquals("test123", newsletter.getMaillingList());
+		assertEquals(NewsletterStatus.UNREGISTERED, newsletter.getStatus());
 	}
 }
