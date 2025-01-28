@@ -5,6 +5,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import org.junit.jupiter.api.Test;
 
 import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.NewsletterStatus;
 
 class NewsletterEntityTest {
 
@@ -43,6 +44,6 @@ class NewsletterEntityTest {
 		assertEquals(1L, newsletter.getId());
 		assertEquals("test@example.com", newsletter.getDomain());
 		assertEquals("test123", newsletter.getMaillingList());
-		assertEquals(NewsletterEntityStatus.REGISTERED, newsletter.getStatus());
+		assertEquals(NewsletterStatus.REGISTERED, newsletter.getStatus());
 	}
 }
