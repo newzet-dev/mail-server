@@ -24,22 +24,36 @@ class NewsletterRepositoryImplTest {
 	}
 
 	@Test
+	public void UnregisteredNewsletter를_생성_및_반환() {
+		//Given
+		String name = "test";
+		String domain = "test@example.com";
+		String maillingList = "test1234";
+
+		newsletterRepository.createAndGetUnregisteredNewsletter(name, domain, maillingList);
+
+		//When
+
+		//Then
+	}
+
+	@Test
 	public void 뉴스레터가_존재하는_경우_뉴스레터를_리턴() {
 		//Given
 		String existDomain = "exist@example.com";
 		String existMaillingList = "exist1234";
-		NewsletterJpaEntity newsletterJpaEntity = Mockito.mock(NewsletterJpaEntity.class);
-		when(newsletterJpaEntity.toNewsletter()).thenReturn(new RegisteredNewsletter());
+		NewsletterEntity newsletterEntity = Mockito.mock(NewsletterEntity.class);
+		when(newsletterEntity.toNewsletter()).thenReturn(new RegisteredNewsletter());
 		when(newsletterJpaRepository
 			.findNewsletterByDomainOrMaillingList(existDomain, existMaillingList))
-			.thenReturn(Optional.of(newsletterJpaEntity));
+			.thenReturn(Optional.of(newsletterEntity));
 
 		//When
 		Newsletter newsletter = newsletterRepository.findNewsletter(existDomain, existMaillingList);
 
 		//Then
 		assertInstanceOf(Newsletter.class, newsletter);
-		verify(newsletterJpaEntity).toNewsletter();
+		verify(newsletterEntity).toNewsletter();
 	}
 
 	@Test
