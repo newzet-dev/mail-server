@@ -29,7 +29,7 @@ class ActiveUserRepositoryImplTest {
 		//Given
 		String existEmail = "exist@example.com";
 		when(userJpaRepository.findByEmailAndStatus(existEmail, UserStatus.ACTIVE))
-			.thenReturn(Optional.of(new UserJpaEntity(1L, existEmail, UserStatus.ACTIVE)));
+			.thenReturn(Optional.of(new UserEntity(1L, existEmail, UserStatus.ACTIVE)));
 
 		//When
 		ActiveUser activeUser = activeUserRepository.findActiveUserByEmail(existEmail);

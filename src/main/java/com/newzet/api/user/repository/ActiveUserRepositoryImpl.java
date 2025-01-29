@@ -15,9 +15,9 @@ public class ActiveUserRepositoryImpl implements ActiveUserRepository {
 	private final UserJpaRepository userJpaRepository;
 
 	public ActiveUser findActiveUserByEmail(String email) {
-		UserJpaEntity userJpaEntity = userJpaRepository.findByEmailAndStatus(email,
+		UserEntity userEntity = userJpaRepository.findByEmailAndStatus(email,
 				UserStatus.ACTIVE)
 			.orElseThrow(NoActiveUserException::new);
-		return userJpaEntity.toActiveUser();
+		return userEntity.toActiveUser();
 	}
 }
