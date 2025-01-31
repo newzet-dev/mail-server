@@ -33,7 +33,8 @@ public class NewsletterRedisRepository implements NewsletterCacheRepository {
 
 	@Override
 	public void saveByMailingList(String mailingList, NewsletterEntity newsletterEntity) {
-
+		redisTemplate.opsForValue().set(MAILING_LIST_PREFIX + mailingList,
+			serialize(newsletterEntity), NEWSLETTER_DURATION, TIME_UNIT);
 	}
 
 	@Override
@@ -44,7 +45,8 @@ public class NewsletterRedisRepository implements NewsletterCacheRepository {
 
 	@Override
 	public Optional<NewsletterEntity> findByMailingList(String mailingList) {
-		return Optional.empty();
+		String value = redisTemplate.opsForValue().get(MAILING_LIST_PREFIX + mailingList);
+		return deserialize(value);
 	}
 
 	private String serialize(NewsletterEntity newsletterEntity) {
