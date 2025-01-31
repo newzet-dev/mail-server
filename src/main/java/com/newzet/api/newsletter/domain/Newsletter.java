@@ -10,11 +10,11 @@ public class Newsletter {
 	private final Long id;
 	private final String name;
 	private final String domain;
-	private final String maillingList;
+	private final String mailingList;
 	private final NewsletterStatus status;
 
-	public static Newsletter create(Long id, String name, String domain, String maillingList,
+	public static Newsletter create(Long id, String name, String domain, String mailingList,
 		NewsletterStatus status) {
-		return new Newsletter(id, name, domain, maillingList, status);
+		return new Newsletter(id, name, domain, mailingList, status);
 	}
 }

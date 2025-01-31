@@ -16,7 +16,7 @@ class NewsletterTest {
 		assertEquals(1L, newsletter.getId());
 		assertEquals("test", newsletter.getName());
 		assertEquals("test@example.com", newsletter.getDomain());
-		assertEquals("test123", newsletter.getMaillingList());
+		assertEquals("test123", newsletter.getMailingList());
 		assertEquals(NewsletterStatus.UNREGISTERED, newsletter.getStatus());
 	}
 }

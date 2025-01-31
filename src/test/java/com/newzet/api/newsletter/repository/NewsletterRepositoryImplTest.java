@@ -24,31 +24,31 @@ class NewsletterRepositoryImplTest {
 		// Given
 		String name = "test";
 		String domain = "test@example.com";
-		String maillingList = "test123";
+		String mailingList = "test123";
 		NewsletterStatus status = NewsletterStatus.REGISTERED;
 
 		// When
-		Newsletter savedNewsletter = newsletterRepository.save(name, domain, maillingList, status);
+		Newsletter savedNewsletter = newsletterRepository.save(name, domain, mailingList, status);
 
 		// Then
 		assertEquals(1L, savedNewsletter.getId());
 		assertEquals(name, savedNewsletter.getName());
 		assertEquals(domain, savedNewsletter.getDomain());
-		assertEquals(maillingList, savedNewsletter.getMaillingList());
+		assertEquals(mailingList, savedNewsletter.getMailingList());
 		assertEquals(status, savedNewsletter.getStatus());
 	}
 
 	@Test
-	public void domain과maillingList로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
+	public void domain과mailingList로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
 		//Given
 		Newsletter savedNewsletter = saveNewsletter();
 
 		//When
-		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMaillingList(
-			savedNewsletter.getDomain(), savedNewsletter.getMaillingList()).get();
+		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+			savedNewsletter.getDomain(), savedNewsletter.getMailingList()).get();
 
 		// Then
-		verifyFindByDomainOrMaillingList(foundNewsletter, savedNewsletter);
+		verifyFindByDomainOrMailingList(foundNewsletter, savedNewsletter);
 	}
 
 	@Test
@@ -57,49 +57,49 @@ class NewsletterRepositoryImplTest {
 		Newsletter savedNewsletter = saveNewsletter();
 
 		//When
-		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMaillingList(
+		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMailingList(
 			savedNewsletter.getDomain(), " ").get();
 
 		// Then
-		verifyFindByDomainOrMaillingList(foundNewsletter, savedNewsletter);
+		verifyFindByDomainOrMailingList(foundNewsletter, savedNewsletter);
 	}
 
 	@Test
-	public void maillingList로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
+	public void mailingList로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
 		//Given
 		Newsletter savedNewsletter = saveNewsletter();
 
 		//When
-		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMaillingList(
+		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMailingList(
 			savedNewsletter.getDomain(), " ").get();
 
 		// Then
-		verifyFindByDomainOrMaillingList(foundNewsletter, savedNewsletter);
+		verifyFindByDomainOrMailingList(foundNewsletter, savedNewsletter);
 	}
 
 	@Test
-	public void domain과maillingList로_뉴스레터_조회_시_뉴스레터가_없는_경우_Optional_empty를_반환() {
+	public void domain과mailingList로_뉴스레터_조회_시_뉴스레터가_없는_경우_Optional_empty를_반환() {
 		//Given
 		Newsletter savedNewsletter = saveNewsletter();
 
 		//When, Then
 		assertEquals(Optional.empty(),
-			newsletterRepository.findByDomainOrMaillingList(" ", " "));
+			newsletterRepository.findByDomainOrMailingList(" ", " "));
 	}
 
 	private Newsletter saveNewsletter() {
 		String name = "test";
 		String domain = "test@example.com";
-		String maillingList = "test123";
+		String mailingList = "test123";
 		NewsletterStatus status = NewsletterStatus.REGISTERED;
-		return newsletterRepository.save(name, domain, maillingList, status);
+		return newsletterRepository.save(name, domain, mailingList, status);
 	}
 
-	private static void verifyFindByDomainOrMaillingList(Newsletter foundNewsletter,
+	private static void verifyFindByDomainOrMailingList(Newsletter foundNewsletter,
 		Newsletter savedNewsletter) {
 		assertEquals(savedNewsletter.getDomain(), foundNewsletter.getDomain());
 		assertEquals(savedNewsletter.getName(), foundNewsletter.getName());
-		assertEquals(savedNewsletter.getMaillingList(), foundNewsletter.getMaillingList());
+		assertEquals(savedNewsletter.getMailingList(), foundNewsletter.getMailingList());
 		assertEquals(savedNewsletter.getStatus(), foundNewsletter.getStatus());
 	}
 }

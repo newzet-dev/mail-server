@@ -7,7 +7,7 @@ import com.newzet.api.newsletter.domain.NewsletterStatus;
 
 public interface NewsletterRepository {
 
-	Newsletter save(String name, String domain, String maillingList, NewsletterStatus status);
+	Newsletter save(String name, String domain, String mailingList, NewsletterStatus status);
 
-	Optional<Newsletter> findByDomainOrMaillingList(String domain, String maillingList);
+	Optional<Newsletter> findByDomainOrMailingList(String domain, String mailingList);
 }

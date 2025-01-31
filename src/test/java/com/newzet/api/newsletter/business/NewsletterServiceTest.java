@@ -28,20 +28,20 @@ class NewsletterServiceTest {
 		// Given
 		String name = "test";
 		String domain = "test@example.com";
-		String maillingList = "test123";
-		Newsletter existingNewsletter = Newsletter.create(1L, name, domain, maillingList,
+		String mailingList = "test123";
+		Newsletter existingNewsletter = Newsletter.create(1L, name, domain, mailingList,
 			NewsletterStatus.REGISTERED);
-		when(newsletterRepository.findByDomainOrMaillingList(domain, maillingList))
+		when(newsletterRepository.findByDomainOrMailingList(domain, mailingList))
 			.thenReturn(Optional.of(existingNewsletter));
 
 		// When
 		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain,
-			maillingList);
+			mailingList);
 
 		// Then
 		assertEquals(existingNewsletter, newsletter);
 		verify(newsletterRepository, times(1))
-			.findByDomainOrMaillingList(domain, maillingList);
+			.findByDomainOrMailingList(domain, mailingList);
 		verify(newsletterRepository, never()).save(any(), any(), any(), any());
 	}
 
@@ -50,23 +50,23 @@ class NewsletterServiceTest {
 		// Given
 		String name = "test";
 		String domain = "test@example.com";
-		String maillingList = "test123";
-		Newsletter savedNewsletter = Newsletter.create(1L, name, domain, maillingList,
+		String mailingList = "test123";
+		Newsletter savedNewsletter = Newsletter.create(1L, name, domain, mailingList,
 			NewsletterStatus.UNREGISTERED);
-		when(newsletterRepository.findByDomainOrMaillingList(domain, maillingList))
+		when(newsletterRepository.findByDomainOrMailingList(domain, mailingList))
 			.thenReturn(Optional.empty());
-		when(newsletterRepository.save(name, domain, maillingList, NewsletterStatus.UNREGISTERED))
+		when(newsletterRepository.save(name, domain, mailingList, NewsletterStatus.UNREGISTERED))
 			.thenReturn(savedNewsletter);
 
 		// When
 		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain,
-			maillingList);
+			mailingList);
 
 		// Then
 		assertEquals(savedNewsletter, newsletter);
 		verify(newsletterRepository, times(1))
-			.findByDomainOrMaillingList(domain, maillingList);
+			.findByDomainOrMailingList(domain, mailingList);
 		verify(newsletterRepository, times(1))
-			.save(name, domain, maillingList, NewsletterStatus.UNREGISTERED);
+			.save(name, domain, mailingList, NewsletterStatus.UNREGISTERED);
 	}
 }

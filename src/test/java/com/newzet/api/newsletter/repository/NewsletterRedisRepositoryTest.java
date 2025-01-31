@@ -63,7 +63,7 @@ class NewsletterRedisRepositoryTest {
 		//Given
 		String mailingList = "exist123";
 		NewsletterEntity newsletter = NewsletterEntity.builder()
-			.maillingList(mailingList)
+			.mailingList(mailingList)
 			.build();
 		newsletterRedisRepository.saveByMailingList(mailingList, newsletter);
 
@@ -73,7 +73,7 @@ class NewsletterRedisRepositoryTest {
 
 		//Then
 		assertTrue(foundNewsletter.isPresent());
-		assertEquals(mailingList, foundNewsletter.get().getMaillingList());
+		assertEquals(mailingList, foundNewsletter.get().getMailingList());
 	}
 
 	@Test

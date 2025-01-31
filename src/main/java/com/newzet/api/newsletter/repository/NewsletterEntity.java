@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "NEWSLETTERS")
 // @Table(name = "NEWSLETTER", indexes = {
-// 	@Index(name = "unique_non_null_mailling_list", columnList = "maillingList")})
+// 	@Index(name = "unique_non_null_mailing_list", columnList = "mailingList")})
 public class NewsletterEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,23 +36,23 @@ public class NewsletterEntity {
 	@Column(unique = true, nullable = false)
 	private String domain;
 
-	private String maillingList;
+	private String mailingList;
 
 	@Enumerated(EnumType.STRING)
 	private NewsletterEntityStatus status = NewsletterEntityStatus.UNREGISTERED;
 
 	public static NewsletterEntity create(String name, String domain,
-		String maillingList, NewsletterEntityStatus status) {
+		String mailingList, NewsletterEntityStatus status) {
 		return NewsletterEntity.builder()
 			.name(name)
 			.domain(domain)
-			.maillingList(maillingList)
+			.mailingList(mailingList)
 			.status(status)
 			.build();
 	}
 
 	public Newsletter toModel() {
-		return Newsletter.create(id, name, domain, maillingList,
+		return Newsletter.create(id, name, domain, mailingList,
 			NewsletterStatus.valueOf(status.name()));
 	}
 }

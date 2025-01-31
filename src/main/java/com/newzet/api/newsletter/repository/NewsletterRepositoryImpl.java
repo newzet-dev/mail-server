@@ -19,18 +19,18 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 
 	@Override
 	@Transactional
-	public Newsletter save(String name, String domain, String maillingList,
+	public Newsletter save(String name, String domain, String mailingList,
 		NewsletterStatus status) {
-		NewsletterEntity newsletterEntity = NewsletterEntity.create(name, domain, maillingList,
+		NewsletterEntity newsletterEntity = NewsletterEntity.create(name, domain, mailingList,
 			NewsletterEntityStatus.valueOf(status.name()));
 		return newsletterJpaRepository.save(newsletterEntity).toModel();
 	}
 
 	@Override
 	@Transactional(readOnly = true)
-	public Optional<Newsletter> findByDomainOrMaillingList(String domain,
-		String maillingList) {
-		return newsletterJpaRepository.findNewsletterByDomainOrMaillingList(domain, maillingList)
+	public Optional<Newsletter> findByDomainOrMailingList(String domain,
+		String mailingList) {
+		return newsletterJpaRepository.findNewsletterByDomainOrMailingList(domain, mailingList)
 			.map(NewsletterEntity::toModel);
 	}
 }

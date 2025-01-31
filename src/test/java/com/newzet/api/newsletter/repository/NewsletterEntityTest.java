@@ -15,14 +15,14 @@ class NewsletterEntityTest {
 		NewsletterEntity newsletterEntity = NewsletterEntity.builder()
 			.name("test")
 			.domain("test@example.com")
-			.maillingList("test123")
+			.mailingList("test123")
 			.status(NewsletterEntityStatus.REGISTERED)
 			.build();
 
 		//Then
 		assertEquals("test", newsletterEntity.getName());
 		assertEquals("test@example.com", newsletterEntity.getDomain());
-		assertEquals("test123", newsletterEntity.getMaillingList());
+		assertEquals("test123", newsletterEntity.getMailingList());
 		assertEquals(NewsletterEntityStatus.REGISTERED, newsletterEntity.getStatus());
 	}
 
@@ -33,7 +33,7 @@ class NewsletterEntityTest {
 			.id(1L)
 			.name("test")
 			.domain("test@example.com")
-			.maillingList("test123")
+			.mailingList("test123")
 			.status(NewsletterEntityStatus.REGISTERED)
 			.build();
 
@@ -43,7 +43,7 @@ class NewsletterEntityTest {
 		//Then
 		assertEquals(1L, newsletter.getId());
 		assertEquals("test@example.com", newsletter.getDomain());
-		assertEquals("test123", newsletter.getMaillingList());
+		assertEquals("test123", newsletter.getMailingList());
 		assertEquals(NewsletterStatus.REGISTERED, newsletter.getStatus());
 	}
 }
