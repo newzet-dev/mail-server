@@ -45,14 +45,19 @@ dependencies {
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    // mockito 추가
     testImplementation "org.mockito:mockito-core:5.11.0"
+
+    // redis 추가
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    testImplementation group: 'com.github.codemonstur', name: 'embedded-redis', version: '1.4.3'
 
     // querydsl 추가
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
     annotationProcessor "com.querydsl:querydsl-apt:${dependencyManagement.importedProperties['querydsl.version']}:jakarta"
     annotationProcessor "jakarta.annotation:jakarta.annotation-api"
     annotationProcessor "jakarta.persistence:jakarta.persistence-api"
-    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
 }
 
 test {
