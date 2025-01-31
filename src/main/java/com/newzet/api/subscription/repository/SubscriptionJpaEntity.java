@@ -1,6 +1,6 @@
 package com.newzet.api.subscription.repository;
 
-import com.newzet.api.newsletter.repository.NewsletterJpaEntity;
+import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.user.repository.UserJpaEntity;
 
 import jakarta.persistence.Entity;
@@ -27,9 +27,9 @@ public class SubscriptionJpaEntity {
 
 	@ManyToOne
 	@JoinColumn(name = "newsletter_id")
-	private NewsletterJpaEntity newsletter;
+	private NewsletterEntity newsletter;
 
-	public SubscriptionJpaEntity(UserJpaEntity user, NewsletterJpaEntity newsletter) {
+	public SubscriptionJpaEntity(UserJpaEntity user, NewsletterEntity newsletter) {
 		this.user = user;
 		this.newsletter = newsletter;
 	}
