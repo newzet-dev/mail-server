@@ -52,4 +52,16 @@ class NewsletterRedisRepositoryTest {
 		assertEquals(domain, foundNewsletter.get().getDomain());
 	}
 
+	@Test
+	public void findByDomain_존재하지_않으면_OptionalEmpty를_반환() {
+		//Given
+		String domain = "exist@example.com";
+
+		//When
+		Optional<NewsletterEntity> foundNewsletter = newsletterRedisRepository.findByDomain(domain);
+
+		//Then
+		assertTrue(foundNewsletter.isEmpty());
+	}
+
 }
