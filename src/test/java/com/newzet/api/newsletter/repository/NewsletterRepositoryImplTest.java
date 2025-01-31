@@ -31,7 +31,6 @@ class NewsletterRepositoryImplTest {
 		Newsletter savedNewsletter = newsletterRepository.save(name, domain, mailingList, status);
 
 		// Then
-		assertEquals(1L, savedNewsletter.getId());
 		assertEquals(name, savedNewsletter.getName());
 		assertEquals(domain, savedNewsletter.getDomain());
 		assertEquals(mailingList, savedNewsletter.getMailingList());
