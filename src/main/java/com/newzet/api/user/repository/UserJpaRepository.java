@@ -8,6 +8,6 @@ import org.springframework.stereotype.Repository;
 import com.newzet.api.user.domain.UserStatus;
 
 @Repository
-public interface UserJpaRepository extends JpaRepository<UserJpaEntity, Long> {
-	Optional<UserJpaEntity> findByEmailAndStatus(String email, UserStatus status);
+public interface UserJpaRepository extends JpaRepository<UserEntity, Long> {
+	Optional<UserEntity> findByEmailAndStatus(String email, UserStatus status);
 }

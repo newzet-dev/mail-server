@@ -7,15 +7,15 @@ import org.junit.jupiter.api.Test;
 import com.newzet.api.user.domain.ActiveUser;
 import com.newzet.api.user.domain.UserStatus;
 
-class UserJpaEntityTest {
+class UserEntityTest {
 
 	@Test
 	public void ActiveUser_변환() {
 		//Given
-		UserJpaEntity userJpaEntity = new UserJpaEntity(1L, "test@example.com", UserStatus.ACTIVE);
+		UserEntity userEntity = new UserEntity(1L, "test@example.com", UserStatus.ACTIVE);
 
 		//When
-		ActiveUser activeUser = userJpaEntity.toActiveUser();
+		ActiveUser activeUser = userEntity.toActiveUser();
 
 		//Then
 		assertEquals(1L, activeUser.getId());
