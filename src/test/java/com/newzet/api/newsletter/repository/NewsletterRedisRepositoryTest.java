@@ -64,4 +64,22 @@ class NewsletterRedisRepositoryTest {
 		assertTrue(foundNewsletter.isEmpty());
 	}
 
+	@Test
+	public void findByMailingList_존재하면_NewsletterEntity를_반환() {
+		//Given
+		String mailingList = "exist123";
+		NewsletterEntity newsletter = NewsletterEntity.builder()
+			.maillingList(mailingList)
+			.build();
+		newsletterRedisRepository.saveByMailingList(mailingList, newsletter);
+
+		//When
+		Optional<NewsletterEntity> foundNewsletter = newsletterRedisRepository.findByMailingList(
+			mailingList);
+
+		//Then
+		assertTrue(foundNewsletter.isPresent());
+		assertEquals(mailingList, foundNewsletter.get().getMaillingList());
+	}
+
 }
