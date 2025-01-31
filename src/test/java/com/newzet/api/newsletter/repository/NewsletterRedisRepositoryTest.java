@@ -4,7 +4,6 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
 
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,11 +27,6 @@ class NewsletterRedisRepositoryTest {
 	void setUp() {
 		newsletterRedisRepository = new NewsletterRedisRepository(redisTemplate,
 			new ObjectMapper());
-	}
-
-	@AfterEach
-	void teardown() {
-		newsletterRedisRepository.deleteAll();
 	}
 
 	@Test
@@ -82,4 +76,16 @@ class NewsletterRedisRepositoryTest {
 		assertEquals(mailingList, foundNewsletter.get().getMaillingList());
 	}
 
+	@Test
+	public void findByMailingList_존재하지_않으면_OptionalEmpty를_반환() {
+		//Given
+		String mailingList = "exist123";
+
+		//When
+		Optional<NewsletterEntity> foundNewsletter = newsletterRedisRepository.findByMailingList(
+			mailingList);
+
+		//Then
+		assertTrue(foundNewsletter.isEmpty());
+	}
 }
