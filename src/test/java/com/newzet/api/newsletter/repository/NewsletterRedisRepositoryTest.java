@@ -9,11 +9,14 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.newzet.api.newsletter.config.EmbeddedRedisConfig;
 
 @DataRedisTest
+@Import(EmbeddedRedisConfig.class)
 class NewsletterRedisRepositoryTest {
 
 	@Autowired
