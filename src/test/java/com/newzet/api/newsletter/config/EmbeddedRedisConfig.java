@@ -18,23 +18,13 @@ public class EmbeddedRedisConfig {
 	private RedisServer redisServer;
 
 	@PostConstruct
-	public void startRedis() {
-		try {
-			System.out.println("hello");
-			redisServer = new RedisServer(port);
-			this.redisServer.start();
-			System.out.println("✅ Embedded Redis Started on port: " + port);
-		} catch (IOException e) {
-			System.out.println("hi");
-		}
-
+	public void startRedis() throws IOException {
+		redisServer = new RedisServer(port);
+		this.redisServer.start();
 	}
 
 	@PreDestroy
 	public void stopRedis() throws IOException {
 		this.redisServer.stop();
-
-		System.out.println("🛑 Embedded Redis Stopped");
 	}
-
 }
