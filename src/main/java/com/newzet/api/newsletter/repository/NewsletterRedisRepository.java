@@ -47,11 +47,6 @@ public class NewsletterRedisRepository implements NewsletterCacheRepository {
 		return Optional.empty();
 	}
 
-	@Override
-	public void deleteAll() {
-
-	}
-
 	private String serialize(NewsletterEntity newsletterEntity) {
 		try {
 			return objectMapper.writeValueAsString(newsletterEntity);

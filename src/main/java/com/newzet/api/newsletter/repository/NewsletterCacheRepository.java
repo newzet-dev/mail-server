@@ -10,6 +10,4 @@ public interface NewsletterCacheRepository {
 	public Optional<NewsletterEntity> findByDomain(String domain);
 
 	public Optional<NewsletterEntity> findByMailingList(String mailingList);
-
-	void deleteAll();
 }
