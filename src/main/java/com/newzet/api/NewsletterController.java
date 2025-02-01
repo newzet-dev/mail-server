@@ -20,7 +20,6 @@ public class NewsletterController {
 
 	@GetMapping
 	public Newsletter getNewsletter() {
-		log.info("call");
 		return newsletterService.findOrCreateNewsletter("test", "", "159161.list-id.stibee.com");
 	}
 }
