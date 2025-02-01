@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class NewsletterRepositoryImpl implements NewsletterRepository {
 
 	private final NewsletterJpaRepository newsletterJpaRepository;
+	private final NewsletterCacheRepository newsletterCacheRepository;
 
 	@Override
 	@Transactional
@@ -30,7 +31,40 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 	@Transactional(readOnly = true)
 	public Optional<Newsletter> findByDomainOrMailingList(String domain,
 		String mailingList) {
-		return newsletterJpaRepository.findNewsletterByDomainOrMailingList(domain, mailingList)
+		Optional<NewsletterEntity> cachedNewsletter = findByDomainOrMailingListOnCache(
+			domain, mailingList);
+		if (cachedNewsletter.isPresent()) {
+			return cachedNewsletter.map(NewsletterEntity::toModel);
+		}
+
+		return findByDomainOrMailingListOnDatabase(domain, mailingList)
 			.map(NewsletterEntity::toModel);
+	}
+
+	private Optional<NewsletterEntity> findByDomainOrMailingListOnCache(String domain,
+		String mailingList) {
+		if (mailingList != null) {
+			Optional<NewsletterEntity> cachedNewsletterByMailingList = newsletterCacheRepository
+				.findByMailingList(mailingList);
+			if (cachedNewsletterByMailingList.isPresent()) {
+				return cachedNewsletterByMailingList;
+			}
+		}
+		return newsletterCacheRepository.findByDomain(domain);
+	}
+
+	private Optional<NewsletterEntity> findByDomainOrMailingListOnDatabase(String domain,
+		String mailingList) {
+		return newsletterJpaRepository.findNewsletterByDomainOrMailingList(domain, mailingList)
+			.map(newsletterEntity -> saveOnCache(domain, mailingList, newsletterEntity));
+	}
+
+	private NewsletterEntity saveOnCache(String domain, String mailingList,
+		NewsletterEntity newsletterEntity) {
+		newsletterCacheRepository.saveByDomain(domain, newsletterEntity);
+		if (mailingList != null) {
+			newsletterCacheRepository.saveByMailingList(mailingList, newsletterEntity);
+		}
+		return newsletterEntity;
 	}
 }
