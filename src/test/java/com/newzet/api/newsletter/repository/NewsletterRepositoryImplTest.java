@@ -40,7 +40,7 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void domain과mailingList로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
 		//Given
-		Newsletter savedNewsletter = saveNewsletter();
+		Newsletter savedNewsletter = saveNewsletterOnDatabase();
 
 		//When
 		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMailingList(
@@ -53,11 +53,11 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void domain으로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
 		//Given
-		Newsletter savedNewsletter = saveNewsletter();
+		Newsletter savedNewsletter = saveNewsletterOnDatabase();
 
 		//When
 		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMailingList(
-			savedNewsletter.getDomain(), " ").get();
+			savedNewsletter.getDomain(), null).get();
 
 		// Then
 		verifyFindByDomainOrMailingList(foundNewsletter, savedNewsletter);
@@ -66,11 +66,11 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void mailingList로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
 		//Given
-		Newsletter savedNewsletter = saveNewsletter();
+		Newsletter savedNewsletter = saveNewsletterOnDatabase();
 
 		//When
 		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMailingList(
-			savedNewsletter.getDomain(), " ").get();
+			"no_exist@example.com", savedNewsletter.getMailingList()).get();
 
 		// Then
 		verifyFindByDomainOrMailingList(foundNewsletter, savedNewsletter);
@@ -79,14 +79,14 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void domain과mailingList로_뉴스레터_조회_시_뉴스레터가_없는_경우_Optional_empty를_반환() {
 		//Given
-		Newsletter savedNewsletter = saveNewsletter();
+		Newsletter savedNewsletter = saveNewsletterOnDatabase();
 
 		//When, Then
 		assertEquals(Optional.empty(),
 			newsletterRepository.findByDomainOrMailingList(" ", " "));
 	}
 
-	private Newsletter saveNewsletter() {
+	private Newsletter saveNewsletterOnDatabase() {
 		String name = "test";
 		String domain = "test@example.com";
 		String mailingList = "test123";
