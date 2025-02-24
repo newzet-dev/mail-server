@@ -6,9 +6,11 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 public class OptionalObjectMapperTest {
 
-	private final OptionalObjectMapper objectMapper = new OptionalObjectMapper();
+	private final OptionalObjectMapper objectMapper = new OptionalObjectMapper(new ObjectMapper());
 
 	@Test
 	public void deserialize_whenValueHasNoText_returnOptionalEmpty() {
@@ -36,14 +38,21 @@ public class OptionalObjectMapperTest {
 
 		// Then
 		assertTrue(obj.isPresent());
-		assertEquals("value", obj.get().value);
+		assertEquals("test", obj.get().value);
 	}
 
 	static class TestObject {
-		private final String value;
+		private String value;
 
-		TestObject(String value) {
+		public TestObject() {
+		}
+
+		public TestObject(String value) {
 			this.value = value;
+		}
+
+		public String getValue() {
+			return value;
 		}
 	}
 }
