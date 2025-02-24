@@ -1,0 +1,49 @@
+package com.newzet.api.common.objectMapper;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+import java.util.Optional;
+
+import org.junit.jupiter.api.Test;
+
+public class OptionalObjectMapperTest {
+
+	private final OptionalObjectMapper objectMapper = new OptionalObjectMapper();
+
+	@Test
+	public void deserialize_whenValueHasNoText_returnOptionalEmpty() {
+		//When, then
+		assertEquals(Optional.empty(), objectMapper.deserialize("", Object.class));
+	}
+
+	@Test
+	public void deserialize_whenJsonProcessingException_throwDeserializationException() {
+		//Given
+		String invalidJson = "{key:value}";
+
+		//When, Then
+		assertThrows(DeserializationException.class,
+			() -> objectMapper.deserialize(invalidJson, Object.class));
+	}
+
+	@Test
+	public void deserialize_whenSuccessToDeserialize_returnClassTypeObject() {
+		// Given
+		String validJson = "{\"value\":\"test\"}";
+
+		// When
+		Optional<TestObject> obj = objectMapper.deserialize(validJson, TestObject.class);
+
+		// Then
+		assertTrue(obj.isPresent());
+		assertEquals("value", obj.get().value);
+	}
+
+	static class TestObject {
+		private final String value;
+
+		TestObject(String value) {
+			this.value = value;
+		}
+	}
+}
