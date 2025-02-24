@@ -24,8 +24,9 @@ public class OptionalObjectMapperTest {
 		String invalidJson = "{key:value}";
 
 		//When, Then
-		assertThrows(DeserializationException.class,
+		DeserializationException exception = assertThrows(DeserializationException.class,
 			() -> objectMapper.deserialize(invalidJson, Object.class));
+		assertEquals("Object 역직렬화 오류", exception.getMessage());
 	}
 
 	@Test
@@ -47,8 +48,9 @@ public class OptionalObjectMapperTest {
 		Object testObject = new Object();
 
 		//When, Then
-		assertThrows(SerializationException.class,
+		SerializationException exception = assertThrows(SerializationException.class,
 			() -> objectMapper.serialize(testObject));
+		assertEquals("Object 직렬화 오류", exception.getMessage());
 	}
 
 	@Test
