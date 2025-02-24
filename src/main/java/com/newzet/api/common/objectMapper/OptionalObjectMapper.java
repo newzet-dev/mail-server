@@ -26,6 +26,10 @@ public class OptionalObjectMapper {
 	}
 
 	public <T> String serialize(T object) {
-		return null;
+		try {
+			return objectMapper.writeValueAsString(object);
+		} catch (JsonProcessingException e) {
+			throw new SerializationException(object.getClass().getSimpleName(), e);
+		}
 	}
 }
