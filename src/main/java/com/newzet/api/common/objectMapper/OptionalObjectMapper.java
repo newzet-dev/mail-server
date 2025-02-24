@@ -21,7 +21,11 @@ public class OptionalObjectMapper {
 		try {
 			return Optional.of(objectMapper.readValue(value, classType));
 		} catch (JsonProcessingException e) {
-			throw new DeserializationException(classType.getSimpleName() + " 역직렬화 오류", e);
+			throw new DeserializationException(classType.getSimpleName(), e);
 		}
+	}
+
+	public <T> String serialize(T object) {
+		return null;
 	}
 }

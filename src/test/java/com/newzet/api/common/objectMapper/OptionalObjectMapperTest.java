@@ -41,6 +41,29 @@ public class OptionalObjectMapperTest {
 		assertEquals("test", obj.get().value);
 	}
 
+	@Test
+	public void serialize_whenJsonProcessingException_throwSerializationException() {
+		//Given
+		Object testObject = new Object();
+
+		//When, Then
+		assertThrows(SerializationException.class,
+			() -> objectMapper.serialize(testObject));
+	}
+
+	@Test
+	public void serialize_whenSuccessToSerialize_returnStringOfObject() {
+		// Given
+		TestObject testObject = new TestObject("test");
+
+		// When
+		String parsedObject = objectMapper.serialize(testObject);
+
+		// Then
+		assertNotNull(parsedObject);
+		assertEquals("{\"value\":\"test\"}", parsedObject);
+	}
+
 	static class TestObject {
 		private String value;
 
