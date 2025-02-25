@@ -85,4 +85,29 @@ class RedisLockFactoryIntegrationTest {
 		// Cleanup
 		firstLock.get().unlock();
 	}
+
+	@Test
+	void unlock_whenUnlockOccurs_returnLock() throws InterruptedException {
+		// Given
+		String lockKey = "testLock";
+		Optional<Lock> firstLock = redisLockFactory.tryLock(lockKey, 500, 10000);
+
+		assertTrue(firstLock.isPresent());
+		assertTrue(((RLock)firstLock.get()).isLocked());
+
+		// When
+		AtomicBoolean secondLockAcquired = new AtomicBoolean(false);
+		Thread thread = new Thread(() -> {
+			Optional<Lock> secondLock = redisLockFactory.tryLock(lockKey, 500, 2000);
+			secondLockAcquired.set(secondLock.isPresent());
+			secondLock.ifPresent(lock -> ((RLock)lock).unlock());
+		});
+
+		firstLock.get().unlock();
+		thread.start();
+		thread.join();
+
+		// Then
+		assertTrue(secondLockAcquired.get());
+	}
 }
