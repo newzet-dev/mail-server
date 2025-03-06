@@ -21,7 +21,7 @@ import com.newzet.api.config.TestRedisConfig;
 // perInstance로 설정하여 docker 컨테이너 실행
 @ExtendWith(TestRedisConfig.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
-class RedisLockFactoryIntegrationTest {
+class RedisLockFactoryTest {
 
 	private RedissonClient redissonClient;
 	private RedisLockFactory redisLockFactory;
