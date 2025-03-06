@@ -20,7 +20,8 @@ public class RedisUtil implements CacheUtil {
 
 	@Override
 	public <T> Optional<T> get(String key, Class<T> classType) {
-		return Optional.empty();
+		String cachedValue = redisTemplate.opsForValue().get(key);
+		return objectMapper.deserialize(cachedValue, classType);
 	}
 
 	@Override
