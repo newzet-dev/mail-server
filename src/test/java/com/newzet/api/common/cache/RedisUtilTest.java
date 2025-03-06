@@ -2,6 +2,8 @@ package com.newzet.api.common.cache;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,5 +45,19 @@ class RedisUtilTest {
 
 		// Then
 		assertFalse(redisUtil.set(key, value, ttl));
+	}
+
+	@Test
+	public void get_whenCachedValueNoExists_returnOptionalEmpty() {
+		//Given
+		String key = "testKey";
+		String value = "testValue";
+		long ttl = 3000L;
+
+		//When
+		Optional<String> returnValue = redisUtil.get(key, String.class);
+
+		//Then
+		assertEquals(Optional.empty(), returnValue);
 	}
 }
