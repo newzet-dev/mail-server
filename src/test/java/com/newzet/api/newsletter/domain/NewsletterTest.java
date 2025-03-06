@@ -10,7 +10,7 @@ class NewsletterTest {
 	public void 뉴스레터_생성() {
 		//When
 		Newsletter newsletter = Newsletter.create(1L, "test",
-			"test@example.com", "test123", NewsletterStatus.UNREGISTERED);
+			"test@example.com", "test123", "UNREGISTERED");
 
 		//Then
 		assertEquals(1L, newsletter.getId());
