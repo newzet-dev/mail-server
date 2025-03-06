@@ -25,6 +25,7 @@ public class RedisUtil implements CacheUtil {
 
 	@Override
 	public Boolean set(String key, Object object, long ttl) {
-		return true;
+		String value = objectMapper.serialize(object);
+		return redisTemplate.opsForValue().setIfAbsent(key, value, ttl, TIME_UNIT);
 	}
 }
