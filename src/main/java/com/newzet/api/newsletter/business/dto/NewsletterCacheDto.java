@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.business;
+package com.newzet.api.newsletter.business.dto;
 
 import lombok.AccessLevel;
 import lombok.Builder;

@@ -4,7 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.newzet.api.newsletter.business.NewsletterCacheDto;
+import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 
 class NewsletterTest {
 
