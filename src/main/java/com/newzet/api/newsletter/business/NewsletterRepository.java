@@ -2,12 +2,11 @@ package com.newzet.api.newsletter.business;
 
 import java.util.Optional;
 
-import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 
 public interface NewsletterRepository {
 
-	Newsletter save(String name, String domain, String mailingList, NewsletterStatus status);
+	NewsletterEntityDto save(String name, String domain, String mailingList, String status);
 
-	Optional<Newsletter> findByDomainOrMailingList(String domain, String mailingList);
+	Optional<NewsletterEntityDto> findByDomainOrMailingList(String domain, String mailingList);
 }
