@@ -1,7 +1,6 @@
 package com.newzet.api.newsletter.repository;
 
-import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -41,18 +40,17 @@ public class NewsletterEntity {
 	@Enumerated(EnumType.STRING)
 	private NewsletterEntityStatus status = NewsletterEntityStatus.UNREGISTERED;
 
-	public static NewsletterEntity create(String name, String domain,
-		String mailingList, NewsletterEntityStatus status) {
+	public static NewsletterEntity create(String name, String domain, String mailingList,
+		String status) {
 		return NewsletterEntity.builder()
 			.name(name)
 			.domain(domain)
 			.mailingList(mailingList)
-			.status(status)
+			.status(NewsletterEntityStatus.valueOf(status))
 			.build();
 	}
 
-	public Newsletter toModel() {
-		return Newsletter.create(id, name, domain, mailingList,
-			NewsletterStatus.valueOf(status.name()));
+	public NewsletterEntityDto toEntityDto() {
+		return NewsletterEntityDto.create(id, name, domain, mailingList, status.name());
 	}
 }
