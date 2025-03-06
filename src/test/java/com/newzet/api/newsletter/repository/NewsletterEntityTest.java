@@ -4,13 +4,12 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import org.junit.jupiter.api.Test;
 
-import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 
 class NewsletterEntityTest {
 
 	@Test
-	public void 뉴스레터_엔티티_생성() {
+	public void create_returnNewsletterEntity() {
 		//When
 		NewsletterEntity newsletterEntity = NewsletterEntity.builder()
 			.name("test")
@@ -27,7 +26,7 @@ class NewsletterEntityTest {
 	}
 
 	@Test
-	public void 뉴스레터_엔티티를_모델로_변환() {
+	public void toEntityDto_returnNewsletterEntityDto() {
 		//Given
 		NewsletterEntity newsletterEntity = NewsletterEntity.builder()
 			.id(1L)
@@ -38,12 +37,12 @@ class NewsletterEntityTest {
 			.build();
 
 		//When
-		Newsletter newsletter = newsletterEntity.toModel();
+		NewsletterEntityDto newsletter = newsletterEntity.toEntityDto();
 
 		//Then
-		assertEquals(1L, newsletter.getId());
-		assertEquals("test@example.com", newsletter.getDomain());
-		assertEquals("test123", newsletter.getMailingList());
-		assertEquals(NewsletterStatus.REGISTERED, newsletter.getStatus());
+		assertEquals(newsletterEntity.getId(), newsletter.getId());
+		assertEquals(newsletterEntity.getDomain(), newsletter.getDomain());
+		assertEquals(newsletterEntity.getMailingList(), newsletter.getMailingList());
+		assertEquals(newsletterEntity.getStatus().name(), newsletter.getStatus());
 	}
 }
