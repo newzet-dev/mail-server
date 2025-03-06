@@ -60,4 +60,20 @@ class RedisUtilTest {
 		//Then
 		assertEquals(Optional.empty(), returnValue);
 	}
+
+	@Test
+	public void get_whenCachedValueExist_returnValue() {
+		//Given
+		String key = "testKey";
+		String value = "testValue";
+		long ttl = 3000L;
+
+		//When
+		redisUtil.set(key, value, ttl);
+		Optional<String> returnValue = redisUtil.get(key, String.class);
+
+		//Then
+		assertTrue(returnValue.isPresent());
+		assertEquals(value, returnValue.get());
+	}
 }
