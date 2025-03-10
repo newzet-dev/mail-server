@@ -56,10 +56,6 @@ jobs:
       - name: Check Redis password configuration
         run: docker exec newzet-test-redis redis-cli CONFIG GET requirepass
 
-      - name: Check Redis startup logs
-        run: docker logs newzet-test-redis | grep "password"
-
-
       - name: Check Redis is running
         run: docker ps | grep newzet-test-redis
 
