@@ -41,14 +41,20 @@ jobs:
       - name: Check Redis logs
         run: docker logs newzet-test-redis
 
+      - name: Check Redis configuration
+        run: docker exec newzet-test-redis cat /etc/redis/redis.conf || echo "No config file found"
+
+      - name: Try connecting without password
+        run: docker exec newzet-test-redis redis-cli ping
+
       - name: Print application.yml contents
         run: cat src/main/resources/application.yml
 
-      - name: Print environment variables inside Redis container
-        run: docker exec newzet-test-redis env
+      - name: Check Redis is running
+        run: docker ps | grep newzet-test-redis
 
       - name: Check Redis status inside the container
-        run: docker exec -it newzet-test-redis redis-cli -a newzetredispassword PING
+        run: docker exec newzet-test-redis redis-cli -a newzetredispassword PING
 
       - name: build code and test
         run: ./gradlew clean build
