@@ -38,6 +38,12 @@ jobs:
       - name: Start Container
         run: docker compose -f docker-compose.yml up -d
 
+      - name: Print application.yml contents
+        run: cat src/main/resources/application.yml
+
+      - name: Print environment variables inside Redis container
+        run: docker exec newzet-test-redis env
+
       - name: build code and test
         run: ./gradlew clean build
 
