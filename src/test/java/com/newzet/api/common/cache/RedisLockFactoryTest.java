@@ -6,43 +6,25 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.TestInstance;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.redisson.Redisson;
 import org.redisson.api.RLock;
-import org.redisson.api.RedissonClient;
-import org.redisson.config.Config;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
+import org.springframework.context.annotation.Import;
+import org.springframework.test.context.ActiveProfiles;
 
-import com.newzet.api.config.TestRedisConfig;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.newzet.api.common.objectMapper.OptionalObjectMapper;
+import com.newzet.api.config.RedissonConfig;
 
-// perInstance로 설정하여 docker 컨테이너 실행
-@ExtendWith(TestRedisConfig.class)
-@TestInstance(TestInstance.Lifecycle.PER_CLASS)
+@DataRedisTest
+@ActiveProfiles("test")
+@Import({ObjectMapper.class, OptionalObjectMapper.class, RedisUtil.class, RedisLockFactory.class,
+	RedissonConfig.class})
 class RedisLockFactoryTest {
 
-	private RedissonClient redissonClient;
+	@Autowired
 	private RedisLockFactory redisLockFactory;
-
-	@BeforeAll
-	void setUp() {
-		String redisHost = System.getProperty("spring.data.redis.host");
-		String redisPort = System.getProperty("spring.data.redis.port");
-		String redisUrl = "redis://" + redisHost + ":" + redisPort;
-
-		Config config = new Config();
-		config.useSingleServer().setAddress(redisUrl);
-		redissonClient = Redisson.create(config);
-
-		redisLockFactory = new RedisLockFactory(redissonClient);
-	}
-
-	@AfterAll
-	void tearDown() {
-		redissonClient.shutdown();
-	}
 
 	@Test
 	void tryLock_whenLockAcquired_returnLock() {
