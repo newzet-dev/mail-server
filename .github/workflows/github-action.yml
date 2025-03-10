@@ -41,15 +41,14 @@ jobs:
       - name: Check Redis logs
         run: docker logs newzet-test-redis
 
-      - name: Debug Redis connection
-        run: |
-          curl -v redis://newzet-test-redis:6379
-
       - name: Print application.yml contents
         run: cat src/main/resources/application.yml
 
       - name: Print environment variables inside Redis container
         run: docker exec newzet-test-redis env
+
+      - name: Check Redis status inside the container
+        run: docker exec -it newzet-test-redis redis-cli -a newzetredispassword PING
 
       - name: build code and test
         run: ./gradlew clean build
