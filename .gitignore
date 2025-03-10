@@ -45,3 +45,4 @@ application-prod.yml
 
 docker-compose.test.yml
 docker-compose.dev.yml
+docker-compose.prod.yml
