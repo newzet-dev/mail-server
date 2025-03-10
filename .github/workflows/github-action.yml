@@ -38,6 +38,13 @@ jobs:
       - name: Start Container
         run: docker compose -f docker-compose.yml up -d
 
+      - name: Check Redis logs
+        run: docker logs newzet-test-redis
+
+      - name: Debug Redis connection
+        run: |
+          curl -v redis://newzet-test-redis:6379
+
       - name: Print application.yml contents
         run: cat src/main/resources/application.yml
 
