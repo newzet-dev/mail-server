@@ -50,6 +50,9 @@ jobs:
       - name: Print application.yml contents
         run: cat src/main/resources/application.yml
 
+      - name: Print docker-compose.yml contents
+        run: cat docker-compose.yml
+
       - name: Check Redis is running
         run: docker ps | grep newzet-test-redis
 
