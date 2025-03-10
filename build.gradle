@@ -74,7 +74,8 @@ jacocoTestReport {
                 fileTree(dir: it, excludes: [
                         '**/*Application*',
                         '**/Q*.class',
-                        '**/*Exception.class'
+                        '**/*Exception.class',
+                        '**/config/**',
                 ])
             })
     )
