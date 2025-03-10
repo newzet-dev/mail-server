@@ -29,4 +29,9 @@ public class RedisUtil implements CacheUtil {
 		String value = objectMapper.serialize(object);
 		return redisTemplate.opsForValue().setIfAbsent(key, value, ttl, TIME_UNIT);
 	}
+
+	@Override
+	public void deleteAllKeys() {
+		redisTemplate.delete(redisTemplate.keys("*"));
+	}
 }
