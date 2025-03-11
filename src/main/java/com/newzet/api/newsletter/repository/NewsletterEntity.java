@@ -1,7 +1,6 @@
 package com.newzet.api.newsletter.repository;
 
-import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -24,7 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "NEWSLETTERS")
 // @Table(name = "NEWSLETTER", indexes = {
-// 	@Index(name = "unique_non_null_mailling_list", columnList = "maillingList")})
+// 	@Index(name = "unique_non_null_mailing_list", columnList = "mailingList")})
 public class NewsletterEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -36,23 +35,22 @@ public class NewsletterEntity {
 	@Column(unique = true, nullable = false)
 	private String domain;
 
-	private String maillingList;
+	private String mailingList;
 
 	@Enumerated(EnumType.STRING)
 	private NewsletterEntityStatus status = NewsletterEntityStatus.UNREGISTERED;
 
-	public static NewsletterEntity create(String name, String domain,
-		String maillingList, NewsletterEntityStatus status) {
+	public static NewsletterEntity create(String name, String domain, String mailingList,
+		String status) {
 		return NewsletterEntity.builder()
 			.name(name)
 			.domain(domain)
-			.maillingList(maillingList)
-			.status(status)
+			.mailingList(mailingList)
+			.status(NewsletterEntityStatus.valueOf(status))
 			.build();
 	}
 
-	public Newsletter toModel() {
-		return Newsletter.create(id, name, domain, maillingList,
-			NewsletterStatus.valueOf(status.name()));
+	public NewsletterEntityDto toEntityDto() {
+		return NewsletterEntityDto.create(id, name, domain, mailingList, status.name());
 	}
 }

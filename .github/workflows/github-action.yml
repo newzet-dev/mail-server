@@ -29,17 +29,5 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
 
-      - name: Inject application.yml
-        run: |
-          mkdir -p src/main/resources
-          echo "${{ secrets.TEST_APPLICATION_YML }}" | base64 -d | sed 's/\r$//' > src/main/resources/application.yml
-          echo "${{ secrets.TEST_DOCKER_COMPOSE_YML }}" | base64 -d | sed 's/\r$//' > docker-compose.yml
-
-      - name: Start Container
-        run: docker compose -f docker-compose.yml up -d
-
       - name: build code and test
         run: ./gradlew clean build
-
-      - name: Quit Container
-        run: docker compose -f docker-compose.yml down

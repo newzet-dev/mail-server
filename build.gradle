@@ -51,7 +51,11 @@ dependencies {
 
     // redis 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
-    testImplementation group: 'com.github.codemonstur', name: 'embedded-redis', version: '1.4.3'
+    implementation 'org.redisson:redisson-spring-boot-starter:3.43.0'
+
+    // test container
+    testImplementation 'org.testcontainers:testcontainers:1.20.5'
+    testImplementation 'org.testcontainers:junit-jupiter:1.20.5'
 
     // querydsl 추가
     implementation 'com.querydsl:querydsl-jpa:5.0.0:jakarta'
@@ -72,7 +76,8 @@ jacocoTestReport {
                 fileTree(dir: it, excludes: [
                         '**/*Application*',
                         '**/Q*.class',
-                        '**/*Exception.class'
+                        '**/*Exception.class',
+                        '**/config/**',
                 ])
             })
     )
@@ -90,7 +95,8 @@ jacocoTestCoverageVerification {
                 fileTree(dir: it, excludes: [
                         '**/*Application*',
                         '**/Q*.class',
-                        '**/*Exception.class'
+                        '**/*Exception.class',
+                        '**/config/**',
                 ])
             })
     )

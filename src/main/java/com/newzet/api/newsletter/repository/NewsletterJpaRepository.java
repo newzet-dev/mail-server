@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 
 @Repository
 public interface NewsletterJpaRepository extends JpaRepository<NewsletterEntity, Long> {
-	Optional<NewsletterEntity> findNewsletterByDomainOrMaillingList(String domain,
-		String maillingList);
+	Optional<NewsletterEntity> findNewsletterByDomainOrMailingList(String domain,
+		String mailingList);
 }

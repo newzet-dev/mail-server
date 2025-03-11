@@ -5,101 +5,110 @@ import static org.junit.jupiter.api.Assertions.*;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 
-import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.config.PostgresTestContainerConfig;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 
-@SpringBootTest
-@Transactional
+@DataJpaTest
+@Import(NewsletterRepositoryImpl.class)
+@ExtendWith(PostgresTestContainerConfig.class)
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 class NewsletterRepositoryImplTest {
 
 	@Autowired
 	private NewsletterRepositoryImpl newsletterRepository;
 
 	@Test
-	public void 뉴스레터_저장() {
+	public void save_returnNewsletterEntityDto() {
 		// Given
 		String name = "test";
 		String domain = "test@example.com";
-		String maillingList = "test123";
-		NewsletterStatus status = NewsletterStatus.REGISTERED;
+		String mailingList = "test123";
+		String status = "REGISTERED";
 
 		// When
-		Newsletter savedNewsletter = newsletterRepository.save(name, domain, maillingList, status);
+		NewsletterEntityDto savedNewsletter = newsletterRepository
+			.save(name, domain, mailingList, status);
 
 		// Then
-		assertEquals(1L, savedNewsletter.getId());
 		assertEquals(name, savedNewsletter.getName());
 		assertEquals(domain, savedNewsletter.getDomain());
-		assertEquals(maillingList, savedNewsletter.getMaillingList());
+		assertEquals(mailingList, savedNewsletter.getMailingList());
 		assertEquals(status, savedNewsletter.getStatus());
 	}
 
 	@Test
-	public void domain과maillingList로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
+	public void findByDomainOrMailingList_whenNewsletterExist_returnNewsletterEntity() {
 		//Given
-		Newsletter savedNewsletter = saveNewsletter();
+		NewsletterEntityDto savedNewsletter = saveNewsletter();
 
 		//When
-		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMaillingList(
-			savedNewsletter.getDomain(), savedNewsletter.getMaillingList()).get();
+		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+			savedNewsletter.getDomain(), savedNewsletter.getMailingList());
 
 		// Then
-		verifyFindByDomainOrMaillingList(foundNewsletter, savedNewsletter);
+		assertTrue(foundNewsletter.isPresent());
+		verifyFindByDomainOrMailingList(foundNewsletter.get(), savedNewsletter);
 	}
 
 	@Test
-	public void domain으로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
+	public void findByDomainOrMailingList_whenNewsletterExistByDomain_returnNewsletterEntity() {
 		//Given
-		Newsletter savedNewsletter = saveNewsletter();
+		NewsletterEntityDto savedNewsletter = saveNewsletter();
 
 		//When
-		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMaillingList(
-			savedNewsletter.getDomain(), " ").get();
+		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+			savedNewsletter.getDomain(), null);
 
 		// Then
-		verifyFindByDomainOrMaillingList(foundNewsletter, savedNewsletter);
+		assertTrue(foundNewsletter.isPresent());
+		verifyFindByDomainOrMailingList(foundNewsletter.get(), savedNewsletter);
 	}
 
 	@Test
-	public void maillingList로_뉴스레터_조회_시_뉴스레터가_있는_경우_뉴스레터를_반환() {
+	public void findByDomainOrMailingList_whenNewsletterExistByMailingList_returnNewsletterEntity() {
 		//Given
-		Newsletter savedNewsletter = saveNewsletter();
+		NewsletterEntityDto savedNewsletter = saveNewsletter();
 
 		//When
-		Newsletter foundNewsletter = newsletterRepository.findByDomainOrMaillingList(
-			savedNewsletter.getDomain(), " ").get();
+		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+			"noexist@domain.com",
+			savedNewsletter.getMailingList());
 
 		// Then
-		verifyFindByDomainOrMaillingList(foundNewsletter, savedNewsletter);
+		assertTrue(foundNewsletter.isPresent());
+		verifyFindByDomainOrMailingList(foundNewsletter.get(), savedNewsletter);
 	}
 
 	@Test
-	public void domain과maillingList로_뉴스레터_조회_시_뉴스레터가_없는_경우_Optional_empty를_반환() {
-		//Given
-		Newsletter savedNewsletter = saveNewsletter();
+	public void findByDomainOrMailingList_whenNewsletterNoExist_returnEmpty() {
+		//When
+		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+			"test@example.com", "test123");
 
-		//When, Then
-		assertEquals(Optional.empty(),
-			newsletterRepository.findByDomainOrMaillingList(" ", " "));
+		// Then
+		assertEquals(Optional.empty(), foundNewsletter);
 	}
 
-	private Newsletter saveNewsletter() {
+	private NewsletterEntityDto saveNewsletter() {
 		String name = "test";
 		String domain = "test@example.com";
-		String maillingList = "test123";
-		NewsletterStatus status = NewsletterStatus.REGISTERED;
-		return newsletterRepository.save(name, domain, maillingList, status);
+		String mailingList = "test123";
+		String status = "REGISTERED";
+		return newsletterRepository.save(name, domain, mailingList, status);
 	}
 
-	private static void verifyFindByDomainOrMaillingList(Newsletter foundNewsletter,
-		Newsletter savedNewsletter) {
-		assertEquals(savedNewsletter.getDomain(), foundNewsletter.getDomain());
-		assertEquals(savedNewsletter.getName(), foundNewsletter.getName());
-		assertEquals(savedNewsletter.getMaillingList(), foundNewsletter.getMaillingList());
-		assertEquals(savedNewsletter.getStatus(), foundNewsletter.getStatus());
+	private static void verifyFindByDomainOrMailingList(NewsletterEntityDto n1,
+		NewsletterEntityDto n2) {
+		assertEquals((n1.getId()), n2.getId());
+		assertEquals(n1.getDomain(), n2.getDomain());
+		assertEquals(n1.getName(), n2.getName());
+		assertEquals(n1.getMailingList(), n2.getMailingList());
+		assertEquals(n1.getStatus(), n2.getStatus());
 	}
 }
