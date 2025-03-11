@@ -34,4 +34,28 @@ class UserRepositoryImplTest {
 		assertEquals(email, savedUser.getEmail());
 		assertEquals(status, savedUser.getStatus());
 	}
+
+	@Test
+	public void getByEmail_whenUserExist_returnUserEntityDto() {
+		//Given
+		String email = "exist@example.com";
+		String status = "ACTIVE";
+		UserEntityDto savedUser = userRepository.save(email, status);
+
+		//When
+		UserEntityDto searchedUser = userRepository.getByEmail(email);
+
+		//Then
+		assertEquals(email, searchedUser.getEmail());
+		assertEquals(status, searchedUser.getStatus());
+	}
+
+	@Test
+	public void getByEmail_whenUserNoExist_throwNoUserException() {
+		//Given
+		String email = "exist@example.com";
+
+		//When, Then
+		assertThrows(NoUserException.class, () -> userRepository.getByEmail(email));
+	}
 }
