@@ -1,15 +1,10 @@
 package com.newzet.api.user.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+public class ActiveUser extends User {
 
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ActiveUser implements User {
-
-	private final Long id;
-	private final String email;
+	private ActiveUser(Long id, String email) {
+		super(id, email);
+	}
 
 	public static ActiveUser create(Long id, String email) {
 		return new ActiveUser(id, email);
