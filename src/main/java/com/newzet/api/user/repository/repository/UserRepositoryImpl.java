@@ -1,8 +1,10 @@
-package com.newzet.api.user.repository;
+package com.newzet.api.user.repository.repository;
 
 import org.springframework.stereotype.Repository;
 
 import com.newzet.api.user.business.dto.UserEntityDto;
+import com.newzet.api.user.repository.entity.UserEntity;
+import com.newzet.api.user.repository.exception.NoUserException;
 
 import lombok.RequiredArgsConstructor;
 

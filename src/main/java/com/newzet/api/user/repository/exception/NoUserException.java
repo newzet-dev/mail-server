@@ -1,4 +1,4 @@
-package com.newzet.api.user.repository;
+package com.newzet.api.user.repository.exception;
 
 public class NoUserException extends RuntimeException {
 	public NoUserException(String route) {

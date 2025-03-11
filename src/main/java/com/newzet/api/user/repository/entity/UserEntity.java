@@ -1,4 +1,4 @@
-package com.newzet.api.user.repository;
+package com.newzet.api.user.repository.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

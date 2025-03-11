@@ -11,6 +11,8 @@ import org.springframework.context.annotation.Import;
 
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.user.business.dto.UserEntityDto;
+import com.newzet.api.user.repository.exception.NoUserException;
+import com.newzet.api.user.repository.repository.UserRepositoryImpl;
 
 @DataJpaTest
 @Import(UserRepositoryImpl.class)

@@ -1,4 +1,4 @@
-package com.newzet.api.user.repository;
+package com.newzet.api.user.repository.entity;
 
 public enum UserEntityStatus {
 	ACTIVE,
