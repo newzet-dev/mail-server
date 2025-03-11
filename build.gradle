@@ -52,6 +52,8 @@ dependencies {
     // redis 추가
     implementation 'org.springframework.boot:spring-boot-starter-data-redis'
     implementation 'org.redisson:redisson-spring-boot-starter:3.43.0'
+
+    // test container
     testImplementation 'org.testcontainers:testcontainers:1.20.5'
     testImplementation 'org.testcontainers:junit-jupiter:1.20.5'
 
