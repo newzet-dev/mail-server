@@ -20,6 +20,9 @@ public class UserRepositoryImpl implements UserRepository {
 	}
 
 	public UserEntityDto getByEmail(String email) {
-		return null;
+		UserEntity user = userJpaRepository.findByEmail(email)
+			.orElseThrow(() -> new NoUserException(this.getClass().getSimpleName() + "#" +
+				Thread.currentThread().getStackTrace()[2].getMethodName()));
+		return UserEntityDto.create(user.getId(), user.getEmail(), user.getStatus().name());
 	}
 }
