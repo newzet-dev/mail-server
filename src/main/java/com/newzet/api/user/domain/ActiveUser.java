@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class ActiveUser {
+public class ActiveUser implements User {
 
 	private final Long id;
 	private final String email;
