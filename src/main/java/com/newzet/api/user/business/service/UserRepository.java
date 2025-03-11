@@ -1,4 +1,4 @@
-package com.newzet.api.user.repository.repository;
+package com.newzet.api.user.business.service;
 
 import com.newzet.api.user.business.dto.UserEntityDto;
 
