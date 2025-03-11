@@ -1,19 +1,22 @@
 package com.newzet.api.user.domain;
 
-import org.junit.jupiter.api.Assertions;
+import static org.junit.jupiter.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
 
 class ActiveUserTest {
 
 	@Test
-	public void Active_User_생성() {
+	public void create_returnActiveUser() {
 		//Given
+		Long id = 1L;
 		String email = "test@example.com";
 
 		//When
-		ActiveUser activeUser = ActiveUser.create(1L, email);
+		ActiveUser activeUser = ActiveUser.create(id, email);
 
 		//Then
-		Assertions.assertEquals(email, activeUser.getEmail());
+		assertEquals(id, activeUser.getId());
+		assertEquals(email, activeUser.getEmail());
 	}
 }

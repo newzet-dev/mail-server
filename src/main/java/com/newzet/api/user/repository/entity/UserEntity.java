@@ -1,7 +1,4 @@
-package com.newzet.api.user.repository;
-
-import com.newzet.api.user.domain.ActiveUser;
-import com.newzet.api.user.domain.UserStatus;
+package com.newzet.api.user.repository.entity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,14 +9,16 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@Table(name = "USERS")
-@AllArgsConstructor
+@Builder(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(name = "USERS")
 public class UserEntity {
 	@Id
 	@GeneratedValue
@@ -29,9 +28,12 @@ public class UserEntity {
 	private String email;
 
 	@Enumerated(EnumType.STRING)
-	private UserStatus status;
+	private UserEntityStatus status;
 
-	public ActiveUser toActiveUser() {
-		return ActiveUser.create(id, email);
+	public static UserEntity create(String email, String status) {
+		return UserEntity.builder()
+			.email(email)
+			.status(UserEntityStatus.valueOf(status))
+			.build();
 	}
 }

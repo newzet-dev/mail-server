@@ -1,13 +1,13 @@
-package com.newzet.api.user.repository;
+package com.newzet.api.user.repository.repository;
 
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import com.newzet.api.user.domain.UserStatus;
+import com.newzet.api.user.repository.entity.UserEntity;
 
 @Repository
 public interface UserJpaRepository extends JpaRepository<UserEntity, Long> {
-	Optional<UserEntity> findByEmailAndStatus(String email, UserStatus status);
+	Optional<UserEntity> findByEmail(String email);
 }

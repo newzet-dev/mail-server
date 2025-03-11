@@ -1,7 +1,7 @@
 package com.newzet.api.subscription.repository;
 
 import com.newzet.api.newsletter.repository.NewsletterEntity;
-import com.newzet.api.user.repository.UserEntity;
+import com.newzet.api.user.repository.entity.UserEntity;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
