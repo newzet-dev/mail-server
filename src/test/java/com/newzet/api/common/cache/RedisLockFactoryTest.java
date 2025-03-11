@@ -7,20 +7,21 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
+import com.newzet.api.config.RedisTestContainerConfig;
 import com.newzet.api.config.RedissonConfig;
 
 @DataRedisTest
-@ActiveProfiles("test")
 @Import({ObjectMapper.class, OptionalObjectMapper.class, RedisUtil.class, RedisLockFactory.class,
 	RedissonConfig.class})
+@ExtendWith(RedisTestContainerConfig.class)
 class RedisLockFactoryTest {
 
 	@Autowired

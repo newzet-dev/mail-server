@@ -6,17 +6,18 @@ import java.util.Optional;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
+import com.newzet.api.config.RedisTestContainerConfig;
 
 @DataRedisTest
-@ActiveProfiles("test")
 @Import({ObjectMapper.class, OptionalObjectMapper.class, RedisUtil.class})
+@ExtendWith(RedisTestContainerConfig.class)
 class RedisUtilTest {
 
 	@Autowired

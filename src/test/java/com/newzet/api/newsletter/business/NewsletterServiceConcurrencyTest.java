@@ -8,15 +8,17 @@ import java.util.concurrent.Executors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 
 import com.newzet.api.common.cache.CacheUtil;
+import com.newzet.api.config.PostgresTestContainerConfig;
+import com.newzet.api.config.RedisTestContainerConfig;
 
 @SpringBootTest
-@ActiveProfiles("test")
+@ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class})
 public class NewsletterServiceConcurrencyTest {
 
 	@Autowired
