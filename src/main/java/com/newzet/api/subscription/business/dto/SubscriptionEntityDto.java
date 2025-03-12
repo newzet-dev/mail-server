@@ -17,4 +17,13 @@ public class SubscriptionEntityDto {
 	private final UUID id;
 	private final NewsletterEntityDto newsletterEntityDto;
 	private final LocalDateTime createdAt;
+
+	public static SubscriptionEntityDto create(UUID id, NewsletterEntityDto newsletterEntityDto,
+		LocalDateTime createdAt) {
+		return SubscriptionEntityDto.builder()
+			.id(id)
+			.newsletterEntityDto(newsletterEntityDto)
+			.createdAt(createdAt)
+			.build();
+	}
 }
