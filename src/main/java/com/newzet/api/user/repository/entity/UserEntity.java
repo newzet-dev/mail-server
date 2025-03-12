@@ -36,4 +36,12 @@ public class UserEntity {
 			.status(UserEntityStatus.valueOf(status))
 			.build();
 	}
+
+	public static UserEntity create(Long id, String email, String status) {
+		return UserEntity.builder()
+			.id(id)
+			.email(email)
+			.status(UserEntityStatus.valueOf(status))
+			.build();
+	}
 }
