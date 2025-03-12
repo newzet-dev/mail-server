@@ -17,13 +17,15 @@ public class SubscriptionEntityDto {
 	private final UUID id;
 	private final NewsletterEntityDto newsletterEntityDto;
 	private final LocalDateTime createdAt;
+	private final LocalDateTime deletedAt;
 
 	public static SubscriptionEntityDto create(UUID id, NewsletterEntityDto newsletterEntityDto,
-		LocalDateTime createdAt) {
+		LocalDateTime createdAt, LocalDateTime deletedAt) {
 		return SubscriptionEntityDto.builder()
 			.id(id)
 			.newsletterEntityDto(newsletterEntityDto)
 			.createdAt(createdAt)
+			.deletedAt(deletedAt)
 			.build();
 	}
 }
