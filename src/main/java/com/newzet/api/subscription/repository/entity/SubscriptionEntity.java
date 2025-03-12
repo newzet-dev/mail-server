@@ -3,6 +3,8 @@ package com.newzet.api.subscription.repository.entity;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import org.hibernate.annotations.UuidGenerator;
+
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.user.repository.entity.UserEntity;
 
@@ -26,7 +28,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "SUBSCRIPTIONS")
 public class SubscriptionEntity {
 	@Id
-	@Column(columnDefinition = "UUID DEFAULT gen_random_uuid()", updatable = false, nullable = false)
+	@UuidGenerator
+	@Column(columnDefinition = "UUID", updatable = false, nullable = false)
 	private UUID id;
 
 	@ManyToOne
@@ -43,10 +46,13 @@ public class SubscriptionEntity {
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private LocalDateTime deletedAt;
 
-	public static SubscriptionEntity create(UserEntity user, NewsletterEntity newsletter) {
+	public static SubscriptionEntity create(UserEntity user, NewsletterEntity newsletter,
+		LocalDateTime createdAt, LocalDateTime deletedAt) {
 		return SubscriptionEntity.builder()
 			.user(user)
 			.newsletter(newsletter)
+			.createdAt(createdAt)
+			.deletedAt(deletedAt)
 			.build();
 	}
 }
