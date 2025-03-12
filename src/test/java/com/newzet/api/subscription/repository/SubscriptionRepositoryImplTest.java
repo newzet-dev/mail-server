@@ -2,6 +2,8 @@ package com.newzet.api.subscription.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Optional;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,29 +26,51 @@ public class SubscriptionRepositoryImplTest {
 	@Autowired
 	private SubscriptionRepositoryImpl subscriptionRepository;
 
+	private final UserEntityDto userDto = UserEntityDto.create(1L, "test@example.com", "ACTIVE");
+	private final NewsletterEntityDto newsletterDto = NewsletterEntityDto.create(1L, "test",
+		"test@example.com", "test123", "REGISTERED");
+
 	@Test
 	public void save_returnSubscriptionEntityDto() {
-		//Given
-		Long id = 1L;
-		String name = "test";
-		String domain = "test@example.com";
-		String mailingList = "test123";
-		String status = "REGISTERED";
-
-		UserEntityDto userDto = UserEntityDto.create(1L, "test@example.com", "ACTIVE");
-		NewsletterEntityDto newsletterDto = NewsletterEntityDto.create(id, name, domain,
-			mailingList, status);
-
 		//When
 		SubscriptionEntityDto subscription = subscriptionRepository.save(userDto,
 			newsletterDto);
 
 		//Then
-		NewsletterEntityDto newsletter = subscription.getNewsletterEntityDto();
-		assertEquals(id, newsletter.getId());
-		assertEquals(name, newsletter.getName());
-		assertEquals(domain, newsletter.getDomain());
-		assertEquals(mailingList, newsletter.getMailingList());
-		assertEquals(status, newsletter.getStatus());
+		compareNewsletterEntity(newsletterDto, subscription.getNewsletterEntityDto());
+	}
+
+	@Test
+	public void findByUserIdAndNewsletterId_whenExist_returnSubscriptionEntityDto() {
+		//Given
+		SubscriptionEntityDto subscription = subscriptionRepository.save(userDto,
+			newsletterDto);
+
+		//When
+		Optional<SubscriptionEntityDto> foundedSubscription = subscriptionRepository.findByUserIdAndNewsletterId(
+			userDto.getId(), newsletterDto.getId());
+
+		//Then
+		assertTrue(foundedSubscription.isPresent());
+		compareNewsletterEntity(newsletterDto, foundedSubscription.get().getNewsletterEntityDto());
+	}
+
+	@Test
+	public void findByUserIdAndNewsletterId_whenNoExist_returnOptionalEmpty() {
+		//When
+		Optional<SubscriptionEntityDto> foundedSubscription = subscriptionRepository.findByUserIdAndNewsletterId(
+			userDto.getId(), newsletterDto.getId());
+
+		//Then
+		assertTrue(foundedSubscription.isEmpty());
+	}
+
+	private static void compareNewsletterEntity(NewsletterEntityDto expected,
+		NewsletterEntityDto actual) {
+		assertEquals(expected.getId(), actual.getId());
+		assertEquals(expected.getName(), actual.getName());
+		assertEquals(expected.getDomain(), actual.getDomain());
+		assertEquals(expected.getMailingList(), actual.getMailingList());
+		assertEquals(expected.getStatus(), actual.getStatus());
 	}
 }
