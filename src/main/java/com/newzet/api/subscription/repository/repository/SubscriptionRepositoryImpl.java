@@ -28,17 +28,36 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 		NewsletterEntity newsletter = NewsletterEntity.create(newsletterDto.getId(),
 			newsletterDto.getName(), newsletterDto.getDomain(), newsletterDto.getMailingList(),
 			newsletterDto.getStatus());
-		SubscriptionEntity subscription = subscriptionJpaRepository.save(
-			SubscriptionEntity.create(user, newsletter, LocalDateTime.now(), null));
+		SubscriptionEntity subscription = SubscriptionEntity.create(user, newsletter,
+			LocalDateTime.now(), null);
 
-		NewsletterEntityDto newsletterEntityDto = subscription.getNewsletter().toEntityDto();
-		return SubscriptionEntityDto.create(subscription.getId(),
-			newsletterEntityDto, subscription.getCreatedAt());
+		return convertToDto(subscriptionJpaRepository.save(subscription));
 	}
 
 	@Override
 	public Optional<SubscriptionEntityDto> findByUserIdAndNewsletterId(Long userId,
 		Long newsletterId) {
-		return null;
+		return subscriptionJpaRepository.findByUserIdAndNewsletterId(userId, newsletterId)
+			.map(this::convertToDto);
+	}
+
+	private SubscriptionEntityDto convertToDto(SubscriptionEntity subscription) {
+		NewsletterEntityDto newsletterDto = convertToNewsletterDto(subscription.getNewsletter());
+		return SubscriptionEntityDto.create(
+			subscription.getId(),
+			newsletterDto,
+			subscription.getCreatedAt(),
+			subscription.getDeletedAt()
+		);
+	}
+
+	private NewsletterEntityDto convertToNewsletterDto(NewsletterEntity newsletter) {
+		return NewsletterEntityDto.create(
+			newsletter.getId(),
+			newsletter.getName(),
+			newsletter.getDomain(),
+			newsletter.getMailingList(),
+			newsletter.getStatus().name()
+		);
 	}
 }
