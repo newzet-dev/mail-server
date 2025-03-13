@@ -1,6 +1,7 @@
 package com.newzet.api.newsletter.domain;
 
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,5 +23,9 @@ public class Newsletter {
 
 	public NewsletterCacheDto toCacheDto() {
 		return NewsletterCacheDto.create(id, name, domain, mailingList, status.name());
+	}
+
+	public NewsletterEntityDto toEntityDto() {
+		return NewsletterEntityDto.create(id, name, domain, mailingList, status.name());
 	}
 }

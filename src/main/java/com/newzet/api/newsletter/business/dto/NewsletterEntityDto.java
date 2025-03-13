@@ -1,5 +1,7 @@
 package com.newzet.api.newsletter.business.dto;
 
+import com.newzet.api.newsletter.domain.Newsletter;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -24,5 +26,9 @@ public class NewsletterEntityDto {
 			.mailingList(mailingList)
 			.status(status)
 			.build();
+	}
+
+	public Newsletter toDomain() {
+		return Newsletter.create(id, name, domain, mailingList, status);
 	}
 }
