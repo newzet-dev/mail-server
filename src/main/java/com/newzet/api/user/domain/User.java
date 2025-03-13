@@ -1,12 +1,9 @@
 package com.newzet.api.user.domain;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.RequiredArgsConstructor;
+import com.newzet.api.user.business.dto.UserEntityDto;
 
-@Getter
-@RequiredArgsConstructor(access = AccessLevel.PROTECTED)
-public class User {
-	private final Long id;
-	private final String email;
+public interface User {
+	public UserEntityDto toEntityDto();
+
+	public Long getId();
 }
