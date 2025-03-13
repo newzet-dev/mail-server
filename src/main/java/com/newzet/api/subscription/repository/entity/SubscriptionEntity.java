@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.newzet.api.newsletter.repository.NewsletterEntity;
+import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import com.newzet.api.user.repository.entity.UserEntity;
 
 import jakarta.persistence.Column;
@@ -54,5 +55,14 @@ public class SubscriptionEntity {
 			.createdAt(createdAt)
 			.deletedAt(deletedAt)
 			.build();
+	}
+
+	public SubscriptionEntityDto toEntityDto() {
+		return SubscriptionEntityDto.create(id, createdAt, deletedAt);
+	}
+
+	public void update(LocalDateTime createdAt, LocalDateTime deletedAt) {
+		this.createdAt = createdAt;
+		this.deletedAt = deletedAt;
 	}
 }

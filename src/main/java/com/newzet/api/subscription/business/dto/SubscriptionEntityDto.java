@@ -3,7 +3,7 @@ package com.newzet.api.subscription.business.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.subscription.domain.Subscription;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -15,17 +15,19 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class SubscriptionEntityDto {
 	private final UUID id;
-	private final NewsletterEntityDto newsletterEntityDto;
 	private final LocalDateTime createdAt;
 	private final LocalDateTime deletedAt;
 
-	public static SubscriptionEntityDto create(UUID id, NewsletterEntityDto newsletterEntityDto,
+	public static SubscriptionEntityDto create(UUID id,
 		LocalDateTime createdAt, LocalDateTime deletedAt) {
 		return SubscriptionEntityDto.builder()
 			.id(id)
-			.newsletterEntityDto(newsletterEntityDto)
 			.createdAt(createdAt)
 			.deletedAt(deletedAt)
 			.build();
+	}
+
+	public Subscription toDomain() {
+		return Subscription.create(createdAt, deletedAt);
 	}
 }
