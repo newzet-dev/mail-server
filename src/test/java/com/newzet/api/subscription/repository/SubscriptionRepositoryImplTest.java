@@ -2,6 +2,7 @@ package com.newzet.api.subscription.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -52,28 +53,25 @@ public class SubscriptionRepositoryImplTest {
 	}
 
 	@Test
-	public void save_returnSubscriptionEntityDto() {
+	public void create_returnSubscriptionEntityDto() {
 		//When
-		SubscriptionEntityDto subscription = subscriptionRepository.save(userDto,
+		SubscriptionEntityDto subscription = subscriptionRepository.create(userDto,
 			newsletterDto);
 
 		//Then
-		compareNewsletterEntity(newsletterDto, subscription.getNewsletterEntityDto());
+		assertTrue(subscriptionRepository.findByUserIdAndNewsletterId(
+			userDto.getId(), newsletterDto.getId()).isPresent());
 	}
 
 	@Test
 	public void findByUserIdAndNewsletterId_whenExist_returnSubscriptionEntityDto() {
 		//Given
-		SubscriptionEntityDto subscription = subscriptionRepository.save(userDto,
+		SubscriptionEntityDto subscription = subscriptionRepository.create(userDto,
 			newsletterDto);
 
-		//When
-		Optional<SubscriptionEntityDto> foundedSubscription = subscriptionRepository.findByUserIdAndNewsletterId(
-			userDto.getId(), newsletterDto.getId());
-
-		//Then
-		assertTrue(foundedSubscription.isPresent());
-		compareNewsletterEntity(newsletterDto, foundedSubscription.get().getNewsletterEntityDto());
+		//When, Then
+		assertTrue(subscriptionRepository.findByUserIdAndNewsletterId(
+			userDto.getId(), newsletterDto.getId()).isPresent());
 	}
 
 	@Test
@@ -86,12 +84,19 @@ public class SubscriptionRepositoryImplTest {
 		assertTrue(foundedSubscription.isEmpty());
 	}
 
-	private static void compareNewsletterEntity(NewsletterEntityDto expected,
-		NewsletterEntityDto actual) {
-		assertEquals(expected.getId(), actual.getId());
-		assertEquals(expected.getName(), actual.getName());
-		assertEquals(expected.getDomain(), actual.getDomain());
-		assertEquals(expected.getMailingList(), actual.getMailingList());
-		assertEquals(expected.getStatus(), actual.getStatus());
+	@Test
+	public void save() {
+		//Given
+		SubscriptionEntityDto original = subscriptionRepository.create(userDto,
+			newsletterDto);
+		SubscriptionEntityDto changed = SubscriptionEntityDto.create(
+			original.getId(), LocalDateTime.MAX, LocalDateTime.MIN);
+
+		//When
+		subscriptionRepository.save(changed);
+
+		//Then
+		assertEquals(LocalDateTime.MAX, changed.getCreatedAt());
+		assertEquals(LocalDateTime.MIN, changed.getDeletedAt());
 	}
 }
