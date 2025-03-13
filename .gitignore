@@ -42,7 +42,9 @@ application-test.yml
 application-dev.yml
 application-prod.yml
 
-
-docker-compose.test.yml
 docker-compose.dev.yml
 docker-compose.prod.yml
+
+/newrelic
+/dockercomposes/monitoring/newrelic-infra/newrelic-infra.yml
+
