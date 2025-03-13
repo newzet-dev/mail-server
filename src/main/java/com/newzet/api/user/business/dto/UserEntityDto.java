@@ -1,5 +1,8 @@
 package com.newzet.api.user.business.dto;
 
+import com.newzet.api.user.business.service.UserFactory;
+import com.newzet.api.user.domain.User;
+
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -19,5 +22,9 @@ public class UserEntityDto {
 			.email(email)
 			.status(status)
 			.build();
+	}
+
+	public User toDomain() {
+		return UserFactory.create(id, email, status);
 	}
 }
