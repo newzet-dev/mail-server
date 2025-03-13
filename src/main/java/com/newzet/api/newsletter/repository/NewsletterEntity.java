@@ -50,6 +50,17 @@ public class NewsletterEntity {
 			.build();
 	}
 
+	public static NewsletterEntity create(Long id, String name, String domain, String mailingList,
+		String status) {
+		return NewsletterEntity.builder()
+			.id(id)
+			.name(name)
+			.domain(domain)
+			.mailingList(mailingList)
+			.status(NewsletterEntityStatus.valueOf(status))
+			.build();
+	}
+
 	public NewsletterEntityDto toEntityDto() {
 		return NewsletterEntityDto.create(id, name, domain, mailingList, status.name());
 	}
