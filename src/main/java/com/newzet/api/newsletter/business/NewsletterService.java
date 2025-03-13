@@ -4,6 +4,7 @@ import java.util.Optional;
 import java.util.concurrent.locks.Lock;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.cache.LockFactory;
@@ -14,10 +15,9 @@ import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
+@Transactional
 @RequiredArgsConstructor
 public class NewsletterService {
 
