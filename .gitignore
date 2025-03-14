@@ -37,14 +37,10 @@ out/
 .vscode/
 
 .DS_Store
-application.yml
-application-test.yml
-application-dev.yml
-application-prod.yml
-
-docker-compose.dev.yml
-docker-compose.prod.yml
 
 /newrelic
+.secrets
+.env
+.env.prod
 /dockercomposes/monitoring/newrelic-infra/newrelic-infra.yml
 
