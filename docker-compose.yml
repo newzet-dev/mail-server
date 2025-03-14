@@ -1,0 +1,40 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7.0.8-alpine
+    container_name: newzet-dev-redis
+    command: redis-server --requirepass ${SPRING_REDIS_PASSWORD} --bind 0.0.0.0
+    ports:
+      - "6379:6379"
+    networks:
+      - newzet-network
+
+  newzet-apm:
+    image: ${DOCKER_USERNAME}/newzet-apm:${IMAGE_TAG:-latest}
+    build:
+      context: .
+      dockerfile: Dockerfile
+      args:
+        - PROFILE=$SPRING_PROFILES_ACTIVE
+    environment:
+      - SPRING_PROFILES_ACTIVE=$SPRING_PROFILES_ACTIVE
+      - DB_HOST=$DB_HOST
+      - DB_PORT=$DB_PORT
+      - DB_NAME=$DB_NAME
+      - DB_USERNAME=$DB_USERNAME
+      - DB_PASSWORD=$DB_PASSWORD
+      - SPRING_JPA_DDL=$SPRING_JPA_DDL
+      - SPRING_JPA_SHOW_SQL=$SPRING_JPA_SHOW_SQL
+      - SPRING_REDIS_HOST=$SPRING_REDIS_HOST
+      - SPRING_REDIS_PORT=$SPRING_REDIS_PORT
+      - SPRING_REDIS_PASSWORD=$SPRING_REDIS_PASSWORD
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    networks:
+      - newzet-network
+
+networks:
+  newzet-network:
+    driver: bridge
