@@ -2,7 +2,7 @@ version: '3.8'
 services:
   redis:
     image: redis:7.0.8-alpine
-    container_name: newzet-dev-redis
+    container_name: ${SPRING_REDIS_HOST}
     command: redis-server --requirepass ${SPRING_REDIS_PASSWORD} --bind 0.0.0.0
     ports:
       - "6379:6379"
