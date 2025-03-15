@@ -68,13 +68,33 @@ jobs:
           aws ec2 start-instances --instance-ids ${{ secrets.AWS_CANARY_EC2_ID }}
           aws ec2 wait instance-running --instance-ids ${{ secrets.AWS_CANARY_EC2_ID }}
 
+      - name: Ensure app directory exists on Canary EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_CANARY_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          script: |
+            mkdir -p /home/ubuntu/app
+      
+      - name: Upload files to Canary EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AWS_CANARY_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          source: "docker-compose.yml,deploy.sh"
+          target: "/home/ubuntu/app/"
+
       - name: Deploy to Canary EC2
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.AWS_CANARY_EC2_HOST }}
           username: ubuntu
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
-          script: /home/ubuntu/app/deploy.sh ${{ env.IMAGE_TAG }}
+          script: |
+            chmod +x /home/ubuntu/app/deploy.sh
+            /home/ubuntu/app/deploy.sh ${{ env.IMAGE_TAG }}
 
       - name: Register Canary EC2 to ALB
         run: |
