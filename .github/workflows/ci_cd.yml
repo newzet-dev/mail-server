@@ -97,6 +97,35 @@ jobs:
             chmod +x /home/ubuntu/app/deploy.sh
             /home/ubuntu/app/deploy.sh ${{ env.IMAGE_TAG }} canary
 
+      - name: Ensure app directory exists on LIVE EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_LIVE_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          script: |
+            mkdir -p /home/ubuntu/app
+            chmod -R 755 /home/ubuntu/app
+
+      - name: Upload files to LIVE EC2
+        uses: appleboy/scp-action@master
+        with:
+          host: ${{ secrets.AWS_LIVE_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          source: "docker-compose.yml,deploy.sh"
+          target: "/home/ubuntu/app/"
+
+      - name: Deploy to LIVE EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_LIVE_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          script: |
+            chmod +x /home/ubuntu/app/deploy.sh
+            /home/ubuntu/app/deploy.sh ${{ env.IMAGE_TAG }} live
+
       - name: Register Canary EC2 to ALB
         run: |
           aws elbv2 register-targets \
