@@ -65,5 +65,22 @@ jobs:
 
       - name: Start Canary EC2
         run: |
-          aws ec2 start-instances --instance-ids i-09796512811a1f3b9
-          aws ec2 wait instance-running --instance-ids i-09796512811a1f3b9
+          aws ec2 start-instances --instance-ids ${{ secrets.AWS_CANARY_EC2_ID }}
+          aws ec2 wait instance-running --instance-ids ${{ secrets.AWS_CANARY_EC2_ID }}
+
+      - name: Deploy to Canary EC2
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.AWS_CANARY_EC2_HOST }}
+          username: ubuntu
+          key: ${{ secrets.AWS_EC2_SSH_KEY }}
+          script: /home/ubuntu/app/deploy.sh ${{ env.IMAGE_TAG }}
+
+      - name: Register Canary EC2 to ALB
+        run: |
+          aws elbv2 register-targets \
+          --target-group-arn ${{ secrets.AWS_CANARY_TG_ARN }} \
+          --targets Id=${{ secrets.AWS_CANARY_EC2_ID }},Port=8080
+          aws elbv2 modify-listener \
+          --listener-arn ${{ secrets.AWS_ALB_LISTENER_ARN }} \
+          --default-actions '[{"Type":"forward","ForwardConfig":{"TargetGroups":[{"TargetGroupArn":"${{ secrets.AWS_LIVE_TG_ARN }}","Weight":80},{"TargetGroupArn":"${{ secrets.AWS_CANARY_TG_ARN }}","Weight":20}]}}'
