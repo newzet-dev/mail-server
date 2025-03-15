@@ -11,7 +11,7 @@ on:
       - feature/setup-cd
 
 jobs:
-  build-and-test:
+  ci-cd:
     runs-on: ubuntu-latest
 
     steps:
