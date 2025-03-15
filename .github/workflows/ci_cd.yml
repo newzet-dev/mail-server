@@ -76,7 +76,9 @@ jobs:
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           script: |
             mkdir -p /home/ubuntu/app
-      
+            chmod -R 755 /home/ubuntu/app
+
+
       - name: Upload files to Canary EC2
         uses: appleboy/scp-action@master
         with:
