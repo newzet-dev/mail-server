@@ -36,6 +36,11 @@ management:
   endpoint:
     health:
       show-details: always
+    info:
+      enabled: true
+  info:
+    defaults:
+      enabled: true
 info:
   app:
     version: ${APP_VERSION}
