@@ -95,7 +95,7 @@ jobs:
           key: ${{ secrets.AWS_EC2_SSH_KEY }}
           script: |
             chmod +x /home/ubuntu/app/deploy.sh
-            /home/ubuntu/app/deploy.sh ${{ env.IMAGE_TAG }}
+            /home/ubuntu/app/deploy.sh ${{ env.IMAGE_TAG }} canary
 
       - name: Register Canary EC2 to ALB
         run: |

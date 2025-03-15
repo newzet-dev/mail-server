@@ -36,3 +36,6 @@ management:
   endpoint:
     health:
       show-details: always
+info:
+  app:
+    version: ${APP_VERSION}

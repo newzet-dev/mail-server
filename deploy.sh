@@ -7,6 +7,7 @@ docker-compose -f docker-compose.yml down || true
 
 aws s3 cp s3://newzet-config/.env .env
 echo "IMAGE_TAG=$1" >> .env
+echo "APP_VERSION=$2" >> .env
 
 docker-compose -f docker-compose.yml --env-file .env up -d
 
