@@ -104,4 +104,4 @@ jobs:
           --targets Id=${{ secrets.AWS_CANARY_EC2_ID }},Port=8080
           aws elbv2 modify-listener \
           --listener-arn ${{ secrets.AWS_ALB_LISTENER_ARN }} \
-          --default-actions '[{"Type":"forward","ForwardConfig":{"TargetGroups":[{"TargetGroupArn":"${{ secrets.AWS_LIVE_TG_ARN }}","Weight":80},{"TargetGroupArn":"${{ secrets.AWS_CANARY_TG_ARN }}","Weight":20}]}}'
+          --default-actions '[{"Type":"forward","ForwardConfig":{"TargetGroups":[{"TargetGroupArn":"${{ secrets.AWS_LIVE_TG_ARN }}","Weight":80},{"TargetGroupArn":"${{ secrets.AWS_CANARY_TG_ARN }}","Weight":20}]}}]'
