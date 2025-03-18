@@ -7,11 +7,16 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
+import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.config.PostgresTestContainerConfig;
+import com.newzet.api.config.RedisTestContainerConfig;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
@@ -25,9 +30,12 @@ import com.newzet.api.user.domain.User;
 import com.newzet.api.user.repository.entity.UserEntity;
 import com.newzet.api.user.repository.repository.UserJpaRepository;
 
-@SpringBootTest
+@DataJpaTest
+@ComponentScan(basePackages = "com.newzet.api")
+@Import(ObjectMapper.class)
+@ExtendWith({PostgresTestContainerConfig.class, RedisTestContainerConfig.class})
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
-@ExtendWith(PostgresTestContainerConfig.class)
 public class SubscriptionServiceTest {
 
 	@Autowired
