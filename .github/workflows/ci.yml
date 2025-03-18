@@ -1,9 +1,8 @@
-name: Java CI with Gradle
+name: CI Pipeline
 
 on:
   pull_request:
     branches:
-      - main
       - dev
     paths:
       - 'src/**'
@@ -12,14 +11,10 @@ on:
       - synchronize
 
 jobs:
-  build-and-test:
-    if: github.event.action == 'opened' || github.event.action == 'synchronize'
+  ci:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check platform
-        run: uname -m
-
       - name: get repository code
         uses: actions/checkout@v4
 
@@ -28,6 +23,14 @@ jobs:
         with:
           java-version: '17'
           distribution: 'temurin'
+
+      - name: Setup Gradle
+        uses: gradle/actions/setup-gradle@v3
+        with:
+          cache-write-only: true
+
+      - name: Grant execute permission for gradlew
+        run: chmod +x gradlew
 
       - name: build code and test
         run: ./gradlew clean build

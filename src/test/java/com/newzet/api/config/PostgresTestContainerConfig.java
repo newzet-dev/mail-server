@@ -35,5 +35,6 @@ public class PostgresTestContainerConfig implements BeforeAllCallback {
 		System.setProperty("spring.jpa.properties.hibernate.dialect",
 			"org.hibernate.dialect.PostgreSQLDialect");
 		System.setProperty("spring.jpa.hibernate.ddl-auto", "create-drop");
+		System.setProperty("SPRING_JPA_SHOW_SQL", "false");
 	}
 }

@@ -1,0 +1,25 @@
+version: '3.8'
+services:
+  redis:
+    image: redis:7.0.8-alpine
+    container_name: ${SPRING_REDIS_HOST}
+    command: redis-server --requirepass ${SPRING_REDIS_PASSWORD} --bind 0.0.0.0
+    ports:
+      - "6379:6379"
+    networks:
+      - newzet-network
+
+  newzet-apm:
+    image: ${DOCKER_USERNAME}/newzet-apm:${IMAGE_TAG:-latest}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - redis
+    env_file:
+      - .env
+    networks:
+      - newzet-network
+
+networks:
+  newzet-network:
+    driver: bridge
