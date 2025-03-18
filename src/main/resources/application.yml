@@ -38,4 +38,4 @@ management:
       show-details: always
 info:
   app:
-    version: ${APP_VERSION}
+    version: ${APP_VERSION:latest}
