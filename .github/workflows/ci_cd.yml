@@ -145,7 +145,8 @@ jobs:
 
       - name: Schedule Live Deployment
         run: |
-          SCHEDULE_TIME=$(date -u -d "+10 minutes" '+%Y-%m-%dT%H:%M:%SZ')
+          SCHEDULE_TIME=$(date -u -d "+10 minutes" '+%Y-%m-%dT%H:%M:%S')
+          echo $SCHEDULE_TIME
           aws scheduler create-schedule \
             --name "DeployLive" \
             --schedule-expression "at($SCHEDULE_TIME)" \
