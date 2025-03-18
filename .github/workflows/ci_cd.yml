@@ -1,14 +1,9 @@
 name: CI/CD Pipeline
 
-#on:
-#  push:
-#    branches:
-#      - main
-
 on:
   push:
     branches:
-      - feature/setup-cd
+      - main
 
 jobs:
   ci-cd:
@@ -145,8 +140,7 @@ jobs:
 
       - name: Schedule Live Deployment
         run: |
-          SCHEDULE_TIME=$(date -u -d "+10 minutes" '+%Y-%m-%dT%H:%M:%S')
-          echo $SCHEDULE_TIME
+          SCHEDULE_TIME=$(date -u -d "+1 day" '+%Y-%m-%dT%H:%M:%S')
           aws scheduler create-schedule \
             --name "DeployLive" \
             --schedule-expression "at($SCHEDULE_TIME)" \
