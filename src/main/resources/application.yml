@@ -1,7 +1,4 @@
 spring:
-  profiles:
-    active: ${SPRING_PROFILES_ACTIVE:dev}
-
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USERNAME}
@@ -32,10 +29,10 @@ management:
   endpoints:
     web:
       exposure:
-        include: health, info
-  endpoint:
-    health:
-      show-details: always
+        include: "*"
+  info:
+    env:
+      enabled: true
 info:
   app:
     version: ${APP_VERSION:latest}
