@@ -6,6 +6,8 @@ services:
     command: redis-server --requirepass ${SPRING_REDIS_PASSWORD} --bind 0.0.0.0
     ports:
       - "6379:6379"
+    env_file:
+      - .env
     networks:
       - newzet-network
 
