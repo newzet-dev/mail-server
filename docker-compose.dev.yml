@@ -11,7 +11,7 @@ services:
     networks:
       - newzet-network
 
-  newzet-apm:
+  spring-server:
     build: .
     ports:
       - "8080:8080"
