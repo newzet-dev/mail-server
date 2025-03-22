@@ -1,4 +1,6 @@
 spring:
+  lifecycle:
+    timeout-per-shutdown: 60s
   datasource:
     url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
     username: ${DB_USERNAME}
@@ -38,6 +40,7 @@ info:
     version: ${APP_VERSION:latest}
 
 server:
+  shutdown: graceful
   tomcat:
     mbeanregistry:
       enabled: true
