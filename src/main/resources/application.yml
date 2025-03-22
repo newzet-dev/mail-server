@@ -36,3 +36,8 @@ management:
 info:
   app:
     version: ${APP_VERSION:latest}
+
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
