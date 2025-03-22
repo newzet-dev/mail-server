@@ -12,7 +12,7 @@ services:
       - newzet-network
 
   newzet-apm:
-    image: ${DOCKER_USERNAME}/newzet-apm:${IMAGE_TAG:-latest}
+    build: .
     ports:
       - "8080:8080"
     depends_on:
