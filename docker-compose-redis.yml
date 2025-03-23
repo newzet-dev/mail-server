@@ -7,18 +7,7 @@ services:
     ports:
       - "6379:6379"
     env_file:
-      - .env
-    networks:
-      - newzet-network
-
-  spring-server:
-    build: .
-    ports:
-      - "8080:8080"
-    depends_on:
-      - redis
-    env_file:
-      - .env
+      - .env.redis
     networks:
       - newzet-network
 
