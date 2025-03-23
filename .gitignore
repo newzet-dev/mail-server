@@ -41,7 +41,7 @@ out/
 /newrelic
 .secrets
 .env
-.env.prod
+.env.dev
 .env.redis
 /dockercomposes/monitoring/newrelic-infra/newrelic-infra.yml
 
