@@ -26,7 +26,12 @@ public class RedissonConfig {
 		Config config = new Config();
 		config.useSingleServer()
 			.setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort)
-			.setPassword(password);
+			.setPassword(password)
+			.setConnectTimeout(1000)
+			.setTimeout(500)
+			.setRetryAttempts(1)
+			.setRetryInterval(200)
+			.setPingConnectionInterval(30000);
 
 		return Redisson.create(config);
 	}

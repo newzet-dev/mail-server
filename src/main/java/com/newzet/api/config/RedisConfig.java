@@ -1,14 +1,20 @@
 package com.newzet.api.config;
 
+import java.time.Duration;
+
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
+import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import io.lettuce.core.ClientOptions;
+import io.lettuce.core.SocketOptions;
 
 @Configuration
 public class RedisConfig {
@@ -24,9 +30,18 @@ public class RedisConfig {
 
 	@Bean
 	public RedisConnectionFactory redisConnectionFactory() {
-		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(host, port);
-		config.setPassword(RedisPassword.of(password));
-		return new LettuceConnectionFactory(config);
+		RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(host, port);
+		serverConfig.setPassword(RedisPassword.of(password));
+
+		LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
+			.commandTimeout(Duration.ofMillis(500))
+			.clientOptions(ClientOptions.builder()
+				.socketOptions(SocketOptions.builder().connectTimeout(Duration.ofMillis(1000)).build())
+				.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
+				.build())
+			.build();
+
+		return new LettuceConnectionFactory(serverConfig, clientConfig);
 	}
 
 	@Bean
