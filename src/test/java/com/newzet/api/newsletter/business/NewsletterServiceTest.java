@@ -114,10 +114,18 @@ class NewsletterServiceTest {
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.empty());
 		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenReturn(Optional.empty());
+		when(newsletterRepository.findByDomainOrMailingList(domain, mailingList)).thenReturn(
+			Optional.of(entityDto));
 
-		//When, Then
-		assertThrows(LockAcquisitionException.class,
-			() -> newsletterService.findOrCreateNewsletter(name, domain, mailingList));
+		// When
+		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
+
+		// Then
+		verifyValue(newsletter);
+		verify(cacheUtil, times(1)).get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class);
+		verify(newsletterRepository, times(1)).findByDomainOrMailingList(domain, mailingList);
+		verify(cacheUtil, never()).set(eq(CACHE_DOMAIN_PREFIX + domain), any(), anyLong());
+		verify(lockFactory, never()).unlock(lock);
 	}
 
 	private void verifyValue(Newsletter newsletter) {
