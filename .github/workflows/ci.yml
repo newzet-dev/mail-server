@@ -9,7 +9,27 @@ on:
       - synchronize
 
 jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    outputs:
+      should-run-ci: ${{ steps.check.outputs.run_ci }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - id: check
+        run: |
+          git fetch origin ${{ github.base_ref }}
+          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD \
+            | grep -v -E '^(README\.md|\.gitignore)$' \
+            | grep .; then
+            echo "run_ci=false" >> $GITHUB_OUTPUT
+          else
+            echo "run_ci=true" >> $GITHUB_OUTPUT
+          fi
+
   ci:
+    needs: check-changes
+    if: needs.check-changes.outputs.should-run-ci == 'true'
     runs-on: ubuntu-latest
 
     steps:
