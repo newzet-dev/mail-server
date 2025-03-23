@@ -27,6 +27,7 @@ public class RedissonConfig {
 		config.useSingleServer()
 			.setAddress(REDISSON_HOST_PREFIX + redisHost + ":" + redisPort)
 			.setPassword(password)
+			.setDnsMonitoringInterval(30000)
 			.setConnectTimeout(1000)
 			.setTimeout(500)
 			.setRetryAttempts(1)
