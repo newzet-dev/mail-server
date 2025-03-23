@@ -9,7 +9,7 @@ on:
       - synchronize
 
 jobs:
-  check-changes:
+  ci:
     runs-on: ubuntu-latest
     steps:
       - name: get repository code
