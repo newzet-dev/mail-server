@@ -43,5 +43,6 @@ out/
 .env
 .env.dev
 .env.redis
+.env.redis.dev
 /dockercomposes/monitoring/newrelic-infra/newrelic-infra.yml
 

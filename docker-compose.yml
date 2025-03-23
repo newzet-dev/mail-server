@@ -4,8 +4,6 @@ services:
     image: ${DOCKER_USERNAME}/newzet-spring-server:${IMAGE_TAG:-latest}
     ports:
       - "8080:8080"
-    depends_on:
-      - redis
     env_file:
       - .env
     networks:
