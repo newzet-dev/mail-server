@@ -15,7 +15,9 @@ import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @Transactional
 @RequiredArgsConstructor
@@ -43,29 +45,37 @@ public class NewsletterService {
 
 	private Newsletter findOrCreateByDomainOrMailingListWithLock(String name, String domain,
 		String mailingList) {
-		Lock lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
-			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME).orElseThrow(() ->
-			new LockAcquisitionException(this.getClass().getSimpleName() + "#" +
-				Thread.currentThread().getStackTrace()[2].getMethodName()));
+		Optional<Lock> lockOptional = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain, CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
+
+		if (lockOptional.isEmpty()) {
+			log.warn("lock 획득 실패, domain: {}", domain);
+			return findOrCreateByDomainOrMailingListInDatabase(name, domain,
+				mailingList);
+		}
+
+		Lock lock = lockOptional.get();
 		try {
 			Optional<Newsletter> cachedNewsletter = findByDomainOnCache(domain);
 			if (cachedNewsletter.isPresent()) {
 				return cachedNewsletter.get();
 			}
 
-			NewsletterEntityDto newsletterEntityDto = newsletterRepository
-				.findByDomainOrMailingList(domain, mailingList)
-				.orElseGet(() -> newsletterRepository
-					.save(name, domain, mailingList, NewsletterStatus.UNREGISTERED.name()));
-
-			Newsletter newsletter = Newsletter.create(newsletterEntityDto.getId(),
-				newsletterEntityDto.getName(), newsletterEntityDto.getDomain(),
-				newsletterEntityDto.getMailingList(), newsletterEntityDto.getStatus());
-
+			Newsletter newsletter =  findOrCreateByDomainOrMailingListInDatabase(name, domain, mailingList);
 			cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(), CACHE_DURATION);
 			return newsletter;
 		} finally {
 			lockFactory.unlock(lock);
 		}
+	}
+
+	private Newsletter findOrCreateByDomainOrMailingListInDatabase(String name, String domain, String mailingList) {
+		NewsletterEntityDto newsletterEntityDto = newsletterRepository
+			.findByDomainOrMailingList(domain, mailingList)
+			.orElseGet(() -> newsletterRepository
+				.save(name, domain, mailingList, NewsletterStatus.UNREGISTERED.name()));
+
+		return Newsletter.create(newsletterEntityDto.getId(),
+			newsletterEntityDto.getName(), newsletterEntityDto.getDomain(),
+			newsletterEntityDto.getMailingList(), newsletterEntityDto.getStatus());
 	}
 }
