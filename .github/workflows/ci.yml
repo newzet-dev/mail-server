@@ -11,19 +11,9 @@ on:
 jobs:
   ci:
     runs-on: ubuntu-latest
-
     steps:
       - name: get repository code
         uses: actions/checkout@v4
-
-      - name: Exit if only README.md and .gitignore changed
-        run: |
-          git fetch origin ${{ github.base_ref }}
-          if ! git diff --name-only origin/${{ github.base_ref }}...HEAD \
-            | grep -v -E '^(README\.md|\.gitignore)$' \
-            | grep .; then
-            exit 0
-          fi
 
       - name: Set up JDK 17
         uses: actions/setup-java@v4
