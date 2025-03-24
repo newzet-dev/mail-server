@@ -1,4 +1,4 @@
-package com.newzet.api.common.cache.exception;
+package com.newzet.api.common.lock.exception;
 
 import lombok.extern.slf4j.Slf4j;
 
