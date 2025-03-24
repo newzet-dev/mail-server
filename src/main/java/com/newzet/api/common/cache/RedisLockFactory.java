@@ -8,6 +8,9 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
+import com.newzet.api.common.cache.exception.LockAcquisitionException;
+import com.newzet.api.common.cache.exception.RedisLockAcquisitionException;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -28,11 +31,11 @@ public class RedisLockFactory implements LockFactory {
 			return acquired ? Optional.of(lock) : Optional.empty();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
-			log.warn("Redis lock 획득 중 interrupt 발생, key: {}", lockKey);
+			log.warn("[RedisLockFactory]: Redis lock 획득 중 interrupt 발생, key: {}", lockKey);
 			return Optional.empty();
 		} catch (Exception e) {
-			log.error("Redis lock 획득 실패, key: {}, error: {}", lockKey, e.getMessage());
-			return Optional.empty();
+			log.error("[RedisLockFactory]: Redis lock 획득 실패, errorMessage: {}", e.getMessage());
+			throw new RedisLockAcquisitionException();
 		}
 	}
 
@@ -41,7 +44,7 @@ public class RedisLockFactory implements LockFactory {
 		try{
 			lock.unlock();
 		} catch(Exception e) {
-			log.error("Redis lock 해제 실패, error {}", e.getMessage());
+			log.error("[RedisLockFactory]: Redis lock 해제 실패, error {}", e.getMessage());
 		}
 	}
 }
