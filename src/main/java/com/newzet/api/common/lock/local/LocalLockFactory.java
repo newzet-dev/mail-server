@@ -24,10 +24,6 @@ public class LocalLockFactory implements LockFactory {
 		try {
 			boolean acquired = lock.tryLock(waitTime, TimeUnit.MILLISECONDS);
 			return acquired ? Optional.of(new LocalLock(lockKey, lock)) : Optional.empty();
-		} catch (InterruptedException e) {
-			Thread.currentThread().interrupt();
-			log.warn("[LocalLockFactory]: Local lock 획득 중 interrupt 발생, key: {}", lockKey);
-			return Optional.empty();
 		} catch (Exception e) {
 			log.error("[LocalLockFactory]: Redis lock 획득 실패, errorMessage: {}", e.getMessage());
 			return Optional.empty();
