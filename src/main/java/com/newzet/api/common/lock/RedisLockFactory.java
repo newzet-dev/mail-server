@@ -27,7 +27,7 @@ public class RedisLockFactory implements LockFactory {
 		RLock lock = redissonClient.getLock(LOCK_PREFIX + lockKey);
 		try {
 			boolean acquired = lock.tryLock(waitTime, leaseTime, TIME_UNIT);
-			return acquired ? Optional.of(lock) : Optional.empty();
+			return acquired ? Optional.of(new RedisLock(lock)) : Optional.empty();
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 			log.warn("[RedisLockFactory]: Redis lock 획득 중 interrupt 발생, key: {}", lockKey);
