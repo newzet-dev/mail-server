@@ -12,6 +12,10 @@ import lombok.RequiredArgsConstructor;
 public class RedisLock implements Lock {
 	private final RLock redisLock;
 
+	public boolean isHeldByCurrentThread() {
+		return redisLock.isHeldByCurrentThread();
+	}
+
 	@Override
 	public void lock() {
 		redisLock.lock();
