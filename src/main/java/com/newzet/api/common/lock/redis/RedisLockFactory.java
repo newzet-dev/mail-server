@@ -1,4 +1,4 @@
-package com.newzet.api.common.lock;
+package com.newzet.api.common.lock.redis;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -8,6 +8,7 @@ import org.redisson.api.RLock;
 import org.redisson.api.RedissonClient;
 import org.springframework.stereotype.Component;
 
+import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.RedisLockAcquisitionException;
 
 import lombok.RequiredArgsConstructor;

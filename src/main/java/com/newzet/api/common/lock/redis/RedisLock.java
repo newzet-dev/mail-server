@@ -1,4 +1,4 @@
-package com.newzet.api.common.lock;
+package com.newzet.api.common.lock.redis;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
