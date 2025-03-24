@@ -1,4 +1,4 @@
-package com.newzet.api.common.cache;
+package com.newzet.api.common.lock.redis;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newzet.api.common.lock.redis.RedisLockFactory;
+import com.newzet.api.common.cache.RedisUtil;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.config.RedisTestContainerConfig;
 import com.newzet.api.config.RedissonConfig;
@@ -38,7 +38,7 @@ class RedisLockFactoryTest {
 
 		// Then
 		assertTrue(lock.isPresent());
-		assertTrue(((RLock)lock.get()).isHeldByCurrentThread());
+		assertTrue(((RedisLock) lock.get()).isHeldByCurrentThread());
 
 		// Cleanup
 		lock.get().unlock();
@@ -51,7 +51,7 @@ class RedisLockFactoryTest {
 		Optional<Lock> firstLock = redisLockFactory.tryLock(lockKey, 500, 10000);
 
 		assertTrue(firstLock.isPresent());
-		assertTrue(((RLock)firstLock.get()).isLocked());
+		assertTrue(((RedisLock)firstLock.get()).isHeldByCurrentThread());
 
 		// When
 		AtomicBoolean secondLockAcquired = new AtomicBoolean(true);
@@ -71,20 +71,20 @@ class RedisLockFactoryTest {
 	}
 
 	@Test
-	void unlock_whenUnlockOccurs_returnLock() throws InterruptedException {
+	void unlock_whenUnlockOccurs() throws InterruptedException {
 		// Given
 		String lockKey = "testLock";
 		Optional<Lock> firstLock = redisLockFactory.tryLock(lockKey, 500, 10000);
 
 		assertTrue(firstLock.isPresent());
-		assertTrue(((RLock)firstLock.get()).isLocked());
+		assertTrue(((RedisLock)firstLock.get()).isHeldByCurrentThread());
 
 		// When
 		AtomicBoolean secondLockAcquired = new AtomicBoolean(false);
 		Thread thread = new Thread(() -> {
 			Optional<Lock> secondLock = redisLockFactory.tryLock(lockKey, 500, 2000);
 			secondLockAcquired.set(secondLock.isPresent());
-			secondLock.ifPresent(lock -> ((RLock)lock).unlock());
+			secondLock.ifPresent(lock -> ((RedisLock)lock).unlock());
 		});
 
 		firstLock.get().unlock();
