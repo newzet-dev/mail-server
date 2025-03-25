@@ -1,12 +1,14 @@
 package com.newzet.api.common.lock;
 
 import java.util.Optional;
+import java.util.UnknownFormatConversionException;
 import java.util.concurrent.locks.Lock;
 
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
 import com.newzet.api.common.lock.exception.RedisLockAcquisitionException;
+import com.newzet.api.common.lock.exception.UnknownLockException;
 import com.newzet.api.common.lock.local.LocalLock;
 import com.newzet.api.common.lock.local.LocalLockFactory;
 import com.newzet.api.common.lock.redis.RedisLock;
@@ -41,6 +43,7 @@ public class HybridLockFactory implements LockFactory{
 			localLockFactory.unlock(lock);
 		} else {
 			log.error("[HybridLockFactory]: 알 수 없는 락 타입 {}", lock.getClass().getName());
+			throw new UnknownLockException(lock.getClass());
 		}
 	}
 }

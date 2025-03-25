@@ -15,6 +15,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.common.lock.exception.RedisLockAcquisitionException;
+import com.newzet.api.common.lock.exception.UnknownLockException;
 import com.newzet.api.common.lock.local.LocalLock;
 import com.newzet.api.common.lock.local.LocalLockFactory;
 import com.newzet.api.common.lock.redis.RedisLock;
