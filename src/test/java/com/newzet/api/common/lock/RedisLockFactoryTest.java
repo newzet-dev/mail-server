@@ -1,4 +1,4 @@
-package com.newzet.api.common.lock.redis;
+package com.newzet.api.common.lock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -6,15 +6,17 @@ import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.redisson.api.RLock;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.common.cache.RedisUtil;
+import com.newzet.api.common.lock.redis.RedisLock;
+import com.newzet.api.common.lock.redis.RedisLockFactory;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.config.RedisTestContainerConfig;
 import com.newzet.api.config.RedissonConfig;
@@ -38,7 +40,7 @@ class RedisLockFactoryTest {
 
 		// Then
 		assertTrue(lock.isPresent());
-		assertTrue(((RedisLock) lock.get()).isHeldByCurrentThread());
+		Assertions.assertTrue(((RedisLock) lock.get()).isHeldByCurrentThread());
 
 		// Cleanup
 		lock.get().unlock();
