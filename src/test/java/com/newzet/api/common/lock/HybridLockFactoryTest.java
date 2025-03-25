@@ -49,4 +49,21 @@ class HybridLockFactoryTest {
 		assertTrue(lock.isPresent());
 		assertEquals(redisLock, lock.get());
 	}
+	
+	@Test
+	public void tryLock_whenRedisLockFail_returnLocalLock() {
+		// Given
+		String key = "testLock";
+		when(redisLockFactory.tryLock(eq(key), anyLong(), anyLong()))
+			.thenReturn(Optional.empty());
+		when(localLockFactory.tryLock(eq(key), anyLong(), anyLong()))
+			.thenReturn(Optional.of(localLock));
+
+		// When
+		Optional<Lock> result = hybridLockFactory.tryLock(key, 500, 1000);
+
+		// Then
+		assertTrue(result.isPresent());
+		assertEquals(localLock, result.get());
+	}
 }
