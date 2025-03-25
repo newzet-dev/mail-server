@@ -1,4 +1,4 @@
-package com.newzet.api.common.cache;
+package com.newzet.api.common.lock;
 
 import java.util.Optional;
 import java.util.concurrent.locks.Lock;
