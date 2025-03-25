@@ -37,7 +37,6 @@ public class LocalLockFactoryTest {
 		Optional<Lock> firstLock = localLockFactory.tryLock(lockKey, 500, 5000);
 		assertTrue(firstLock.isPresent());
 
-		// 다른 스레드에서 락 시도 → 실패해야 함
 		AtomicBoolean secondAcquired = new AtomicBoolean(true);
 		Thread thread = new Thread(() -> {
 			Optional<Lock> secondLock = localLockFactory.tryLock(lockKey, 500, 5000);
@@ -48,8 +47,23 @@ public class LocalLockFactoryTest {
 
 		// Then
 		assertFalse(secondAcquired.get());
-
-		// Cleanup
 		firstLock.get().unlock();
+	}
+
+	@Test
+	public void unlock_whenUnlockOccurs() throws InterruptedException{
+		// Given
+		String lockKey = "testLock";
+
+		// When
+		Optional<Lock> lock = localLockFactory.tryLock(lockKey, 500, 5000);
+		assertTrue(lock.isPresent());
+		lock.get().unlock();
+
+		// Then
+		Optional<Lock> reacquired = localLockFactory.tryLock(lockKey, 500, 1000);
+		assertTrue(reacquired.isPresent());
+
+		reacquired.get().unlock();
 	}
 }
