@@ -84,4 +84,22 @@ class HybridLockFactoryTest {
 		assertTrue(lock.isPresent());
 		assertEquals(localLock, lock.get());
 	}
+
+	@Test
+	public void unlock_whenRedisLockUnlock() {
+		// When
+		hybridLockFactory.unlock(redisLock);
+
+		// Then
+		verify(redisLockFactory).unlock(redisLock);
+	}
+
+	@Test
+	void unlock_whenLocalLockUnlock() {
+		// When
+		hybridLockFactory.unlock(localLock);
+
+		// Then
+		verify(localLockFactory).unlock(localLock);
+	}
 }
