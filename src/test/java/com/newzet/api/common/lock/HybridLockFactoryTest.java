@@ -4,6 +4,8 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 
 import org.junit.jupiter.api.Test;
@@ -101,5 +103,21 @@ class HybridLockFactoryTest {
 
 		// Then
 		verify(localLockFactory).unlock(localLock);
+	}
+
+	@Test
+	void unlock_whenUnknownLock_throwUnknownLockException() {
+		// Given
+		Lock unknowLock = new Lock() {
+			@Override public void lock() {}
+			@Override public void lockInterruptibly() {}
+			@Override public boolean tryLock() { return false; }
+			@Override public boolean tryLock(long time, TimeUnit unit) { return false; }
+			@Override public void unlock() {}
+			@Override public Condition newCondition() { return null; }
+		};
+
+		// When , Then
+		assertThrows(UnknownLockException.class, () -> hybridLockFactory.unlock(unknowLock));
 	}
 }
