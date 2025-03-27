@@ -8,9 +8,7 @@ import org.springframework.stereotype.Component;
 import com.github.benmanes.caffeine.cache.Cache;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.newzet.api.common.cache.CacheUtil;
-import com.querydsl.codegen.utils.model.ClassType;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -38,9 +36,9 @@ public class LocalCacheUtil implements CacheUtil {
 			return Optional.empty();
 		}
 
-		try{
+		try {
 			return Optional.of(classType.cast(entry.getValue()));
-		}catch(ClassCastException e) {
+		} catch (ClassCastException e) {
 			log.error("[LocalCacheUtil]: Local Cache에서 값 가져오기 실패, key: {}, error: {}", key,
 				e.getMessage());
 			return Optional.empty();
@@ -48,9 +46,7 @@ public class LocalCacheUtil implements CacheUtil {
 	}
 
 	@Override
-	public <T> Boolean set(String key, T object, long ttl) {
-		CacheEntry<?> previous = cache.getIfPresent(key);
+	public <T> void set(String key, T object, long ttl) {
 		cache.put(key, new CacheEntry<>(object, ttl));
-		return previous != null;
 	}
 }

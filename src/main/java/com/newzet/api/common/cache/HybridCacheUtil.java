@@ -18,25 +18,25 @@ import lombok.extern.slf4j.Slf4j;
 @Primary
 @Component
 @RequiredArgsConstructor
-public class HybridCacheUtil implements CacheUtil{
+public class HybridCacheUtil implements CacheUtil {
 	private final RedisUtil redisUtil;
 	private final LocalCacheUtil localCacheUtil;
 
 	@Override
 	public <T> Optional<T> get(String key, Class<T> classType) {
-		try{
+		try {
 			return redisUtil.get(key, classType);
-		} catch(RedisServerException e) {
+		} catch (RedisServerException e) {
 			return localCacheUtil.get(key, classType);
 		}
 	}
 
 	@Override
-	public <T> Boolean set(String key, T object, long ttl) {
-		try{
-			return redisUtil.set(key, object, ttl);
-		} catch(CacheException e) {
-			return localCacheUtil.set(key, object, ttl);
+	public <T> void set(String key, T object, long ttl) {
+		try {
+			redisUtil.set(key, object, ttl);
+		} catch (CacheException e) {
+			localCacheUtil.set(key, object, ttl);
 		}
 	}
 }
