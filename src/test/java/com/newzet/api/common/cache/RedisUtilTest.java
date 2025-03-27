@@ -12,6 +12,7 @@ import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.newzet.api.common.cache.redis.RedisUtil;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.config.RedisTestContainerConfig;
 

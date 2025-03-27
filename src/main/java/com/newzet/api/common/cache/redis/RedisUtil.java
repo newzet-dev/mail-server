@@ -1,4 +1,4 @@
-package com.newzet.api.common.cache;
+package com.newzet.api.common.cache.redis;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -6,7 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import com.newzet.api.common.cache.exception.RedisServerException;
+import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 
 import lombok.RequiredArgsConstructor;
