@@ -34,7 +34,7 @@ public class RedisUtil implements CacheUtil {
 	}
 
 	@Override
-	public Boolean set(String key, Object object, long ttl) {
+	public <T> Boolean set(String key, T object, long ttl) {
 		try{
 			String value = objectMapper.serialize(object);
 			return redisTemplate.opsForValue().setIfAbsent(key, value, ttl, TIME_UNIT);
