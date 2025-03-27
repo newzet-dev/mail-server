@@ -2,8 +2,6 @@ package com.newzet.api.common.cache;
 
 import java.util.Optional;
 
-import javax.cache.CacheException;
-
 import org.springframework.context.annotation.Primary;
 import org.springframework.stereotype.Component;
 
@@ -35,7 +33,7 @@ public class HybridCacheUtil implements CacheUtil {
 	public <T> void set(String key, T object, long ttl) {
 		try {
 			redisUtil.set(key, object, ttl);
-		} catch (CacheException e) {
+		} catch (RedisServerException e) {
 			localCacheUtil.set(key, object, ttl);
 		}
 	}
