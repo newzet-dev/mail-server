@@ -43,15 +43,4 @@ public class RedisUtil implements CacheUtil {
 			throw new RedisServerException();
 		}
 	}
-
-	@Override
-	public void deleteAllKeys() {
-		try{
-			redisTemplate.delete(redisTemplate.keys("*"));
-		} catch(Exception e) {
-			log.error("[RedisUtil]: Redis에서 key 모두 삭제 실패, error: {}", e.getMessage());
-			throw new RedisServerException();
-		}
-
-	}
 }

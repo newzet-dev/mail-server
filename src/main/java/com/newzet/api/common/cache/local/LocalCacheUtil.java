@@ -53,9 +53,4 @@ public class LocalCacheUtil implements CacheUtil {
 		cache.put(key, new CacheEntry<>(object, ttl));
 		return previous != null;
 	}
-
-	@Override
-	public void deleteAllKeys() {
-		cache.invalidateAll();
-	}
 }

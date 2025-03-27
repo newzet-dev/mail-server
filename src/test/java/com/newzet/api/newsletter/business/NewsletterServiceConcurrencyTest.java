@@ -40,11 +40,6 @@ public class NewsletterServiceConcurrencyTest {
 	private final String domain = "test@example.com";
 	private final String mailingList = "test123";
 
-	@BeforeEach
-	void setUp() {
-		cacheUtil.deleteAllKeys();
-	}
-
 	@Test
 	public void findOrCreateNewsletter_when100Requests_requestDB1time() throws
 		InterruptedException {
