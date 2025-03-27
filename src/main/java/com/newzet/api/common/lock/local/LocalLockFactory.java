@@ -34,8 +34,8 @@ public class LocalLockFactory implements LockFactory {
 	public void unlock(Lock lock) {
 		try {
 			lock.unlock();
-			locks.remove(((LocalLock) lock).getLockKey());
-		}  catch(Exception e) {
+			locks.remove(((LocalLock)lock).getLockKey());
+		} catch (Exception e) {
 			log.error("[LocalLockFactory]: Local lock 해제 실패, error {}", e.getMessage());
 		}
 	}
