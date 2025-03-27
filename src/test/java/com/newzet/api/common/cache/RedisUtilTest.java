@@ -34,28 +34,37 @@ class RedisUtilTest {
 	}
 
 	@Test
-	public void set_whenCachedValueNoExists_returnTrue() {
+	public void set_whenCachedValueNoExists() {
 		//Given
 		String key = "testKey";
 		String value = "testValue";
 		long ttl = 60000L;
 
-		//When, Then
-		assertTrue(redisUtil.set(key, value, ttl));
-	}
-
-	@Test
-	public void set_whenCachedValueExists_returnFalse() {
-		//Given
-		String key = "testKey";
-		String value = "testValue";
-		long ttl = 60000L;
+		assertFalse(redisUtil.get(key, String.class).isPresent());
 
 		//When
 		redisUtil.set(key, value, ttl);
 
+		//Then
+		assertTrue(redisUtil.get(key, String.class).isPresent());
+	}
+
+	@Test
+	public void set_whenCachedValueExists_updateTTL() throws InterruptedException {
+		//Given
+		String key = "testKey";
+		String value = "testValue";
+		long ttl = 1000L;
+
+		redisUtil.set(key, value, ttl);
+		assertTrue(redisUtil.get(key, String.class).isPresent());
+
+		//When
+		redisUtil.set(key, value, 3000L);
+
 		// Then
-		assertFalse(redisUtil.set(key, value, ttl));
+		Thread.sleep(1000L);
+		assertTrue(redisUtil.get(key, String.class).isPresent());
 	}
 
 	@Test
