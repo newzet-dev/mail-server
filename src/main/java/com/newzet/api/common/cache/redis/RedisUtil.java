@@ -1,4 +1,4 @@
-package com.newzet.api.common.cache;
+package com.newzet.api.common.cache.redis;
 
 import java.util.Optional;
 import java.util.concurrent.TimeUnit;
@@ -6,6 +6,7 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -22,35 +23,24 @@ public class RedisUtil implements CacheUtil {
 
 	@Override
 	public <T> Optional<T> get(String key, Class<T> classType) {
-		try{
+		try {
 			String cachedValue = redisTemplate.opsForValue().get(key);
 			return objectMapper.deserialize(cachedValue, classType);
-		}catch(Exception e) {
-			log.error("Redis 에서 key 가져오기 실패, key: {}, error: {}", key, e.getMessage());
-			return Optional.empty();
-		}
-
-	}
-
-	@Override
-	public Boolean set(String key, Object object, long ttl) {
-		try{
-			String value = objectMapper.serialize(object);
-			return redisTemplate.opsForValue().setIfAbsent(key, value, ttl, TIME_UNIT);
 		} catch (Exception e) {
-			log.error("Redis 값 저장 실패, key: {}, error: {}", key, e.getMessage());
-			return false;
+			log.error("[RedisUtil]: Redis 에서 key 가져오기 실패, key: {}, error: {}", key, e.getMessage());
+			throw new RedisServerException();
 		}
 
 	}
 
 	@Override
-	public void deleteAllKeys() {
-		try{
-			redisTemplate.delete(redisTemplate.keys("*"));
-		} catch(Exception e) {
-			log.error("Redis에서 key 모두 삭제 실패, error: {}", e.getMessage());
+	public <T> void set(String key, T object, long ttl) {
+		try {
+			String value = objectMapper.serialize(object);
+			redisTemplate.opsForValue().set(key, value, ttl, TIME_UNIT);
+		} catch (Exception e) {
+			log.error("[RedisUtil]: Redis 값 저장 실패, key: {}, error: {}", key, e.getMessage());
+			throw new RedisServerException();
 		}
-
 	}
 }

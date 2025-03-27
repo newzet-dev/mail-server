@@ -14,7 +14,7 @@ import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
 import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newzet.api.common.cache.RedisUtil;
+import com.newzet.api.common.cache.redis.RedisUtil;
 import com.newzet.api.common.lock.redis.RedisLock;
 import com.newzet.api.common.lock.redis.RedisLockFactory;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;

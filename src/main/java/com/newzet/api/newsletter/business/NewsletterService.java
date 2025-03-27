@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
+import com.newzet.api.common.lock.exception.LockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
@@ -44,12 +45,12 @@ public class NewsletterService {
 
 	private Newsletter findOrCreateByDomainOrMailingListWithLock(String name, String domain,
 		String mailingList) {
-		Optional<Lock> lockOptional = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain, CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
+		Optional<Lock> lockOptional = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
+			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
 
 		if (lockOptional.isEmpty()) {
-			log.warn("lock 획득 실패, domain: {}", domain);
-			return findOrCreateByDomainOrMailingListInDatabase(name, domain,
-				mailingList);
+			log.warn("[NewsletterService] lock 획득 실패, domain: {}", domain);
+			throw new LockAcquisitionException();
 		}
 
 		Lock lock = lockOptional.get();
@@ -59,7 +60,8 @@ public class NewsletterService {
 				return cachedNewsletter.get();
 			}
 
-			Newsletter newsletter =  findOrCreateByDomainOrMailingListInDatabase(name, domain, mailingList);
+			Newsletter newsletter = findOrCreateByDomainOrMailingListInDatabase(name, domain,
+				mailingList);
 			cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(), CACHE_DURATION);
 			return newsletter;
 		} finally {
@@ -67,7 +69,8 @@ public class NewsletterService {
 		}
 	}
 
-	private Newsletter findOrCreateByDomainOrMailingListInDatabase(String name, String domain, String mailingList) {
+	private Newsletter findOrCreateByDomainOrMailingListInDatabase(String name, String domain,
+		String mailingList) {
 		NewsletterEntityDto newsletterEntityDto = newsletterRepository
 			.findByDomainOrMailingList(domain, mailingList)
 			.orElseGet(() -> newsletterRepository
