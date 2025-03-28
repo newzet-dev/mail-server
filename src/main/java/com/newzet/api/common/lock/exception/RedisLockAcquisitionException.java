@@ -1,4 +1,7 @@
 package com.newzet.api.common.lock.exception;
 
-public class RedisLockAcquisitionException extends LockAcquisitionException {
+public class RedisLockAcquisitionException extends RuntimeException {
+	public RedisLockAcquisitionException() {
+		super();
+	}
 }
