@@ -14,7 +14,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
-import com.newzet.api.common.lock.exception.LockAcquisitionException;
+import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
@@ -63,7 +63,7 @@ class NewsletterServiceTest {
 		// Given
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.empty());
-		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenReturn(Optional.of(lock));
+		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenReturn(lock);
 		when(newsletterRepository.findByDomainOrMailingList(domain, mailingList)).thenReturn(
 			Optional.of(entityDto));
 
@@ -85,7 +85,7 @@ class NewsletterServiceTest {
 		// Given
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.empty());
-		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenReturn(Optional.of(lock));
+		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenReturn(lock);
 		when(newsletterRepository.findByDomainOrMailingList(domain, mailingList)).thenReturn(
 			Optional.empty());
 		when(newsletterRepository.save(any(), any(), any(), any())).thenReturn(entityDto);
@@ -108,10 +108,10 @@ class NewsletterServiceTest {
 		//Given
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.empty());
-		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenReturn(Optional.empty());
+		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenThrow(new LocalLockAcquisitionException());
 
 		// When
-		assertThrows(LockAcquisitionException.class,
+		assertThrows(LocalLockAcquisitionException.class,
 			() -> newsletterService.findOrCreateNewsletter(name, domain, mailingList));
 
 		// Then

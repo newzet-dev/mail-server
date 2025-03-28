@@ -3,7 +3,6 @@ package com.newzet.api.common.lock;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
@@ -44,31 +43,14 @@ class HybridLockFactoryTest {
 		// Given
 		String key = "testLock";
 		when(redisLockFactory.tryLock(eq(key), anyLong(), anyLong()))
-			.thenReturn(Optional.of(redisLock));
+			.thenReturn(redisLock);
 
 		// When
-		Optional<Lock> lock = hybridLockFactory.tryLock(key, 500, 1000);
+		Lock lock = hybridLockFactory.tryLock(key, 500, 1000);
 
 		// Then
-		assertTrue(lock.isPresent());
-		assertEquals(redisLock, lock.get());
-	}
-	
-	@Test
-	public void tryLock_whenRedisLockFail_returnLocalLock() {
-		// Given
-		String key = "testLock";
-		when(redisLockFactory.tryLock(eq(key), anyLong(), anyLong()))
-			.thenReturn(Optional.empty());
-		when(localLockFactory.tryLock(eq(key), anyLong(), anyLong()))
-			.thenReturn(Optional.of(localLock));
-
-		// When
-		Optional<Lock> lock = hybridLockFactory.tryLock(key, 500, 1000);
-
-		// Then
-		assertTrue(lock.isPresent());
-		assertEquals(localLock, lock.get());
+		assertNotNull(lock);
+		assertEquals(redisLock, lock);
 	}
 	
 	@Test
@@ -78,14 +60,14 @@ class HybridLockFactoryTest {
 		when(redisLockFactory.tryLock(eq(key), anyLong(), anyLong()))
 			.thenThrow(new RedisLockAcquisitionException());
 		when(localLockFactory.tryLock(eq(key), anyLong(), anyLong()))
-			.thenReturn(Optional.of(localLock));
+			.thenReturn(localLock);
 
 		// When
-		Optional<Lock> lock = hybridLockFactory.tryLock(key, 500, 1000);
+		Lock lock = hybridLockFactory.tryLock(key, 500, 1000);
 
 		// Then
-		assertTrue(lock.isPresent());
-		assertEquals(localLock, lock.get());
+		assertNotNull(lock);
+		assertEquals(localLock, lock);
 	}
 
 	@Test
