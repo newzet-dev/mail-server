@@ -8,7 +8,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
-import com.newzet.api.common.lock.exception.LockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
@@ -45,15 +44,9 @@ public class NewsletterService {
 
 	private Newsletter findOrCreateByDomainOrMailingListWithLock(String name, String domain,
 		String mailingList) {
-		Optional<Lock> lockOptional = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
+		Lock lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
 			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
 
-		if (lockOptional.isEmpty()) {
-			log.warn("[NewsletterService] lock 획득 실패, domain: {}", domain);
-			throw new LockAcquisitionException();
-		}
-
-		Lock lock = lockOptional.get();
 		try {
 			Optional<Newsletter> cachedNewsletter = findByDomainOnCache(domain);
 			if (cachedNewsletter.isPresent()) {

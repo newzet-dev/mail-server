@@ -1,6 +1,5 @@
 package com.newzet.api.common.lock.redis;
 
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 
@@ -24,11 +23,13 @@ public class RedisLockFactory implements LockFactory {
 	private final RedissonClient redissonClient;
 
 	@Override
-	public Optional<Lock> tryLock(String lockKey, long waitTime, long leaseTime) {
+	public Lock tryLock(String lockKey, long waitTime, long leaseTime) {
 		RLock lock = redissonClient.getLock(LOCK_PREFIX + lockKey);
 		try {
-			boolean acquired = lock.tryLock(waitTime, leaseTime, TIME_UNIT);
-			return acquired ? Optional.of(new RedisLock(lock)) : Optional.empty();
+			if (!lock.tryLock(waitTime, leaseTime, TIME_UNIT)) {
+				throw new RedisLockAcquisitionException();
+			}
+			return new RedisLock(lock);
 		} catch (Exception e) {
 			log.error("[RedisLockFactory]: Redis lock 획득 실패, errorMessage: {}", e.getMessage());
 			throw new RedisLockAcquisitionException();

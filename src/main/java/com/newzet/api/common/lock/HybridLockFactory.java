@@ -1,7 +1,5 @@
 package com.newzet.api.common.lock;
 
-import java.util.Optional;
-import java.util.UnknownFormatConversionException;
 import java.util.concurrent.locks.Lock;
 
 import org.springframework.context.annotation.Primary;
@@ -26,10 +24,9 @@ public class HybridLockFactory implements LockFactory{
 	private final LocalLockFactory localLockFactory;
 
 	@Override
-	public Optional<Lock> tryLock(String lockKey, long waitTime, long leaseTime) {
+	public Lock tryLock(String lockKey, long waitTime, long leaseTime) {
 		try {
-			return redisLockFactory.tryLock(lockKey, waitTime, leaseTime)
-				.or(() -> localLockFactory.tryLock(lockKey, waitTime, leaseTime));
+			return redisLockFactory.tryLock(lockKey, waitTime, leaseTime);
 		} catch (RedisLockAcquisitionException e) {
 			return localLockFactory.tryLock(lockKey, waitTime, leaseTime);
 		}
