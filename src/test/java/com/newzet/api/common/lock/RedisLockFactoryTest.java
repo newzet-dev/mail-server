@@ -2,11 +2,9 @@ package com.newzet.api.common.lock;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.locks.Lock;
 
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +13,7 @@ import org.springframework.context.annotation.Import;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.common.cache.redis.RedisUtil;
+import com.newzet.api.common.lock.exception.RedisLockAcquisitionException;
 import com.newzet.api.common.lock.redis.RedisLock;
 import com.newzet.api.common.lock.redis.RedisLockFactory;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
@@ -36,64 +35,71 @@ class RedisLockFactoryTest {
 		String lockKey = "testLock";
 
 		// When
-		Optional<Lock> lock = redisLockFactory.tryLock(lockKey, 500, 2000);
+		Lock lock = redisLockFactory.tryLock(lockKey, 500, 2000);
 
 		// Then
-		assertTrue(lock.isPresent());
-		Assertions.assertTrue(((RedisLock) lock.get()).isHeldByCurrentThread());
+		assertNotNull(lock);
+		assertTrue(((RedisLock) lock).isHeldByCurrentThread());
 
 		// Cleanup
-		lock.get().unlock();
+		lock.unlock();
 	}
 
 	@Test
-	void tryLock_whenLockAlreadyHeld_returnEmpty() throws InterruptedException {
+	void tryLock_whenLockAlreadyHeld_throwRedisLockAcquisitionException() throws InterruptedException {
 		// Given
 		String lockKey = "testLock";
-		Optional<Lock> firstLock = redisLockFactory.tryLock(lockKey, 500, 10000);
+		Lock firstLock = redisLockFactory.tryLock(lockKey, 500, 10000);
 
-		assertTrue(firstLock.isPresent());
-		assertTrue(((RedisLock)firstLock.get()).isHeldByCurrentThread());
+		assertNotNull(firstLock);
+		assertTrue(((RedisLock)firstLock).isHeldByCurrentThread());
 
 		// When
-		AtomicBoolean secondLockAcquired = new AtomicBoolean(true);
+		AtomicBoolean lockFailed = new AtomicBoolean(false);
 		Thread thread = new Thread(() -> {
-			Optional<Lock> secondLock = redisLockFactory.tryLock(lockKey, 500, 2000);
-			secondLockAcquired.set(secondLock.isPresent());
+			try {
+				Lock secondLock = redisLockFactory.tryLock(lockKey, 500, 2000);
+				secondLock.unlock();
+			} catch (RedisLockAcquisitionException e) {
+				lockFailed.set(true);
+			}
 		});
 
 		thread.start();
 		thread.join();
 
 		// Then
-		assertFalse(secondLockAcquired.get());
+		assertTrue(lockFailed.get());
 
 		// Cleanup
-		firstLock.get().unlock();
+		firstLock.unlock();
 	}
 
 	@Test
 	void unlock_whenUnlockOccurs() throws InterruptedException {
 		// Given
 		String lockKey = "testLock";
-		Optional<Lock> firstLock = redisLockFactory.tryLock(lockKey, 500, 10000);
+		Lock firstLock = redisLockFactory.tryLock(lockKey, 500, 10000);
 
-		assertTrue(firstLock.isPresent());
-		assertTrue(((RedisLock)firstLock.get()).isHeldByCurrentThread());
+		assertNotNull(firstLock);
+		assertTrue(((RedisLock)firstLock).isHeldByCurrentThread());
 
 		// When
-		AtomicBoolean secondLockAcquired = new AtomicBoolean(false);
+		AtomicBoolean lockFailed = new AtomicBoolean(false);
 		Thread thread = new Thread(() -> {
-			Optional<Lock> secondLock = redisLockFactory.tryLock(lockKey, 500, 2000);
-			secondLockAcquired.set(secondLock.isPresent());
-			secondLock.ifPresent(lock -> ((RedisLock)lock).unlock());
+			try{
+				Lock secondLock = redisLockFactory.tryLock(lockKey, 500, 2000);
+				((RedisLock) secondLock).unlock();
+			} catch	(Exception e) {
+				lockFailed.set(true);
+			}
 		});
 
-		firstLock.get().unlock();
+		firstLock.unlock();
 		thread.start();
 		thread.join();
 
 		// Then
-		assertTrue(secondLockAcquired.get());
+		assertFalse(lockFailed.get());
 	}
 }
