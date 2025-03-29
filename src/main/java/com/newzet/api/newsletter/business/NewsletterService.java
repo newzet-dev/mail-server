@@ -48,15 +48,8 @@ public class NewsletterService {
 			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
 
 		try {
-			Optional<Newsletter> cachedNewsletter = findByDomainOnCache(domain);
-			if (cachedNewsletter.isPresent()) {
-				return cachedNewsletter.get();
-			}
-
-			Newsletter newsletter = findOrCreateByDomainOrMailingListInDatabase(name, domain,
-				mailingList);
-			cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(), CACHE_DURATION);
-			return newsletter;
+			return findByDomainOnCache(domain).orElseGet(
+				() -> findOrCreateByDomainOrMailingListInDatabase(name, domain, mailingList));
 		} finally {
 			lockFactory.unlock(lock);
 		}
@@ -64,13 +57,20 @@ public class NewsletterService {
 
 	private Newsletter findOrCreateByDomainOrMailingListInDatabase(String name, String domain,
 		String mailingList) {
-		NewsletterEntityDto newsletterEntityDto = newsletterRepository
+		return newsletterRepository
 			.findByDomainOrMailingList(domain, mailingList)
-			.orElseGet(() -> newsletterRepository
-				.save(name, domain, mailingList, NewsletterStatus.UNREGISTERED.name()));
+			.map(NewsletterEntityDto::toDomain)
+			.map(newsletter -> {
+				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(), CACHE_DURATION);
+				return newsletter;
+			})
+			.orElseGet(() -> createNewsletter(name, domain, mailingList));
+	}
 
-		return Newsletter.create(newsletterEntityDto.getId(),
-			newsletterEntityDto.getName(), newsletterEntityDto.getDomain(),
-			newsletterEntityDto.getMailingList(), newsletterEntityDto.getStatus());
+	private Newsletter createNewsletter(String name, String domain, String mailingList) {
+		Newsletter savedNewsletter = newsletterRepository.save(name, domain, mailingList,
+			NewsletterStatus.UNREGISTERED.name()).toDomain();
+		cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, savedNewsletter.toCacheDto(), CACHE_DURATION);
+		return savedNewsletter;
 	}
 }
