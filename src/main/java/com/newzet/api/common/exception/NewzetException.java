@@ -1,5 +1,7 @@
 package com.newzet.api.common.exception;
 
+import com.newzet.api.common.response.ResponseCode;
+
 public abstract class NewzetException extends RuntimeException {
 	private final String message;
 	private final ResponseCode responseCode;

@@ -1,4 +1,4 @@
-package com.newzet.api.common.exception;
+package com.newzet.api.common.response;
 
 public interface ResponseFormat {
 
