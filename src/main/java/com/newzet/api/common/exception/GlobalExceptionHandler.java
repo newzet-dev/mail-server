@@ -1,12 +1,9 @@
 package com.newzet.api.common.exception;
 
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.ProblemDetail;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-
-import com.newzet.api.common.response.BasicResponseFormat;
-import com.newzet.api.common.response.ResponseFormat;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -15,8 +12,11 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 
 	@ExceptionHandler(NewzetException.class)
-	public ResponseEntity<ResponseFormat> handleNewzetEx(NewzetException e) {
-		return ResponseEntity.status(HttpStatus.OK)
-			.body(new BasicResponseFormat(e.getResponseCode(), e.getMessage()));
+	public ProblemDetail handleNewzetEx(NewzetException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.OK);
+		problemDetail.setTitle("Newzet Error");
+		problemDetail.setDetail(e.getMessage());
+		problemDetail.setProperty("responseCode", e.getResponseCode());
+		return problemDetail;
 	}
 }
