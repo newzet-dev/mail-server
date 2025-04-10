@@ -2,10 +2,8 @@ package com.newzet.api.config;
 
 import java.util.List;
 
-import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.Ordered;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
@@ -13,7 +11,6 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.newzet.api.auth.infrastructure.filter.AuthExceptionFilter;
 import com.newzet.api.auth.infrastructure.interceptor.AuthInterceptor;
 import com.newzet.api.auth.infrastructure.resolver.AuthUserArgumentResolver;
 
@@ -24,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 public class WebConfig implements WebMvcConfigurer {
 	private final AuthInterceptor authInterceptor;
 	private final AuthUserArgumentResolver authUserArgumentResolver;
-	private final AuthExceptionFilter authExceptionFilter;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
@@ -36,16 +32,6 @@ public class WebConfig implements WebMvcConfigurer {
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
 		resolvers.add(authUserArgumentResolver);
-	}
-
-	@Bean
-	public FilterRegistrationBean<AuthExceptionFilter> authExceptionFilterRegistration() {
-		FilterRegistrationBean<AuthExceptionFilter> registration = new FilterRegistrationBean<>();
-		registration.setFilter(authExceptionFilter);
-		registration.addUrlPatterns("/*");
-		registration.setName("authExceptionFilter");
-		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
-		return registration;
 	}
 
 	@Bean
