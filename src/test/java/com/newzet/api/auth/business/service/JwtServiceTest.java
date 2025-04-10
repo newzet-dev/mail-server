@@ -13,8 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.newzet.api.auth.business.dto.JwtRefreshRequestDTO;
-import com.newzet.api.auth.business.dto.JwtResponseDTO;
+import com.newzet.api.auth.business.dto.JwtRefreshRequest;
+import com.newzet.api.auth.business.dto.JwtResponse;
 import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
@@ -48,7 +48,7 @@ class JwtServiceTest {
 	public void refreshAccessToken_whenValidRequest_returnNewTokens() {
 		//Given
 		String refreshTokenValue = "refresh-token-value";
-		JwtRefreshRequestDTO request = new JwtRefreshRequestDTO(refreshTokenValue, deviceType);
+		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		Date future = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
 		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId, new Date(),
@@ -64,7 +64,7 @@ class JwtServiceTest {
 		doNothing().when(JWTValidator).validateRefreshToken(any(), anyString(), anyString());
 
 		//When
-		JwtResponseDTO response = jwtService.refreshAccessToken(request);
+		JwtResponse response = jwtService.refreshAccessToken(request);
 
 		//Then
 		assertThat(response.accessToken()).isEqualTo(newAccessToken.getValue());
@@ -77,7 +77,7 @@ class JwtServiceTest {
 	public void refreshAccessToken_whenInvalidToken_throwException() {
 		//Given
 		String refreshTokenValue = "invalid-token";
-		JwtRefreshRequestDTO request = new JwtRefreshRequestDTO(refreshTokenValue, deviceType);
+		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		when(jwtFactory.parseToken(refreshTokenValue)).thenReturn(Optional.empty());
 
@@ -103,7 +103,7 @@ class JwtServiceTest {
 	public void refreshAccessToken_whenValidatorThrowsException_propagatesException() {
 		//Given
 		String refreshTokenValue = "refresh-token-value";
-		JwtRefreshRequestDTO request = new JwtRefreshRequestDTO(refreshTokenValue, deviceType);
+		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		Date future = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
 		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId, new Date(),
@@ -122,7 +122,7 @@ class JwtServiceTest {
 	public void refreshAccessToken_whenAccessTokenCreationFails_throwsException() {
 		//Given
 		String refreshTokenValue = "refresh-token-value";
-		JwtRefreshRequestDTO request = new JwtRefreshRequestDTO(refreshTokenValue, deviceType);
+		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		Date future = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
 		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId, new Date(),
@@ -143,7 +143,7 @@ class JwtServiceTest {
 	public void refreshAccessToken_whenRefreshTokenCreationFails_throwsException() {
 		//Given
 		String refreshTokenValue = "refresh-token-value";
-		JwtRefreshRequestDTO request = new JwtRefreshRequestDTO(refreshTokenValue, deviceType);
+		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		Date future = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
 		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId, new Date(),

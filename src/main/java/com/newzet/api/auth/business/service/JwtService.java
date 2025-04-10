@@ -2,8 +2,8 @@ package com.newzet.api.auth.business.service;
 
 import org.springframework.stereotype.Service;
 
-import com.newzet.api.auth.business.dto.JwtRefreshRequestDTO;
-import com.newzet.api.auth.business.dto.JwtResponseDTO;
+import com.newzet.api.auth.business.dto.JwtRefreshRequest;
+import com.newzet.api.auth.business.dto.JwtResponse;
 import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.exception.TokenBadRequestException;
@@ -18,7 +18,7 @@ public class JwtService {
 	private final TokenRepository tokenRepository;
 	private final JwtValidator JWTValidator;
 
-	public JwtResponseDTO refreshAccessToken(JwtRefreshRequestDTO request) {
+	public JwtResponse refreshAccessToken(JwtRefreshRequest request) {
 		String refreshTokenValue = request.refreshToken();
 		String deviceType = request.deviceType();
 
@@ -35,7 +35,7 @@ public class JwtService {
 		tokenRepository.saveToken(userId, deviceType, newRefreshToken);
 		tokenRepository.updateLastRefreshTime(userId, deviceType);
 
-		return new JwtResponseDTO(newAccessToken.getValue(), newRefreshToken.getValue());
+		return new JwtResponse(newAccessToken.getValue(), newRefreshToken.getValue());
 	}
 
 	public void logout(String userId, String deviceType) {

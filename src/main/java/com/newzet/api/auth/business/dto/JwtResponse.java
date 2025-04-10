@@ -1,6 +1,6 @@
 package com.newzet.api.auth.business.dto;
 
-public record JwtResponseDTO(
+public record JwtResponse(
 	String accessToken,
 	String refreshToken
 ) {
