@@ -21,6 +21,55 @@ class JwtFactoryTest {
 	private JwtFactory jwtFactory;
 	private String TEST_SECRET;
 	private SecretKey testSecretKey;
+	static class TestFixture {
+		static final String USER_ID = "user123";
+		static final String INVALID_TOKEN = "invalid.token.value";
+		static final String MALFORMED_TOKEN = "not.a.validJWTtoken";
+		static final String EMPTY_TOKEN = "";
+		
+		static Date getPastDate() {
+			return new Date(System.currentTimeMillis() - 1000 * 60 * 60); // 1 hour ago
+		}
+		
+		static Date getFutureDate(Date now) {
+			return new Date(now.getTime() + 1000 * 60 * 60); // 1 hour later
+		}
+		
+		static String createExpiredToken(String userId, SecretKey secretKey) {
+			Date past = getPastDate();
+			return Jwts.builder()
+				.subject(userId)
+				.issuedAt(past)
+				.expiration(past)  // Already expired
+				.claim("type", TokenType.ACCESS.name())
+				.signWith(secretKey)
+				.compact();
+		}
+		
+		static String createTokenWithoutType(String userId, SecretKey secretKey) {
+			Date now = new Date();
+			Date future = getFutureDate(now);
+			return Jwts.builder()
+				.subject(userId)
+				.issuedAt(now)
+				.expiration(future)
+				// No type claim
+				.signWith(secretKey)
+				.compact();
+		}
+		
+		static String createTokenWithInvalidType(String userId, SecretKey secretKey) {
+			Date now = new Date();
+			Date future = getFutureDate(now);
+			return Jwts.builder()
+				.subject(userId)
+				.issuedAt(now)
+				.expiration(future)
+				.claim("type", "INVALID_TYPE")  // Invalid type value
+				.signWith(secretKey)
+				.compact();
+		}
+	}
 
 	@BeforeEach
 	void setUp() {
@@ -32,7 +81,7 @@ class JwtFactoryTest {
 	@Test
 	public void createAccessToken_returnValidAccessToken() {
 		//Given
-		String userId = "user123";
+		String userId = TestFixture.USER_ID;
 
 		//When
 		Token token = jwtFactory.createAccessToken(userId);
@@ -48,7 +97,7 @@ class JwtFactoryTest {
 	@Test
 	public void createRefreshToken_returnValidRefreshToken() {
 		//Given
-		String userId = "user123";
+		String userId = TestFixture.USER_ID;
 
 		//When
 		Token token = jwtFactory.createRefreshToken(userId);
@@ -64,7 +113,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenValidToken_returnToken() {
 		//Given
-		String userId = "user123";
+		String userId = TestFixture.USER_ID;
 		Token originalToken = jwtFactory.createAccessToken(userId);
 		String tokenValue = originalToken.getValue();
 
@@ -80,7 +129,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenInvalidToken_returnEmpty() {
 		//Given
-		String invalidToken = "invalid.token.value";
+		String invalidToken = TestFixture.INVALID_TOKEN;
 
 		//When
 		Optional<Token> parsedToken = jwtFactory.parseToken(invalidToken);
@@ -104,7 +153,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenTokenWithDifferentSignature_returnEmpty() {
 		//Given
-		String userId = "user123";
+		String userId = TestFixture.USER_ID;
 		Token originalToken = jwtFactory.createAccessToken(userId);
 		String tokenValue = originalToken.getValue();
 
@@ -121,7 +170,7 @@ class JwtFactoryTest {
 	@Test
 	public void verifyTokenType_whenAccessTokenIsUsedAsRefresh_returnFalse() {
 		//Given
-		String userId = "user123";
+		String userId = TestFixture.USER_ID;
 		Token accessToken = jwtFactory.createAccessToken(userId);
 
 		//When & Then
@@ -131,7 +180,7 @@ class JwtFactoryTest {
 	@Test
 	public void verifyTokenType_whenRefreshTokenIsUsedAsAccess_returnFalse() {
 		//Given
-		String userId = "user123";
+		String userId = TestFixture.USER_ID;
 		Token refreshToken = jwtFactory.createRefreshToken(userId);
 
 		//When & Then
@@ -141,7 +190,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenEmptyToken_returnEmpty() {
 		//Given
-		String emptyToken = "";
+		String emptyToken = TestFixture.EMPTY_TOKEN;
 
 		//When
 		Optional<Token> parsedToken = jwtFactory.parseToken(emptyToken);
@@ -153,7 +202,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenMalformedToken_returnEmpty() {
 		//Given
-		String malformedToken = "not.a.validJWTtoken";
+		String malformedToken = TestFixture.MALFORMED_TOKEN;
 
 		//When
 		Optional<Token> parsedToken = jwtFactory.parseToken(malformedToken);
@@ -165,16 +214,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenExpiredToken_returnEmpty() {
 		//Given
-		String userId = "user123";
-		Date past = new Date(System.currentTimeMillis() - 1000 * 60 * 60); // 1 hour ago
-
-		String expiredToken = Jwts.builder()
-			.subject(userId)
-			.issuedAt(past)
-			.expiration(past)  // Already expired
-			.claim("type", TokenType.ACCESS.name())
-			.signWith(testSecretKey)
-			.compact();
+		String expiredToken = TestFixture.createExpiredToken(TestFixture.USER_ID, testSecretKey);
 
 		//When
 		Optional<Token> parsedToken = jwtFactory.parseToken(expiredToken);
@@ -186,17 +226,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenMissingTypeField_returnEmpty() {
 		//Given
-		String userId = "user123";
-		Date now = new Date();
-		Date future = new Date(now.getTime() + 1000 * 60 * 60);
-
-		String tokenWithoutType = Jwts.builder()
-			.subject(userId)
-			.issuedAt(now)
-			.expiration(future)
-			// No type claim
-			.signWith(testSecretKey)
-			.compact();
+		String tokenWithoutType = TestFixture.createTokenWithoutType(TestFixture.USER_ID, testSecretKey);
 
 		//When
 		Optional<Token> parsedToken = jwtFactory.parseToken(tokenWithoutType);
@@ -208,17 +238,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenInvalidTypeValue_returnEmpty() {
 		//Given
-		String userId = "user123";
-		Date now = new Date();
-		Date future = new Date(now.getTime() + 1000 * 60 * 60);
-
-		String tokenWithInvalidType = Jwts.builder()
-			.subject(userId)
-			.issuedAt(now)
-			.expiration(future)
-			.claim("type", "INVALID_TYPE")  // Invalid type value
-			.signWith(testSecretKey)
-			.compact();
+		String tokenWithInvalidType = TestFixture.createTokenWithInvalidType(TestFixture.USER_ID, testSecretKey);
 
 		//When
 		Optional<Token> parsedToken = jwtFactory.parseToken(tokenWithInvalidType);
