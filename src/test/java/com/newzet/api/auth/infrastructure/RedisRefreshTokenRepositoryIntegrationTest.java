@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 
 import com.newzet.api.auth.business.service.JwtFactory;
@@ -21,6 +22,7 @@ import com.newzet.api.config.RedisTestContainerConfig;
 @ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class,
 	JwtTestConfig.class})
 @SpringBootTest
+@ComponentScan(basePackages = {"com.newzet.api.auth", "com.newzet.api.common"})
 class RedisRefreshTokenRepositoryIntegrationTest {
 
 	@Autowired
