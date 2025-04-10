@@ -19,7 +19,7 @@ public class RedisRefreshTokenRepository implements TokenRepository {
 	private static final String TOKEN_KEY_PREFIX = "refreshToken:";
 	private static final String REFRESH_TIME_KEY_PREFIX = "refresh-time:";
 
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, String> redisTemplate;
 	private final JwtFactory jwtFactory;
 
 	@Override
@@ -33,7 +33,7 @@ public class RedisRefreshTokenRepository implements TokenRepository {
 	@Override
 	public Optional<Token> findToken(String userId, String deviceType) {
 		String key = generateKey(userId, deviceType);
-		String tokenValue = (String)redisTemplate.opsForValue().get(key);
+		String tokenValue = redisTemplate.opsForValue().get(key);
 		return jwtFactory.parseToken(tokenValue);
 	}
 
@@ -46,7 +46,7 @@ public class RedisRefreshTokenRepository implements TokenRepository {
 	@Override
 	public Long getLastRefreshTime(String userId, String deviceType) {
 		String timeKey = generateTimeKey(userId, deviceType);
-		String value = (String)redisTemplate.opsForValue().get(timeKey);
+		String value = redisTemplate.opsForValue().get(timeKey);
 		return value != null ? Long.valueOf(value) : null;
 	}
 

@@ -23,10 +23,10 @@ import com.newzet.api.auth.domain.TokenType;
 class RedisRefreshTokenRepositoryTest {
 
 	@Mock
-	private RedisTemplate<String, Object> redisTemplate;
+	private RedisTemplate<String, String> redisTemplate;
 
 	@Mock
-	private ValueOperations<String, Object> valueOperations;
+	private ValueOperations<String, String> valueOperations;
 
 	@Mock
 	private JwtFactory jwtFactory;
