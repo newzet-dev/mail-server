@@ -2,10 +2,10 @@ package com.newzet.api.auth.business.service;
 
 import org.springframework.stereotype.Service;
 
-import com.newzet.api.auth.business.dto.JwtResponseDTO;
 import com.newzet.api.auth.business.dto.JwtRefreshRequestDTO;
-import com.newzet.api.auth.domain.Token;
+import com.newzet.api.auth.business.dto.JwtResponseDTO;
 import com.newzet.api.auth.business.validator.JwtValidator;
+import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.exception.JWTBadRequestException;
 import com.newzet.api.auth.infrastructure.TokenRepository;
 
@@ -13,8 +13,8 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class TokenService {
-	private final TokenFactory tokenFactory;
+public class JwtService {
+	private final JwtFactory jwtFactory;
 	private final TokenRepository tokenRepository;
 	private final JwtValidator JWTValidator;
 
@@ -22,15 +22,15 @@ public class TokenService {
 		String refreshTokenValue = request.refreshToken();
 		String deviceType = request.deviceType();
 
-		Token refreshToken = tokenFactory.parseToken(refreshTokenValue)
+		Token refreshToken = jwtFactory.parseToken(refreshTokenValue)
 			.orElseThrow(() -> new JWTBadRequestException("유효하지 않은 토큰입니다."));
 
 		String userId = refreshToken.getSubject();
 
 		JWTValidator.validateRefreshToken(refreshToken, userId, deviceType);
 
-		Token newAccessToken = tokenFactory.createAccessToken(userId);
-		Token newRefreshToken = tokenFactory.createRefreshToken(userId);
+		Token newAccessToken = jwtFactory.createAccessToken(userId);
+		Token newRefreshToken = jwtFactory.createRefreshToken(userId);
 
 		tokenRepository.saveToken(userId, deviceType, newRefreshToken);
 		tokenRepository.updateLastRefreshTime(userId, deviceType);

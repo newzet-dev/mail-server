@@ -1,9 +1,6 @@
 package com.newzet.api.auth.business.dto;
 
-import lombok.Builder;
-
-@Builder
-public record JWTResponseDTO(
+public record JwtResponseDTO(
 	String accessToken,
 	String refreshToken
 ) {

@@ -1,4 +1,4 @@
-package com.newzet.api.auth.domain.validator;
+package com.newzet.api.auth.business.validator;
 
 import org.springframework.stereotype.Component;
 
@@ -13,7 +13,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class TokenValidator {
+public class JwtValidator {
 	private static final long REFRESH_RATE_LIMIT_MILLISECONDS = 60 * 1000;
 
 	private final TokenRepository tokenRepository;

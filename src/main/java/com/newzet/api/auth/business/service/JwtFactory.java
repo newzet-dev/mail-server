@@ -16,12 +16,12 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 
 @Component
-public class TokenFactory {
+public class JwtFactory {
 	public static final long REFRESH_TOKEN_VALIDITY_MILLISECONDS = 14 * 24 * 60 * 60 * 1000;
 	private static final long ACCESS_TOKEN_VALIDITY_MILLISECONDS = 30 * 60 * 1000;
 	private final SecretKey secretKey;
 
-	public TokenFactory(@Value("${jwt.secret}") String secret) {
+	public JwtFactory(@Value("${jwt.secret}") String secret) {
 		this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
 	}
 
