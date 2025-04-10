@@ -12,19 +12,14 @@ import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.MalformedJwtException;
-import io.jsonwebtoken.UnsupportedJwtException;
+import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
-import io.jsonwebtoken.security.SignatureException;
 
 @Component
 public class TokenFactory {
-	private final SecretKey secretKey;
-
+	public static final long REFRESH_TOKEN_VALIDITY_MILLISECONDS = 14 * 24 * 60 * 60 * 1000;
 	private static final long ACCESS_TOKEN_VALIDITY_MILLISECONDS = 30 * 60 * 1000;
-
-	private static final long REFRESH_TOKEN_VALIDITY_MILLISECONDS = 14 * 24 * 60 * 60 * 1000;
+	private final SecretKey secretKey;
 
 	public TokenFactory(@Value("${jwt.secret}") String secret) {
 		this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
@@ -42,7 +37,7 @@ public class TokenFactory {
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + validityInMilliseconds);
 
-		String tokenValue = io.jsonwebtoken.Jwts.builder()
+		String tokenValue = Jwts.builder()
 			.subject(userId)
 			.issuedAt(now)
 			.expiration(validity)
@@ -53,22 +48,26 @@ public class TokenFactory {
 		return Token.of(tokenType, tokenValue, userId, now, validity);
 	}
 
-	public Optional<Token> parseToken(String token) {
+	public Optional<Token> parseToken(String tokenValue) {
+		if (tokenValue == null || tokenValue.isEmpty()) {
+			return Optional.empty();
+		}
+
 		try {
-			Claims claims = io.jsonwebtoken.Jwts.parser()
+			Claims claims = Jwts.parser()
 				.verifyWith(secretKey)
 				.build()
-				.parseSignedClaims(token)
+				.parseSignedClaims(tokenValue)
 				.getPayload();
 
-			TokenType tokenType = TokenType.valueOf(claims.get("type", String.class));
-			String userId = claims.getSubject();
+			String subject = claims.getSubject();
 			Date issuedAt = claims.getIssuedAt();
 			Date expiration = claims.getExpiration();
+			String tokenTypeStr = claims.get("type", String.class);
+			TokenType tokenType = TokenType.valueOf(tokenTypeStr);
 
-			return Optional.of(Token.of(tokenType, token, userId, issuedAt, expiration));
-		} catch (ExpiredJwtException | UnsupportedJwtException | MalformedJwtException |
-				 SignatureException | IllegalArgumentException e) {
+			return Optional.of(Token.of(tokenType, tokenValue, subject, issuedAt, expiration));
+		} catch (Exception e) {
 			return Optional.empty();
 		}
 	}

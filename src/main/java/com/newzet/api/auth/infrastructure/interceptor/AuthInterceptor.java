@@ -23,7 +23,8 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 	private final TokenValidator tokenValidator;
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
+		Object handler) {
 		if (!(handler instanceof HandlerMethod handlerMethod)) {
 			return true;
 		}

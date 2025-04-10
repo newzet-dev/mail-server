@@ -36,7 +36,8 @@ public class TokenValidator {
 			throw new RefreshTokenStolenException("리프레시 토큰이 일치하지 않습니다. 토큰 탈취 가능성.");
 		}
 
-		long lastRefreshTime = tokenRepository.getLastRefreshTime(userId, deviceType);
+		Long lastRefreshTime = tokenRepository.getLastRefreshTime(userId, deviceType);
+
 		if ((System.currentTimeMillis() - lastRefreshTime) < REFRESH_RATE_LIMIT_MILLISECONDS) {
 			throw new JWTConflictException("1분 이내에 이미 재발급 요청이 있었습니다.");
 		}
