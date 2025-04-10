@@ -4,9 +4,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
-import com.newzet.api.auth.business.service.TokenFactory;
+import com.newzet.api.auth.business.service.JwtFactory;
+import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
-import com.newzet.api.auth.domain.validator.TokenValidator;
 import com.newzet.api.auth.exception.JWTBadRequestException;
 import com.newzet.api.auth.infrastructure.annotation.RequireAuth;
 
@@ -16,11 +16,11 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class JwtAuthInterceptor implements HandlerInterceptor {
+public class AuthInterceptor implements HandlerInterceptor {
 	private static final String AUTH_TOKEN_ATTRIBUTE = "AUTH_TOKEN";
 	private static final String BEARER_PREFIX = "Bearer ";
-	private final TokenFactory tokenFactory;
-	private final TokenValidator tokenValidator;
+	private final JwtFactory jwtFactory;
+	private final JwtValidator JWTValidator;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
@@ -37,10 +37,10 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 		}
 
 		String tokenValue = extractTokenFromHeader(request);
-		Token token = tokenFactory.parseToken(tokenValue)
+		Token token = jwtFactory.parseToken(tokenValue)
 			.orElseThrow(() -> new JWTBadRequestException("유효하지 않은 토큰입니다."));
 
-		tokenValidator.validateAccessToken(token);
+		JWTValidator.validateAccessToken(token);
 
 		request.setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
 

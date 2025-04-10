@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.newzet.api.auth.infrastructure.filter.AuthExceptionFilter;
-import com.newzet.api.auth.infrastructure.interceptor.JwtAuthInterceptor;
+import com.newzet.api.auth.infrastructure.interceptor.AuthInterceptor;
 import com.newzet.api.auth.infrastructure.resolver.AuthUserArgumentResolver;
 
 import lombok.RequiredArgsConstructor;
@@ -22,13 +22,13 @@ import lombok.RequiredArgsConstructor;
 @Configuration
 @RequiredArgsConstructor
 public class WebConfig implements WebMvcConfigurer {
-	private final JwtAuthInterceptor jwtAuthInterceptor;
+	private final AuthInterceptor authInterceptor;
 	private final AuthUserArgumentResolver authUserArgumentResolver;
 	private final AuthExceptionFilter authExceptionFilter;
 
 	@Override
 	public void addInterceptors(InterceptorRegistry registry) {
-		registry.addInterceptor(jwtAuthInterceptor)
+		registry.addInterceptor(authInterceptor)
 			.order(1)
 			.addPathPatterns("/**");
 	}
