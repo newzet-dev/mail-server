@@ -3,9 +3,7 @@ package com.newzet.api.auth.domain;
 import lombok.Builder;
 import lombok.Getter;
 
-/*
-추후 email, role 등 추가 고려
- */
+//TODO: 추후 email, role 등 추가 고려
 @Getter
 @Builder
 public class AuthUser {
