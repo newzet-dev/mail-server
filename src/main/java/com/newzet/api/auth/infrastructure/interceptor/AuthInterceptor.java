@@ -7,7 +7,7 @@ import org.springframework.web.servlet.HandlerInterceptor;
 import com.newzet.api.auth.business.service.JwtFactory;
 import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
-import com.newzet.api.auth.exception.JWTBadRequestException;
+import com.newzet.api.auth.exception.TokenBadRequestException;
 import com.newzet.api.auth.infrastructure.annotation.RequireAuth;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -38,7 +38,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 
 		String tokenValue = extractTokenFromHeader(request);
 		Token token = jwtFactory.parseToken(tokenValue)
-			.orElseThrow(() -> new JWTBadRequestException("유효하지 않은 토큰입니다."));
+			.orElseThrow(() -> new TokenBadRequestException("유효하지 않은 토큰입니다."));
 
 		JWTValidator.validateAccessToken(token);
 
@@ -50,7 +50,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 	private String extractTokenFromHeader(HttpServletRequest request) {
 		String authHeader = request.getHeader("Authorization");
 		if (authHeader == null || !authHeader.startsWith(BEARER_PREFIX)) {
-			throw new JWTBadRequestException("Authorization 헤더가 없거나 Bearer 형식이 아닙니다.");
+			throw new TokenBadRequestException("Authorization 헤더가 없거나 Bearer 형식이 아닙니다.");
 		}
 		return authHeader.substring(BEARER_PREFIX.length());
 	}

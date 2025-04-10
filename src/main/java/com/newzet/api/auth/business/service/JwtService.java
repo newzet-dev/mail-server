@@ -6,7 +6,7 @@ import com.newzet.api.auth.business.dto.JwtRefreshRequestDTO;
 import com.newzet.api.auth.business.dto.JwtResponseDTO;
 import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
-import com.newzet.api.auth.exception.JWTBadRequestException;
+import com.newzet.api.auth.exception.TokenBadRequestException;
 import com.newzet.api.auth.infrastructure.TokenRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -23,7 +23,7 @@ public class JwtService {
 		String deviceType = request.deviceType();
 
 		Token refreshToken = jwtFactory.parseToken(refreshTokenValue)
-			.orElseThrow(() -> new JWTBadRequestException("유효하지 않은 토큰입니다."));
+			.orElseThrow(() -> new TokenBadRequestException("유효하지 않은 토큰입니다."));
 
 		String userId = refreshToken.getSubject();
 

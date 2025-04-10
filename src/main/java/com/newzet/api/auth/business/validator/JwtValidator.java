@@ -3,10 +3,10 @@ package com.newzet.api.auth.business.validator;
 import org.springframework.stereotype.Component;
 
 import com.newzet.api.auth.domain.Token;
-import com.newzet.api.auth.exception.AccessTokenExpiredException;
-import com.newzet.api.auth.exception.JWTBadRequestException;
-import com.newzet.api.auth.exception.JWTConflictException;
-import com.newzet.api.auth.exception.RefreshTokenStolenException;
+import com.newzet.api.auth.exception.TokenBadRequestException;
+import com.newzet.api.auth.exception.TokenConflictException;
+import com.newzet.api.auth.exception.TokenExpiredException;
+import com.newzet.api.auth.exception.TokenStolenException;
 import com.newzet.api.auth.infrastructure.TokenRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,36 +20,36 @@ public class JwtValidator {
 
 	public void validateRefreshToken(Token token, String userId, String deviceType) {
 		if (!token.isRefreshToken()) {
-			throw new JWTBadRequestException("리프레시 토큰이 아닙니다.");
+			throw new TokenBadRequestException("리프레시 토큰이 아닙니다.");
 		}
 
 		if (token.isExpired()) {
-			throw new AccessTokenExpiredException("리프레시 토큰이 만료되었습니다.");
+			throw new TokenExpiredException("리프레시 토큰이 만료되었습니다.");
 		}
 
 		String storedTokenValue = tokenRepository.findToken(userId, deviceType)
 			.map(Token::getValue)
-			.orElseThrow(() -> new JWTBadRequestException("저장된 리프레시 토큰이 없습니다. 재로그인이 필요합니다."));
+			.orElseThrow(() -> new TokenBadRequestException("저장된 리프레시 토큰이 없습니다. 재로그인이 필요합니다."));
 
 		if (!storedTokenValue.equals(token.getValue())) {
 			tokenRepository.removeToken(userId, deviceType);
-			throw new RefreshTokenStolenException("리프레시 토큰이 일치하지 않습니다. 토큰 탈취 가능성.");
+			throw new TokenStolenException("리프레시 토큰이 일치하지 않습니다. 토큰 탈취 가능성.");
 		}
 
 		Long lastRefreshTime = tokenRepository.getLastRefreshTime(userId, deviceType);
 
 		if ((System.currentTimeMillis() - lastRefreshTime) < REFRESH_RATE_LIMIT_MILLISECONDS) {
-			throw new JWTConflictException("1분 이내에 이미 재발급 요청이 있었습니다.");
+			throw new TokenConflictException("1분 이내에 이미 재발급 요청이 있었습니다.");
 		}
 	}
 
 	public void validateAccessToken(Token token) {
 		if (!token.isAccessToken()) {
-			throw new JWTBadRequestException("액세스 토큰이 아닙니다.");
+			throw new TokenBadRequestException("액세스 토큰이 아닙니다.");
 		}
 
 		if (token.isExpired()) {
-			throw new AccessTokenExpiredException("액세스 토큰이 만료되었습니다.");
+			throw new TokenExpiredException("액세스 토큰이 만료되었습니다.");
 		}
 	}
 }

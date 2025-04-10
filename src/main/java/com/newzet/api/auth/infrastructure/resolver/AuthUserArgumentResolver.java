@@ -9,7 +9,7 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.newzet.api.auth.domain.AuthUser;
 import com.newzet.api.auth.domain.Token;
-import com.newzet.api.auth.exception.JWTBadRequestException;
+import com.newzet.api.auth.exception.TokenBadRequestException;
 import com.newzet.api.auth.infrastructure.annotation.Login;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -35,7 +35,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		Token token = (Token)request.getAttribute(AUTH_TOKEN_ATTRIBUTE);
 
 		if (token == null) {
-			throw new JWTBadRequestException(
+			throw new TokenBadRequestException(
 				"인증 정보를 찾을 수 없습니다. 인증이 필요한 로직인 경우 @requiresAuth 를 추가하세요.");
 		}
 
