@@ -18,6 +18,7 @@ import lombok.RequiredArgsConstructor;
 public class RedisRefreshTokenRepository implements TokenRepository {
 	private static final String TOKEN_KEY_PREFIX = "refreshToken:";
 	private static final String REFRESH_TIME_KEY_PREFIX = "refresh-time:";
+	private static final long REFRESH_REQUEST_INTERVAL_LIMIT = 60 * 1000L;
 
 	private final RedisTemplate<String, String> redisTemplate;
 	private final JwtFactory jwtFactory;
@@ -55,7 +56,7 @@ public class RedisRefreshTokenRepository implements TokenRepository {
 		String timeKey = generateTimeKey(userId, deviceType);
 		redisTemplate.opsForValue()
 			.set(timeKey, String.valueOf(System.currentTimeMillis()),
-				REFRESH_TOKEN_VALIDITY_MILLISECONDS, TimeUnit.MILLISECONDS);
+				REFRESH_REQUEST_INTERVAL_LIMIT, TimeUnit.MILLISECONDS);
 	}
 
 	private String generateKey(String userId, String deviceType) {
