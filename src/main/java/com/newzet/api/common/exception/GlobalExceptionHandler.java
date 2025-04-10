@@ -15,8 +15,8 @@ public class GlobalExceptionHandler {
 	public ProblemDetail handleNewzetEx(NewzetException e) {
 		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.OK);
 		problemDetail.setTitle("Newzet Error");
-		problemDetail.setDetail(e.getMessage());
-		problemDetail.setProperty("responseCode", e.getResponseCode());
+		problemDetail.setProperty("code", e.getResponseCode().getCode());
+		problemDetail.setProperty("message", e.getMessage());
 		return problemDetail;
 	}
 }

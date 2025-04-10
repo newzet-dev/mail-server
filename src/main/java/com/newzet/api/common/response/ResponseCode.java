@@ -16,6 +16,6 @@ public enum ResponseCode {
 	S3_ACCESS_ERROR(50006),
 	STORAGE_ACCESS_ERROR(50007);
 
-	private final int responseCode;
+	private final int code;
 
 }
