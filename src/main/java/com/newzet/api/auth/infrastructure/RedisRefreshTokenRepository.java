@@ -45,10 +45,10 @@ public class RedisRefreshTokenRepository implements TokenRepository {
 	}
 
 	@Override
-	public Long getLastRefreshTime(String userId, String deviceType) {
+	public Optional<Long> getLastRefreshTime(String userId, String deviceType) {
 		String timeKey = generateTimeKey(userId, deviceType);
 		String value = redisTemplate.opsForValue().get(timeKey);
-		return value != null ? Long.valueOf(value) : null;
+		return Optional.ofNullable(value).map(Long::valueOf);
 	}
 
 	@Override
