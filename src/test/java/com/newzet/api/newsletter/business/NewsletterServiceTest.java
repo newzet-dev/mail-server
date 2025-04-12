@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.common.cache.CacheUtil;
+import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
@@ -111,7 +112,7 @@ class NewsletterServiceTest {
 		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenThrow(new LocalLockAcquisitionException());
 
 		// When
-		assertThrows(LocalLockAcquisitionException.class,
+		assertThrows(InternalErrorException.class,
 			() -> newsletterService.findOrCreateNewsletter(name, domain, mailingList));
 
 		// Then
