@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
+import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
+import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
+import com.newzet.api.common.lock.exception.UnknownLockException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
@@ -44,14 +47,22 @@ public class NewsletterService {
 
 	private Newsletter findOrCreateByDomainOrMailingListWithLock(String name, String domain,
 		String mailingList) {
-		Lock lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
-			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
-
+		Lock lock = null;
 		try {
+			lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
+				CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
 			return findByDomainOnCache(domain).orElseGet(
 				() -> findOrCreateByDomainOrMailingListInDatabase(name, domain, mailingList));
+		} catch (LocalLockAcquisitionException e) {
+			throw new InternalErrorException("내부에서 요청 처리에 실패하였습니다. 다시 시도해주세요.");
 		} finally {
-			lockFactory.unlock(lock);
+			if (lock != null) {
+				try {
+					lockFactory.unlock(lock);
+				} catch (UnknownLockException e) {
+					throw new InternalErrorException("내부에서 요청 처리에 실패하였습니다. 다시 시도해주세요.");
+				}
+			}
 		}
 	}
 
@@ -61,7 +72,8 @@ public class NewsletterService {
 			.findByDomainOrMailingList(domain, mailingList)
 			.map(NewsletterEntityDto::toDomain)
 			.map(newsletter -> {
-				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(), CACHE_DURATION);
+				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(),
+					CACHE_DURATION);
 				return newsletter;
 			})
 			.orElseGet(() -> createNewsletter(name, domain, mailingList));
