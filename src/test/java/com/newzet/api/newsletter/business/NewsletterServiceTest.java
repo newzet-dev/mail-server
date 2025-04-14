@@ -109,7 +109,7 @@ class NewsletterServiceTest {
 		//Given
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.empty());
-		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenThrow(new LocalLockAcquisitionException());
+		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenThrow(new LocalLockAcquisitionException("Local Lock 획득에 실패하였습니다."));
 
 		// When
 		assertThrows(InternalErrorException.class,
