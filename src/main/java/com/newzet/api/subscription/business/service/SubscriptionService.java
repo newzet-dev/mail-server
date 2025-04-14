@@ -21,14 +21,16 @@ public class SubscriptionService {
 	private final SubscriptionRepository subscriptionRepository;
 
 	public void addSubscription(User user, Newsletter newsletter) {
-		subscriptionRepository.findByUserIdAndNewsletterId(
-				user.getId(), newsletter.getId())
-			.ifPresentOrElse(entityDto -> {
-				Subscription activatedSubscription = entityDto.toDomain().reactivate();
-				subscriptionRepository.save(activatedSubscription.toEntityDto(entityDto.getId()));
-			}, () -> {
-				subscriptionRepository.create(user.toEntityDto(), newsletter.toEntityDto());
-			});
+		Optional<SubscriptionEntityDto> entityDto = subscriptionRepository.findByUserIdAndNewsletterId(
+			user.getId(), newsletter.getId());
+
+		if (entityDto.isEmpty()) {
+			subscriptionRepository.create(user.toEntityDto(), newsletter.toEntityDto());
+		} else {
+			SubscriptionEntityDto dto = entityDto.get();
+			Subscription activatedSubscription = dto.toDomain().reactivate();
+			subscriptionRepository.save(activatedSubscription.toEntityDto(dto.getId()));
+		}
 	}
 
 	public void deleteSubscription(UUID subscriptionId) {
