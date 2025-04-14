@@ -11,7 +11,7 @@ public interface TokenRepository {
 
 	void removeToken(String userId, String deviceType);
 
-	Long getLastRefreshTime(String userId, String deviceType);
+	Optional<Long> getLastRefreshTime(String userId, String deviceType);
 
 	void updateLastRefreshTime(String userId, String deviceType);
 }

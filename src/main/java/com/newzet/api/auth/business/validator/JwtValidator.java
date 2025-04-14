@@ -36,9 +36,13 @@ public class JwtValidator {
 			throw new TokenStolenException("리프레시 토큰이 일치하지 않습니다. 토큰 탈취 가능성.");
 		}
 
-		Long lastRefreshTime = tokenRepository.getLastRefreshTime(userId, deviceType);
+		tokenRepository.getLastRefreshTime(userId, deviceType)
+			.ifPresent(this::checkRefreshInterval);
+	}
 
-		if ((System.currentTimeMillis() - lastRefreshTime) < REFRESH_RATE_LIMIT_MILLISECONDS) {
+	private void checkRefreshInterval(long lastRefreshTime) {
+		long currentTime = System.currentTimeMillis();
+		if ((currentTime - lastRefreshTime) < REFRESH_RATE_LIMIT_MILLISECONDS) {
 			throw new TokenConflictException("1분 이내에 이미 재발급 요청이 있었습니다.");
 		}
 	}

@@ -78,7 +78,7 @@ class JwtValidatorTest {
 		Token token = Token.of(TokenType.REFRESH, tokenValue, userId, new Date(), future);
 
 		when(tokenRepository.findToken(userId, deviceType)).thenReturn(Optional.of(token));
-		when(tokenRepository.getLastRefreshTime(userId, deviceType)).thenReturn(0L);
+		when(tokenRepository.getLastRefreshTime(userId, deviceType)).thenReturn(Optional.of(0L));
 
 		//When, Then
 		assertThatCode(() -> JWTValidator.validateRefreshToken(token, userId, deviceType))
@@ -133,7 +133,8 @@ class JwtValidatorTest {
 		long recentTime = System.currentTimeMillis() - 30 * 1000;
 
 		when(tokenRepository.findToken(userId, deviceType)).thenReturn(Optional.of(token));
-		when(tokenRepository.getLastRefreshTime(userId, deviceType)).thenReturn(recentTime);
+		when(tokenRepository.getLastRefreshTime(userId, deviceType)).thenReturn(
+			Optional.of(recentTime));
 
 		//When, Then
 		assertThatThrownBy(() -> JWTValidator.validateRefreshToken(token, userId, deviceType))
