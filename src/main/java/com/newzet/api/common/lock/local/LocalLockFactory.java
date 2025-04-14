@@ -28,7 +28,6 @@ public class LocalLockFactory implements LockFactory {
 			}
 			return new LocalLock(lockKey, lock);
 		} catch (Exception e) {
-			log.error("[LocalLockFactory]: Local lock 획득 실패, errorMessage: {}", e.getMessage());
 			throw new LocalLockAcquisitionException("Local Lock 획득에 실패하였습니다.");
 		}
 	}
@@ -39,7 +38,6 @@ public class LocalLockFactory implements LockFactory {
 			lock.unlock();
 			locks.remove(((LocalLock)lock).getLockKey());
 		} catch (Exception e) {
-			log.error("[LocalLockFactory]: Local lock 해제 실패, error {}", e.getMessage());
 			throw new UnlockingFailedException("Local Lock 해제에 실패하였습니다.");
 		}
 	}

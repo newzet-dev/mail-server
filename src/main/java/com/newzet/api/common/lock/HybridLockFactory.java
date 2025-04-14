@@ -39,7 +39,6 @@ public class HybridLockFactory implements LockFactory{
 		} else if (lock instanceof LocalLock) {
 			localLockFactory.unlock(lock);
 		} else {
-			log.error("[HybridLockFactory]: 알 수 없는 락 타입 {}", lock.getClass().getName());
 			throw new UnknownLockException("알 수 없는 락 타입입니다.");
 		}
 	}

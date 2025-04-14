@@ -27,7 +27,11 @@ public class LoggingAspect {
 	public void repositoryPointcut() {
 	}
 
-	@AfterThrowing(pointcut = "servicePointcut() || repositoryPointcut()", throwing = "e")
+	@Pointcut("execution(* com.newzet..api.common.lock..*LockFactory.*(..))")
+	public void LockFactoryPointcut() {
+	}
+
+	@AfterThrowing(pointcut = "servicePointcut() || repositoryPointcut() || LockFactoryPointcut()", throwing = "e")
 	public void logException(JoinPoint joinPoint, Throwable e) {
 		String method = joinPoint.getSignature().toShortString();
 		String args = Arrays.toString(joinPoint.getArgs());

@@ -32,7 +32,6 @@ public class RedisLockFactory implements LockFactory {
 			}
 			return new RedisLock(lock);
 		} catch (Exception e) {
-			log.error("[RedisLockFactory]: Redis lock 획득 실패, errorMessage: {}", e.getMessage());
 			throw new RedisLockAcquisitionException("Redis Lock 획득에 실패하였습니다.");
 		}
 	}
@@ -42,7 +41,6 @@ public class RedisLockFactory implements LockFactory {
 		try{
 			lock.unlock();
 		} catch(Exception e) {
-			log.error("[RedisLockFactory]: Redis lock 해제 실패, error {}", e.getMessage());
 			throw new UnlockingFailedException("Redis Lock 해제에 실패하였습니다.");
 		}
 	}
