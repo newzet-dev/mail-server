@@ -37,12 +37,14 @@ public class JwtValidator {
 		}
 
 		tokenRepository.getLastRefreshTime(userId, deviceType)
-			.ifPresent(lastRefreshTime -> {
-				if ((System.currentTimeMillis() - lastRefreshTime)
-					< REFRESH_RATE_LIMIT_MILLISECONDS) {
-					throw new TokenConflictException("1분 이내에 이미 재발급 요청이 있었습니다.");
-				}
-			});
+			.ifPresent(this::checkRefreshInterval);
+	}
+
+	private void checkRefreshInterval(long lastRefreshTime) {
+		long currentTime = System.currentTimeMillis();
+		if ((currentTime - lastRefreshTime) < REFRESH_RATE_LIMIT_MILLISECONDS) {
+			throw new TokenConflictException("1분 이내에 이미 재발급 요청이 있었습니다.");
+		}
 	}
 
 	public void validateAccessToken(Token token) {
