@@ -110,10 +110,11 @@ class RedisRefreshTokenRepositoryTest {
 		when(valueOperations.get(timeKey)).thenReturn(String.valueOf(timestamp));
 
 		// When
-		Long result = tokenRepository.getLastRefreshTime(userId, deviceType);
+		Optional<Long> result = tokenRepository.getLastRefreshTime(userId, deviceType);
 
 		// Then
-		assertThat(result).isEqualTo(timestamp);
+		assertThat(result).isPresent();
+		assertThat(result.get()).isEqualTo(timestamp);
 	}
 
 	@Test
@@ -126,5 +127,18 @@ class RedisRefreshTokenRepositoryTest {
 
 		//Then
 		verify(valueOperations).set(eq(timeKey), anyString(), anyLong(), eq(TimeUnit.MILLISECONDS));
+	}
+
+	@Test
+	void getLastRefreshTime_shouldReturnEmptyOptional_whenTimeDoesNotExist() {
+		// given
+		String timeKey = "refresh-time:" + userId + ":" + deviceType;
+		when(redisTemplate.opsForValue().get(timeKey)).thenReturn(null);
+
+		// when
+		Optional<Long> result = tokenRepository.getLastRefreshTime(userId, deviceType);
+
+		// then
+		assertThat(result).isEmpty();
 	}
 }

@@ -96,22 +96,23 @@ class RedisRefreshTokenRepositoryIntegrationTest {
 		// When
 		tokenRepository.updateLastRefreshTime(userId, deviceType);
 		long afterUpdate = System.currentTimeMillis();
-		long lastRefreshTime = tokenRepository.getLastRefreshTime(userId, deviceType);
+		Optional<Long> lastRefreshTime = tokenRepository.getLastRefreshTime(userId, deviceType);
 
 		// Then
-		assertThat(lastRefreshTime).isBetween(beforeUpdate, afterUpdate);
+		assertThat(lastRefreshTime).isPresent();
+		assertThat(lastRefreshTime.get()).isBetween(beforeUpdate, afterUpdate);
 	}
 
 	@Test
-	public void getLastRefreshTime_whenTimeNotSet_thenReturnsNull() {
+	public void getLastRefreshTime_whenTimeNotSet_thenReturnsEmpty() {
 		// Given
 		String newUserId = "another-user";
 
 		// When
-		Long lastRefreshTime = tokenRepository.getLastRefreshTime(newUserId, deviceType);
+		Optional<Long> lastRefreshTime = tokenRepository.getLastRefreshTime(newUserId, deviceType);
 
 		// Then
-		assertThat(lastRefreshTime).isNull();
+		assertThat(lastRefreshTime).isEmpty();
 	}
 
 	@Test
