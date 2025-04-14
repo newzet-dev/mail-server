@@ -1,6 +1,8 @@
 package com.newzet.api.common.lock.exception;
 
-public class LocalLockAcquisitionException extends RuntimeException {
+import com.newzet.api.common.exception.InternalErrorException;
+
+public class LocalLockAcquisitionException extends InternalErrorException {
 	public LocalLockAcquisitionException() {
 		super();
 	}

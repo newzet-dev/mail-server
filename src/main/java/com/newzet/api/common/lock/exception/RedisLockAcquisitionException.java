@@ -1,6 +1,8 @@
 package com.newzet.api.common.lock.exception;
 
-public class RedisLockAcquisitionException extends RuntimeException {
+import com.newzet.api.common.exception.InternalErrorException;
+
+public class RedisLockAcquisitionException extends InternalErrorException {
 	public RedisLockAcquisitionException() {
 		super();
 	}

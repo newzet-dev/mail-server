@@ -47,22 +47,13 @@ public class NewsletterService {
 
 	private Newsletter findOrCreateByDomainOrMailingListWithLock(String name, String domain,
 		String mailingList) {
-		Lock lock = null;
+		Lock lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
+			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
 		try {
-			lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
-				CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
 			return findByDomainOnCache(domain).orElseGet(
 				() -> findOrCreateByDomainOrMailingListInDatabase(name, domain, mailingList));
-		} catch (LocalLockAcquisitionException e) {
-			throw new InternalErrorException("내부에서 요청 처리에 실패하였습니다. 다시 시도해주세요.");
 		} finally {
-			if (lock != null) {
-				try {
-					lockFactory.unlock(lock);
-				} catch (UnknownLockException e) {
-					throw new InternalErrorException("내부에서 요청 처리에 실패하였습니다. 다시 시도해주세요.");
-				}
-			}
+			lockFactory.unlock(lock);
 		}
 	}
 
