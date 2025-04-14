@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.RedisLockAcquisitionException;
+import com.newzet.api.common.lock.exception.UnlockingFailedException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,12 +28,12 @@ public class RedisLockFactory implements LockFactory {
 		RLock lock = redissonClient.getLock(LOCK_PREFIX + lockKey);
 		try {
 			if (!lock.tryLock(waitTime, leaseTime, TIME_UNIT)) {
-				throw new RedisLockAcquisitionException();
+				throw new RedisLockAcquisitionException("Redis Lock 획득에 실패하였습니다.");
 			}
 			return new RedisLock(lock);
 		} catch (Exception e) {
 			log.error("[RedisLockFactory]: Redis lock 획득 실패, errorMessage: {}", e.getMessage());
-			throw new RedisLockAcquisitionException();
+			throw new RedisLockAcquisitionException("Redis Lock 획득에 실패하였습니다.");
 		}
 	}
 
@@ -42,6 +43,7 @@ public class RedisLockFactory implements LockFactory {
 			lock.unlock();
 		} catch(Exception e) {
 			log.error("[RedisLockFactory]: Redis lock 해제 실패, error {}", e.getMessage());
+			throw new UnlockingFailedException("Redis Lock 해제에 실패하였습니다.");
 		}
 	}
 }

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Component;
 
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
+import com.newzet.api.common.lock.exception.UnlockingFailedException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -23,12 +24,12 @@ public class LocalLockFactory implements LockFactory {
 		Lock lock = locks.computeIfAbsent(lockKey, k -> new ReentrantLock());
 		try {
 			if (!lock.tryLock(waitTime, TimeUnit.MILLISECONDS)) {
-				throw new LocalLockAcquisitionException();
+				throw new LocalLockAcquisitionException("Local Lock 획득에 실패하였습니다.");
 			}
 			return new LocalLock(lockKey, lock);
 		} catch (Exception e) {
-			log.error("[LocalLockFactory]: Redis lock 획득 실패, errorMessage: {}", e.getMessage());
-			throw new LocalLockAcquisitionException();
+			log.error("[LocalLockFactory]: Local lock 획득 실패, errorMessage: {}", e.getMessage());
+			throw new LocalLockAcquisitionException("Local Lock 획득에 실패하였습니다.");
 		}
 	}
 
@@ -39,6 +40,7 @@ public class LocalLockFactory implements LockFactory {
 			locks.remove(((LocalLock)lock).getLockKey());
 		} catch (Exception e) {
 			log.error("[LocalLockFactory]: Local lock 해제 실패, error {}", e.getMessage());
+			throw new UnlockingFailedException("Local Lock 해제에 실패하였습니다.");
 		}
 	}
 }
