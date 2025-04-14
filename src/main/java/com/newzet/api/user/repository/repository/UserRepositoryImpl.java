@@ -24,8 +24,7 @@ public class UserRepositoryImpl implements UserRepository {
 
 	public UserEntityDto getByEmail(String email) {
 		UserEntity user = userJpaRepository.findByEmail(email)
-			.orElseThrow(() -> new NoUserException(this.getClass().getSimpleName() + "#" +
-				Thread.currentThread().getStackTrace()[2].getMethodName()));
+			.orElseThrow(() -> new NoUserException("사용자를 찾을 수 없습니다."));
 		return UserEntityDto.create(user.getId(), user.getEmail(), user.getStatus().name());
 	}
 }

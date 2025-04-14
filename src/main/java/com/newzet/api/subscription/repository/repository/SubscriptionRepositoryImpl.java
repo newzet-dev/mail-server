@@ -47,15 +47,14 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 	public void save(SubscriptionEntityDto subscriptionDto) {
 		SubscriptionEntity subscriptionEntity = subscriptionJpaRepository.findById(
 				subscriptionDto.getId())
-			.orElseThrow(() -> new NoSubscriptionException(this.getClass().getSimpleName() + "#" +
-				Thread.currentThread().getStackTrace()[2].getMethodName()));
+			.orElseThrow(() -> new NoSubscriptionException("일치하는 구독을 찾을 수 없습니다."));
 		subscriptionEntity.update(subscriptionDto.getCreatedAt(), subscriptionDto.getDeletedAt());
 	}
 
 	@Override
 	public SubscriptionEntityDto getById(UUID id) {
 		return subscriptionJpaRepository.findById(id)
-			.orElseThrow(() -> new NoSubscriptionException(this.getClass().getSimpleName() + "#" +
-				Thread.currentThread().getStackTrace()[2].getMethodName())).toEntityDto();
+			.orElseThrow(() -> new NoSubscriptionException("일치하는 구독을 찾을 수 없습니다."))
+			.toEntityDto();
 	}
 }

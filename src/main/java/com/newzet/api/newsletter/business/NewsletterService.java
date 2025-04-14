@@ -7,7 +7,10 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
+import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
+import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
+import com.newzet.api.common.lock.exception.UnknownLockException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
@@ -46,7 +49,6 @@ public class NewsletterService {
 		String mailingList) {
 		Lock lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
 			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
-
 		try {
 			return findByDomainOnCache(domain).orElseGet(
 				() -> findOrCreateByDomainOrMailingListInDatabase(name, domain, mailingList));
@@ -61,7 +63,8 @@ public class NewsletterService {
 			.findByDomainOrMailingList(domain, mailingList)
 			.map(NewsletterEntityDto::toDomain)
 			.map(newsletter -> {
-				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(), CACHE_DURATION);
+				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(),
+					CACHE_DURATION);
 				return newsletter;
 			})
 			.orElseGet(() -> createNewsletter(name, domain, mailingList));
