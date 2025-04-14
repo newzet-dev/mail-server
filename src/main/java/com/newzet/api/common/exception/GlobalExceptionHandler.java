@@ -26,8 +26,8 @@ public class GlobalExceptionHandler {
 	public ProblemDetail handleInternalErrorEx(InternalErrorException e) {
 		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.OK);
 		problemDetail.setTitle("Internal Error");
-		problemDetail.setProperty("code", "내부에서 요청 처리에 실패하였습니다. 다시 시도해주세요.");
-		problemDetail.setProperty("message", e.getMessage());
+		problemDetail.setProperty("code", ResponseCode.SERVER_ERROR);
+		problemDetail.setProperty("message", "내부에서 요청 처리에 실패하였습니다. 다시 시도해주세요.");
 		return problemDetail;
 	}
 
@@ -36,7 +36,7 @@ public class GlobalExceptionHandler {
 		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.OK);
 		problemDetail.setTitle("Unknown Error");
 		problemDetail.setProperty("code", ResponseCode.SERVER_ERROR);
-		problemDetail.setProperty("message", "알 수 없는 서버 내부 오류가 발생하였습니다.");
+		problemDetail.setProperty("message", "알 수 없는 서버 내부 오류가 발생하였습니다, Exception Class=" + e.getClass().getSimpleName());
 		return problemDetail;
 	}
 }
