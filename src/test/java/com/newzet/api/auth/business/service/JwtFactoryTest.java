@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -21,55 +22,6 @@ class JwtFactoryTest {
 	private JwtFactory jwtFactory;
 	private String TEST_SECRET;
 	private SecretKey testSecretKey;
-	static class TestFixture {
-		static final String USER_ID = "user123";
-		static final String INVALID_TOKEN = "invalid.token.value";
-		static final String MALFORMED_TOKEN = "not.a.validJWTtoken";
-		static final String EMPTY_TOKEN = "";
-		
-		static Date getPastDate() {
-			return new Date(System.currentTimeMillis() - 1000 * 60 * 60); // 1 hour ago
-		}
-		
-		static Date getFutureDate(Date now) {
-			return new Date(now.getTime() + 1000 * 60 * 60); // 1 hour later
-		}
-		
-		static String createExpiredToken(String userId, SecretKey secretKey) {
-			Date past = getPastDate();
-			return Jwts.builder()
-				.subject(userId)
-				.issuedAt(past)
-				.expiration(past)  // Already expired
-				.claim("type", TokenType.ACCESS.name())
-				.signWith(secretKey)
-				.compact();
-		}
-		
-		static String createTokenWithoutType(String userId, SecretKey secretKey) {
-			Date now = new Date();
-			Date future = getFutureDate(now);
-			return Jwts.builder()
-				.subject(userId)
-				.issuedAt(now)
-				.expiration(future)
-				// No type claim
-				.signWith(secretKey)
-				.compact();
-		}
-		
-		static String createTokenWithInvalidType(String userId, SecretKey secretKey) {
-			Date now = new Date();
-			Date future = getFutureDate(now);
-			return Jwts.builder()
-				.subject(userId)
-				.issuedAt(now)
-				.expiration(future)
-				.claim("type", "INVALID_TYPE")  // Invalid type value
-				.signWith(secretKey)
-				.compact();
-		}
-	}
 
 	@BeforeEach
 	void setUp() {
@@ -81,7 +33,7 @@ class JwtFactoryTest {
 	@Test
 	public void createAccessToken_returnValidAccessToken() {
 		//Given
-		String userId = TestFixture.USER_ID;
+		UUID userId = TestFixture.USER_ID;
 
 		//When
 		Token token = jwtFactory.createAccessToken(userId);
@@ -89,7 +41,7 @@ class JwtFactoryTest {
 		//Then
 		assertThat(token).isNotNull();
 		assertThat(token.getType()).isEqualTo(TokenType.ACCESS);
-		assertThat(token.getSubject()).isEqualTo(userId);
+		assertThat(token.getSubject()).isEqualTo(userId.toString());
 		assertThat(token.isExpired()).isFalse();
 		assertThat(token.isAccessToken()).isTrue();
 	}
@@ -97,7 +49,7 @@ class JwtFactoryTest {
 	@Test
 	public void createRefreshToken_returnValidRefreshToken() {
 		//Given
-		String userId = TestFixture.USER_ID;
+		UUID userId = TestFixture.USER_ID;
 
 		//When
 		Token token = jwtFactory.createRefreshToken(userId);
@@ -105,7 +57,7 @@ class JwtFactoryTest {
 		//Then
 		assertThat(token).isNotNull();
 		assertThat(token.getType()).isEqualTo(TokenType.REFRESH);
-		assertThat(token.getSubject()).isEqualTo(userId);
+		assertThat(token.getSubject()).isEqualTo(userId.toString());
 		assertThat(token.isExpired()).isFalse();
 		assertThat(token.isRefreshToken()).isTrue();
 	}
@@ -113,7 +65,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenValidToken_returnToken() {
 		//Given
-		String userId = TestFixture.USER_ID;
+		UUID userId = TestFixture.USER_ID;
 		Token originalToken = jwtFactory.createAccessToken(userId);
 		String tokenValue = originalToken.getValue();
 
@@ -153,7 +105,7 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenTokenWithDifferentSignature_returnEmpty() {
 		//Given
-		String userId = TestFixture.USER_ID;
+		UUID userId = TestFixture.USER_ID;
 		Token originalToken = jwtFactory.createAccessToken(userId);
 		String tokenValue = originalToken.getValue();
 
@@ -170,7 +122,7 @@ class JwtFactoryTest {
 	@Test
 	public void verifyTokenType_whenAccessTokenIsUsedAsRefresh_returnFalse() {
 		//Given
-		String userId = TestFixture.USER_ID;
+		UUID userId = TestFixture.USER_ID;
 		Token accessToken = jwtFactory.createAccessToken(userId);
 
 		//When & Then
@@ -180,7 +132,7 @@ class JwtFactoryTest {
 	@Test
 	public void verifyTokenType_whenRefreshTokenIsUsedAsAccess_returnFalse() {
 		//Given
-		String userId = TestFixture.USER_ID;
+		UUID userId = TestFixture.USER_ID;
 		Token refreshToken = jwtFactory.createRefreshToken(userId);
 
 		//When & Then
@@ -226,7 +178,8 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenMissingTypeField_returnEmpty() {
 		//Given
-		String tokenWithoutType = TestFixture.createTokenWithoutType(TestFixture.USER_ID, testSecretKey);
+		String tokenWithoutType = TestFixture.createTokenWithoutType(TestFixture.USER_ID,
+			testSecretKey);
 
 		//When
 		Optional<Token> parsedToken = jwtFactory.parseToken(tokenWithoutType);
@@ -238,12 +191,63 @@ class JwtFactoryTest {
 	@Test
 	public void parseToken_whenInvalidTypeValue_returnEmpty() {
 		//Given
-		String tokenWithInvalidType = TestFixture.createTokenWithInvalidType(TestFixture.USER_ID, testSecretKey);
+		String tokenWithInvalidType = TestFixture.createTokenWithInvalidType(TestFixture.USER_ID,
+			testSecretKey);
 
 		//When
 		Optional<Token> parsedToken = jwtFactory.parseToken(tokenWithInvalidType);
 
 		//Then
 		assertThat(parsedToken).isEmpty();
+	}
+
+	static class TestFixture {
+		static final UUID USER_ID = UUID.randomUUID();
+		static final String INVALID_TOKEN = "invalid.token.value";
+		static final String MALFORMED_TOKEN = "not.a.validJWTtoken";
+		static final String EMPTY_TOKEN = "";
+
+		static Date getPastDate() {
+			return new Date(System.currentTimeMillis() - 1000 * 60 * 60); // 1 hour ago
+		}
+
+		static Date getFutureDate(Date now) {
+			return new Date(now.getTime() + 1000 * 60 * 60); // 1 hour later
+		}
+
+		static String createExpiredToken(UUID userId, SecretKey secretKey) {
+			Date past = getPastDate();
+			return Jwts.builder()
+				.subject(userId.toString())
+				.issuedAt(past)
+				.expiration(past)  // Already expired
+				.claim("type", TokenType.ACCESS.name())
+				.signWith(secretKey)
+				.compact();
+		}
+
+		static String createTokenWithoutType(UUID userId, SecretKey secretKey) {
+			Date now = new Date();
+			Date future = getFutureDate(now);
+			return Jwts.builder()
+				.subject(userId.toString())
+				.issuedAt(now)
+				.expiration(future)
+				// No type claim
+				.signWith(secretKey)
+				.compact();
+		}
+
+		static String createTokenWithInvalidType(UUID userId, SecretKey secretKey) {
+			Date now = new Date();
+			Date future = getFutureDate(now);
+			return Jwts.builder()
+				.subject(userId.toString())
+				.issuedAt(now)
+				.expiration(future)
+				.claim("type", "INVALID_TYPE")  // Invalid type value
+				.signWith(secretKey)
+				.compact();
+		}
 	}
 }

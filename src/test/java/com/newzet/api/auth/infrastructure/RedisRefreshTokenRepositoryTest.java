@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -32,21 +33,22 @@ class RedisRefreshTokenRepositoryTest {
 	private JwtFactory jwtFactory;
 
 	private RedisRefreshTokenRepository tokenRepository;
-	private String userId;
+	private UUID userId;
 	private String deviceType;
 
 	@BeforeEach
 	void setUp() {
 		lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 		tokenRepository = new RedisRefreshTokenRepository(redisTemplate, jwtFactory);
-		userId = "user123";
+		userId = UUID.randomUUID();
 		deviceType = "web";
 	}
 
 	@Test
 	public void saveToken_storesTokenInRedis() {
 		//Given
-		Token token = Token.of(TokenType.REFRESH, "token-value", userId, new Date(), new Date());
+		Token token = Token.of(TokenType.REFRESH, "token-value", userId.toString(), new Date(),
+			new Date());
 		String expectedKey = "refreshToken:" + userId + ":" + deviceType;
 
 		//When
@@ -63,7 +65,8 @@ class RedisRefreshTokenRepositoryTest {
 	public void findToken_whenTokenExists_returnToken() {
 		//Given
 		String tokenValue = "token-value";
-		Token token = Token.of(TokenType.REFRESH, tokenValue, userId, new Date(), new Date());
+		Token token = Token.of(TokenType.REFRESH, tokenValue, userId.toString(), new Date(),
+			new Date());
 		String expectedKey = "refreshToken:" + userId + ":" + deviceType;
 
 		when(valueOperations.get(expectedKey)).thenReturn(tokenValue);
