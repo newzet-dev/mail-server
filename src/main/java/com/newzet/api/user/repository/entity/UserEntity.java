@@ -1,10 +1,13 @@
 package com.newzet.api.user.repository.entity;
 
+import java.util.UUID;
+
+import org.hibernate.annotations.UuidGenerator;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
@@ -21,8 +24,9 @@ import lombok.NoArgsConstructor;
 @Table(name = "USERS")
 public class UserEntity {
 	@Id
-	@GeneratedValue
-	private Long id;
+	@UuidGenerator
+	@Column(columnDefinition = "UUID", updatable = false, nullable = false)
+	private UUID id;
 
 	@Column(unique = true)
 	private String email;
@@ -37,7 +41,7 @@ public class UserEntity {
 			.build();
 	}
 
-	public static UserEntity create(Long id, String email, String status) {
+	public static UserEntity create(UUID id, String email, String status) {
 		return UserEntity.builder()
 			.id(id)
 			.email(email)

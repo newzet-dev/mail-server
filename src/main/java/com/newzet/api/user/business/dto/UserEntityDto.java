@@ -1,5 +1,7 @@
 package com.newzet.api.user.business.dto;
 
+import java.util.UUID;
+
 import com.newzet.api.user.business.service.UserFactory;
 import com.newzet.api.user.domain.User;
 
@@ -12,11 +14,11 @@ import lombok.RequiredArgsConstructor;
 @Builder(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserEntityDto {
-	private final Long id;
+	private final UUID id;
 	private final String email;
 	private final String status;
 
-	public static UserEntityDto create(Long id, String email, String status) {
+	public static UserEntityDto create(UUID id, String email, String status) {
 		return UserEntityDto.builder()
 			.id(id)
 			.email(email)
