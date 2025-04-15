@@ -2,7 +2,6 @@ package com.newzet.api.category.domain;
 
 import java.util.UUID;
 
-import com.newzet.api.category.business.dto.CategoryCacheDto;
 import com.newzet.api.category.business.dto.CategoryEntityDto;
 
 import lombok.AccessLevel;
@@ -19,10 +18,6 @@ public class Category {
 
 	public static Category create(UUID id, String name, String imageUrl, String emoji) {
 		return new Category(id, name, imageUrl, emoji);
-	}
-
-	public CategoryCacheDto toCacheDto() {
-		return CategoryCacheDto.create(id, name, imageUrl, emoji);
 	}
 
 	public CategoryEntityDto toEntityDto() {
