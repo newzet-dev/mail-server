@@ -1,4 +1,4 @@
-package com.newzet.api.auth.business.service;
+package com.newzet.api.auth.repository;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -16,9 +16,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
+import com.newzet.api.auth.business.service.JwtFactory;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
-import com.newzet.api.auth.infrastructure.RedisTokenRepositoryImpl;
 
 @ExtendWith(MockitoExtension.class)
 class RedisTokenRepositoryImplTest {

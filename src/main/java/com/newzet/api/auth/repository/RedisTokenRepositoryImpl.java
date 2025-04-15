@@ -1,4 +1,4 @@
-package com.newzet.api.auth.infrastructure;
+package com.newzet.api.auth.repository;
 
 import static com.newzet.api.auth.business.service.JwtFactory.*;
 
