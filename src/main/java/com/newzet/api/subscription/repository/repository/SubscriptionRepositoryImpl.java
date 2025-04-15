@@ -37,7 +37,7 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 	}
 
 	@Override
-	public Optional<SubscriptionEntityDto> findByUserIdAndNewsletterId(Long userId,
+	public Optional<SubscriptionEntityDto> findByUserIdAndNewsletterId(UUID userId,
 		Long newsletterId) {
 		return subscriptionJpaRepository.findByUserIdAndNewsletterId(userId, newsletterId)
 			.map(SubscriptionEntity::toEntityDto);

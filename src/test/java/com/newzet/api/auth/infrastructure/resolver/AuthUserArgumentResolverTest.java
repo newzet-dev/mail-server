@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Date;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -88,9 +89,10 @@ class AuthUserArgumentResolverTest {
 	@Test
 	public void resolveArgument_whenTokenExists_returnsAuthUser() {
 		// Given
-		String userId = "user123";
+		UUID userId = UUID.randomUUID();
 		Date expiryDate = new Date(System.currentTimeMillis() + 3600000);
-		Token token = Token.of(TokenType.ACCESS, "token-value", userId, new Date(), expiryDate);
+		Token token = Token.of(TokenType.ACCESS, "token-value", String.valueOf(userId), new Date(),
+			expiryDate);
 
 		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
 		when(httpRequest.getAttribute(AUTH_TOKEN_ATTRIBUTE)).thenReturn(token);
