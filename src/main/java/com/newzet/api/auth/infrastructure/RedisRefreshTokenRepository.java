@@ -3,6 +3,7 @@ package com.newzet.api.auth.infrastructure;
 import static com.newzet.api.auth.business.service.JwtFactory.*;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 import org.springframework.data.redis.core.RedisTemplate;
@@ -24,7 +25,7 @@ public class RedisRefreshTokenRepository implements TokenRepository {
 	private final JwtFactory jwtFactory;
 
 	@Override
-	public void saveToken(String userId, String deviceType, Token token) {
+	public void saveToken(UUID userId, String deviceType, Token token) {
 		String key = generateKey(userId, deviceType);
 		redisTemplate.opsForValue()
 			.set(key, token.getValue(), REFRESH_TOKEN_VALIDITY_MILLISECONDS, TimeUnit.MILLISECONDS);
@@ -32,38 +33,38 @@ public class RedisRefreshTokenRepository implements TokenRepository {
 	}
 
 	@Override
-	public Optional<Token> findToken(String userId, String deviceType) {
+	public Optional<Token> findToken(UUID userId, String deviceType) {
 		String key = generateKey(userId, deviceType);
 		String tokenValue = redisTemplate.opsForValue().get(key);
 		return jwtFactory.parseToken(tokenValue);
 	}
 
 	@Override
-	public void removeToken(String userId, String deviceType) {
+	public void removeToken(UUID userId, String deviceType) {
 		String key = generateKey(userId, deviceType);
 		redisTemplate.delete(key);
 	}
 
 	@Override
-	public Optional<Long> getLastRefreshTime(String userId, String deviceType) {
+	public Optional<Long> getLastRefreshTime(UUID userId, String deviceType) {
 		String timeKey = generateTimeKey(userId, deviceType);
 		String value = redisTemplate.opsForValue().get(timeKey);
 		return Optional.ofNullable(value).map(Long::valueOf);
 	}
 
 	@Override
-	public void updateLastRefreshTime(String userId, String deviceType) {
+	public void updateLastRefreshTime(UUID userId, String deviceType) {
 		String timeKey = generateTimeKey(userId, deviceType);
 		redisTemplate.opsForValue()
 			.set(timeKey, String.valueOf(System.currentTimeMillis()),
 				REFRESH_REQUEST_INTERVAL_LIMIT, TimeUnit.MILLISECONDS);
 	}
 
-	private String generateKey(String userId, String deviceType) {
+	private String generateKey(UUID userId, String deviceType) {
 		return TOKEN_KEY_PREFIX + userId + ":" + deviceType;
 	}
 
-	private String generateTimeKey(String userId, String deviceType) {
+	private String generateTimeKey(UUID userId, String deviceType) {
 		return REFRESH_TIME_KEY_PREFIX + userId + ":" + deviceType;
 	}
 }

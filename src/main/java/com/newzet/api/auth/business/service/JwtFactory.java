@@ -2,6 +2,7 @@ package com.newzet.api.auth.business.service;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import javax.crypto.SecretKey;
 
@@ -25,27 +26,27 @@ public class JwtFactory {
 		this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
 	}
 
-	public Token createAccessToken(String userId) {
+	public Token createAccessToken(UUID userId) {
 		return createToken(userId, TokenType.ACCESS, ACCESS_TOKEN_VALIDITY_MILLISECONDS);
 	}
 
-	public Token createRefreshToken(String userId) {
+	public Token createRefreshToken(UUID userId) {
 		return createToken(userId, TokenType.REFRESH, REFRESH_TOKEN_VALIDITY_MILLISECONDS);
 	}
 
-	private Token createToken(String userId, TokenType tokenType, long validityInMilliseconds) {
+	private Token createToken(UUID userId, TokenType tokenType, long validityInMilliseconds) {
 		Date now = new Date();
 		Date validity = new Date(now.getTime() + validityInMilliseconds);
 
 		String tokenValue = Jwts.builder()
-			.subject(userId)
+			.subject(String.valueOf(userId))
 			.issuedAt(now)
 			.expiration(validity)
 			.claim("type", tokenType.name())
 			.signWith(secretKey)
 			.compact();
 
-		return Token.of(tokenType, tokenValue, userId, now, validity);
+		return Token.of(tokenType, tokenValue, String.valueOf(userId), now, validity);
 	}
 
 	public Optional<Token> parseToken(String tokenValue) {

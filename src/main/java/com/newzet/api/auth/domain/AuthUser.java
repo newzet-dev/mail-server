@@ -1,5 +1,7 @@
 package com.newzet.api.auth.domain;
 
+import java.util.UUID;
+
 import lombok.Builder;
 import lombok.Getter;
 
@@ -7,9 +9,9 @@ import lombok.Getter;
 @Getter
 @Builder
 public class AuthUser {
-	private String id;
+	private UUID id;
 
 	public static AuthUser from(Token token) {
-		return new AuthUser(token.getSubject());
+		return new AuthUser(UUID.fromString(token.getSubject()));
 	}
 }

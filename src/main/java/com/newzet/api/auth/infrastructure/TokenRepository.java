@@ -1,17 +1,18 @@
 package com.newzet.api.auth.infrastructure;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import com.newzet.api.auth.domain.Token;
 
 public interface TokenRepository {
-	void saveToken(String userId, String deviceType, Token token);
+	void saveToken(UUID userId, String deviceType, Token token);
 
-	Optional<Token> findToken(String userId, String deviceType);
+	Optional<Token> findToken(UUID userId, String deviceType);
 
-	void removeToken(String userId, String deviceType);
+	void removeToken(UUID userId, String deviceType);
 
-	Optional<Long> getLastRefreshTime(String userId, String deviceType);
+	Optional<Long> getLastRefreshTime(UUID userId, String deviceType);
 
-	void updateLastRefreshTime(String userId, String deviceType);
+	void updateLastRefreshTime(UUID userId, String deviceType);
 }

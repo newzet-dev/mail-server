@@ -1,5 +1,7 @@
 package com.newzet.api.auth.business.validator;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Component;
 
 import com.newzet.api.auth.domain.Token;
@@ -18,7 +20,7 @@ public class JwtValidator {
 
 	private final TokenRepository tokenRepository;
 
-	public void validateRefreshToken(Token token, String userId, String deviceType) {
+	public void validateRefreshToken(Token token, UUID userId, String deviceType) {
 		if (!token.isRefreshToken()) {
 			throw new TokenBadRequestException("리프레시 토큰이 아닙니다.");
 		}
