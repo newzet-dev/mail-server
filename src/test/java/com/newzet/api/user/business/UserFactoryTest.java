@@ -2,6 +2,8 @@ package com.newzet.api.user.business;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 
 import com.newzet.api.user.business.service.UserFactory;
@@ -13,7 +15,7 @@ public class UserFactoryTest {
 	@Test
 	public void create_whenStatusIsActive_returnActiveUser() {
 		//Given
-		Long id = 1L;
+		UUID id = UUID.randomUUID();
 		String email = "test@example.com";
 		String status = "ACTIVE";
 
