@@ -18,7 +18,7 @@ public class CategoryService {
 
 	private final CategoryRepository categoryRepository;
 
-	List<Category> getCategories() {
+	public List<Category> getCategories() {
 		return categoryRepository.findAll().stream()
 			.map(CategoryEntityDto::toDomain)
 			.toList();
