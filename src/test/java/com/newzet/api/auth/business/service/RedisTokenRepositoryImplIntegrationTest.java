@@ -1,4 +1,4 @@
-package com.newzet.api.auth.infrastructure;
+package com.newzet.api.auth.business.service;
 
 import static jodd.util.ThreadUtil.*;
 import static org.assertj.core.api.Assertions.*;
@@ -14,8 +14,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 
-import com.newzet.api.auth.business.service.JwtFactory;
 import com.newzet.api.auth.domain.Token;
+import com.newzet.api.auth.infrastructure.RedisTokenRepositoryImpl;
 import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
@@ -24,10 +24,10 @@ import com.newzet.api.config.RedisTestContainerConfig;
 	JwtTestConfig.class})
 @SpringBootTest
 @ComponentScan(basePackages = {"com.newzet.api.auth", "com.newzet.api.common"})
-class RedisRefreshTokenRepositoryIntegrationTest {
+class RedisTokenRepositoryImplIntegrationTest {
 
 	@Autowired
-	private RedisRefreshTokenRepository tokenRepository;
+	private RedisTokenRepositoryImpl tokenRepository;
 
 	@Autowired
 	private JwtFactory jwtFactory;

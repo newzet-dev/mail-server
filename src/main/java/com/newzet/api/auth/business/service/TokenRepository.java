@@ -1,4 +1,4 @@
-package com.newzet.api.auth.infrastructure;
+package com.newzet.api.auth.business.service;
 
 import java.util.Optional;
 import java.util.UUID;

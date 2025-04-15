@@ -13,13 +13,13 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.newzet.api.auth.business.service.TokenRepository;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
 import com.newzet.api.auth.exception.TokenBadRequestException;
 import com.newzet.api.auth.exception.TokenConflictException;
 import com.newzet.api.auth.exception.TokenExpiredException;
 import com.newzet.api.auth.exception.TokenStolenException;
-import com.newzet.api.auth.infrastructure.TokenRepository;
 
 @ExtendWith(MockitoExtension.class)
 class JwtValidatorTest {

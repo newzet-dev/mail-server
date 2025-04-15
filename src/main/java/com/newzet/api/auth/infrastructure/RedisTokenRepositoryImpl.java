@@ -10,13 +10,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
 import com.newzet.api.auth.business.service.JwtFactory;
+import com.newzet.api.auth.business.service.TokenRepository;
 import com.newzet.api.auth.domain.Token;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class RedisRefreshTokenRepository implements TokenRepository {
+public class RedisTokenRepositoryImpl implements TokenRepository {
 	private static final String TOKEN_KEY_PREFIX = "refreshToken:";
 	private static final String REFRESH_TIME_KEY_PREFIX = "refresh-time:";
 	private static final long REFRESH_REQUEST_INTERVAL_LIMIT = 60 * 1000L;

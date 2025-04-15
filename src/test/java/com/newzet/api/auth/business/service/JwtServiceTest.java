@@ -20,7 +20,6 @@ import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
 import com.newzet.api.auth.exception.TokenBadRequestException;
-import com.newzet.api.auth.infrastructure.TokenRepository;
 
 @ExtendWith(MockitoExtension.class)
 class JwtServiceTest {

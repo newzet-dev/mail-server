@@ -1,4 +1,4 @@
-package com.newzet.api.auth.infrastructure;
+package com.newzet.api.auth.business.service;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -16,12 +16,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import com.newzet.api.auth.business.service.JwtFactory;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
+import com.newzet.api.auth.infrastructure.RedisTokenRepositoryImpl;
 
 @ExtendWith(MockitoExtension.class)
-class RedisRefreshTokenRepositoryTest {
+class RedisTokenRepositoryImplTest {
 
 	@Mock
 	private RedisTemplate<String, String> redisTemplate;
@@ -32,14 +32,14 @@ class RedisRefreshTokenRepositoryTest {
 	@Mock
 	private JwtFactory jwtFactory;
 
-	private RedisRefreshTokenRepository tokenRepository;
+	private RedisTokenRepositoryImpl tokenRepository;
 	private UUID userId;
 	private String deviceType;
 
 	@BeforeEach
 	void setUp() {
 		lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-		tokenRepository = new RedisRefreshTokenRepository(redisTemplate, jwtFactory);
+		tokenRepository = new RedisTokenRepositoryImpl(redisTemplate, jwtFactory);
 		userId = UUID.randomUUID();
 		deviceType = "web";
 	}

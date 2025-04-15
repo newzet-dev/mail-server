@@ -4,12 +4,12 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.newzet.api.auth.business.service.TokenRepository;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.exception.TokenBadRequestException;
 import com.newzet.api.auth.exception.TokenConflictException;
 import com.newzet.api.auth.exception.TokenExpiredException;
 import com.newzet.api.auth.exception.TokenStolenException;
-import com.newzet.api.auth.infrastructure.TokenRepository;
 
 import lombok.RequiredArgsConstructor;
 
