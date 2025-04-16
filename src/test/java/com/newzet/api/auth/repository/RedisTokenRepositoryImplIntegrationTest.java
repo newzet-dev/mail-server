@@ -1,9 +1,10 @@
-package com.newzet.api.auth.infrastructure;
+package com.newzet.api.auth.repository;
 
 import static jodd.util.ThreadUtil.*;
 import static org.assertj.core.api.Assertions.*;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -23,10 +24,10 @@ import com.newzet.api.config.RedisTestContainerConfig;
 	JwtTestConfig.class})
 @SpringBootTest
 @ComponentScan(basePackages = {"com.newzet.api.auth", "com.newzet.api.common"})
-class RedisRefreshTokenRepositoryIntegrationTest {
+class RedisTokenRepositoryImplIntegrationTest {
 
 	@Autowired
-	private RedisRefreshTokenRepository tokenRepository;
+	private RedisTokenRepositoryImpl tokenRepository;
 
 	@Autowired
 	private JwtFactory jwtFactory;
@@ -34,7 +35,7 @@ class RedisRefreshTokenRepositoryIntegrationTest {
 	@Autowired
 	private RedisTemplate<String, Object> redisTemplate;
 
-	private String userId;
+	private UUID userId;
 	private String deviceType;
 	private Token refreshToken;
 
@@ -42,7 +43,7 @@ class RedisRefreshTokenRepositoryIntegrationTest {
 	void setUp() {
 		redisTemplate.getConnectionFactory().getConnection().flushAll();
 
-		userId = "test-user-id";
+		userId = UUID.randomUUID();
 		deviceType = "mobile";
 
 		refreshToken = jwtFactory.createRefreshToken(userId);
@@ -58,14 +59,14 @@ class RedisRefreshTokenRepositoryIntegrationTest {
 
 		assertThat(foundToken).isPresent();
 		assertThat(foundToken.get().getValue()).isEqualTo(refreshToken.getValue());
-		assertThat(foundToken.get().getSubject()).isEqualTo(userId);
+		assertThat(foundToken.get().getSubject()).isEqualTo(userId.toString());
 		assertThat(foundToken.get().isRefreshToken()).isTrue();
 	}
 
 	@Test
 	public void findToken_whenTokenDoesNotExist_thenReturnsEmpty() {
 		// Given
-		String nonExistingUserId = "non-existing-user";
+		UUID nonExistingUserId = UUID.randomUUID();
 
 		// When
 		Optional<Token> result = tokenRepository.findToken(nonExistingUserId, deviceType);
@@ -106,7 +107,7 @@ class RedisRefreshTokenRepositoryIntegrationTest {
 	@Test
 	public void getLastRefreshTime_whenTimeNotSet_thenReturnsEmpty() {
 		// Given
-		String newUserId = "another-user";
+		UUID newUserId = UUID.randomUUID();
 
 		// When
 		Optional<Long> lastRefreshTime = tokenRepository.getLastRefreshTime(newUserId, deviceType);

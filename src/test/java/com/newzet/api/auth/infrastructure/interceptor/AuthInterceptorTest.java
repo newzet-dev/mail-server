@@ -5,6 +5,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -48,10 +49,12 @@ class AuthInterceptorTest {
 	private HandlerMethod handlerMethod;
 
 	private Token token;
+	private UUID userId;
 
 	@BeforeEach
 	void setUp() {
-		token = Token.of(TokenType.ACCESS, "token-value", "user123", new Date(),
+		userId = UUID.randomUUID();
+		token = Token.of(TokenType.ACCESS, "token-value", userId.toString(), new Date(),
 			new Date(System.currentTimeMillis() + 3600000));
 	}
 

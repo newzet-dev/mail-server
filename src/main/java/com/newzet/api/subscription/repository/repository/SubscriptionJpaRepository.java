@@ -8,5 +8,5 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import com.newzet.api.subscription.repository.entity.SubscriptionEntity;
 
 public interface SubscriptionJpaRepository extends JpaRepository<SubscriptionEntity, UUID> {
-	Optional<SubscriptionEntity> findByUserIdAndNewsletterId(Long userId, Long newsletterId);
+	Optional<SubscriptionEntity> findByUserIdAndNewsletterId(UUID userId, Long newsletterId);
 }

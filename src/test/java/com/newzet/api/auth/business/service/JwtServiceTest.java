@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.util.Date;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +20,6 @@ import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
 import com.newzet.api.auth.exception.TokenBadRequestException;
-import com.newzet.api.auth.infrastructure.TokenRepository;
 
 @ExtendWith(MockitoExtension.class)
 class JwtServiceTest {
@@ -34,13 +34,13 @@ class JwtServiceTest {
 	private JwtValidator JWTValidator;
 
 	private JwtService jwtService;
-	private String userId;
+	private UUID userId;
 	private String deviceType;
 
 	@BeforeEach
 	void setUp() {
 		jwtService = new JwtService(jwtFactory, tokenRepository, JWTValidator);
-		userId = "user123";
+		userId = UUID.randomUUID();
 		deviceType = "web";
 	}
 
@@ -51,17 +51,20 @@ class JwtServiceTest {
 		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		Date future = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
-		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId, new Date(),
+		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId.toString(),
+			new Date(),
 			future);
-		Token newAccessToken = Token.of(TokenType.ACCESS, "new-access-token", userId, new Date(),
+		Token newAccessToken = Token.of(TokenType.ACCESS, "new-access-token", userId.toString(),
+			new Date(),
 			future);
-		Token newRefreshToken = Token.of(TokenType.REFRESH, "new-refresh-token", userId, new Date(),
+		Token newRefreshToken = Token.of(TokenType.REFRESH, "new-refresh-token", userId.toString(),
+			new Date(),
 			future);
 
 		when(jwtFactory.parseToken(refreshTokenValue)).thenReturn(Optional.of(refreshToken));
 		when(jwtFactory.createAccessToken(userId)).thenReturn(newAccessToken);
 		when(jwtFactory.createRefreshToken(userId)).thenReturn(newRefreshToken);
-		doNothing().when(JWTValidator).validateRefreshToken(any(), anyString(), anyString());
+		doNothing().when(JWTValidator).validateRefreshToken(any(), eq(userId), eq(deviceType));
 
 		//When
 		JwtResponse response = jwtService.refreshAccessToken(request);
@@ -88,10 +91,6 @@ class JwtServiceTest {
 
 	@Test
 	public void logout_callsRemoveToken() {
-		//Given
-		String userId = "user123";
-		String deviceType = "web";
-
 		//When
 		jwtService.logout(userId, deviceType);
 
@@ -106,12 +105,13 @@ class JwtServiceTest {
 		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		Date future = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
-		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId, new Date(),
+		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId.toString(),
+			new Date(),
 			future);
 
 		when(jwtFactory.parseToken(refreshTokenValue)).thenReturn(Optional.of(refreshToken));
 		doThrow(new TokenBadRequestException("Invalid token"))
-			.when(JWTValidator).validateRefreshToken(any(), anyString(), anyString());
+			.when(JWTValidator).validateRefreshToken(any(), eq(userId), eq(deviceType));
 
 		//When, Then
 		assertThatThrownBy(() -> jwtService.refreshAccessToken(request))
@@ -125,11 +125,12 @@ class JwtServiceTest {
 		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		Date future = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
-		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId, new Date(),
+		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId.toString(),
+			new Date(),
 			future);
 
 		when(jwtFactory.parseToken(refreshTokenValue)).thenReturn(Optional.of(refreshToken));
-		doNothing().when(JWTValidator).validateRefreshToken(any(), anyString(), anyString());
+		doNothing().when(JWTValidator).validateRefreshToken(any(), eq(userId), eq(deviceType));
 		when(jwtFactory.createAccessToken(userId)).thenThrow(
 			new RuntimeException("Token creation failed"));
 
@@ -146,12 +147,14 @@ class JwtServiceTest {
 		JwtRefreshRequest request = new JwtRefreshRequest(refreshTokenValue, deviceType);
 
 		Date future = new Date(System.currentTimeMillis() + 1000 * 60 * 60);
-		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId, new Date(),
+		Token refreshToken = Token.of(TokenType.REFRESH, refreshTokenValue, userId.toString(),
+			new Date(),
 			future);
-		Token accessToken = Token.of(TokenType.ACCESS, "access-token", userId, new Date(), future);
+		Token accessToken = Token.of(TokenType.ACCESS, "access-token", userId.toString(),
+			new Date(), future);
 
 		when(jwtFactory.parseToken(refreshTokenValue)).thenReturn(Optional.of(refreshToken));
-		doNothing().when(JWTValidator).validateRefreshToken(any(), anyString(), anyString());
+		doNothing().when(JWTValidator).validateRefreshToken(any(), eq(userId), eq(deviceType));
 		when(jwtFactory.createAccessToken(userId)).thenReturn(accessToken);
 		when(jwtFactory.createRefreshToken(userId)).thenThrow(
 			new RuntimeException("Token creation failed"));

@@ -1,5 +1,7 @@
 package com.newzet.api.auth.business.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import com.newzet.api.auth.business.dto.JwtRefreshRequest;
@@ -7,7 +9,6 @@ import com.newzet.api.auth.business.dto.JwtResponse;
 import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.exception.TokenBadRequestException;
-import com.newzet.api.auth.infrastructure.TokenRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +26,7 @@ public class JwtService {
 		Token refreshToken = jwtFactory.parseToken(refreshTokenValue)
 			.orElseThrow(() -> new TokenBadRequestException("유효하지 않은 토큰입니다."));
 
-		String userId = refreshToken.getSubject();
+		UUID userId = UUID.fromString(refreshToken.getSubject());
 
 		JWTValidator.validateRefreshToken(refreshToken, userId, deviceType);
 
@@ -38,7 +39,7 @@ public class JwtService {
 		return new JwtResponse(newAccessToken.getValue(), newRefreshToken.getValue());
 	}
 
-	public void logout(String userId, String deviceType) {
+	public void logout(UUID userId, String deviceType) {
 		tokenRepository.removeToken(userId, deviceType);
 	}
 }
