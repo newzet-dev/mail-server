@@ -27,12 +27,7 @@ public class CategoryController {
 	@Operation(summary = "카테고리 리스트 조회",
 		description = "모든 카테고리들을 담은 리스트를 조회한다.")
 	public ResponseEntity<CategoryListResponse> getCategoryList() {
-		List<Category> categoryList = categoryService.getCategories();
-		CategoryListResponse categoryListResponse = CategoryListResponse.create(
-			categoryList.stream()
-				.map(category -> CategoryResponse.create(category.getId(),
-					category.getName(), category.getImageUrl(), category.getEmoji()))
-				.collect(Collectors.toList()));
+		CategoryListResponse categoryListResponse = categoryService.getCategories();
 		return ResponseEntity.ok(categoryListResponse);
 	}
 }
