@@ -11,6 +11,8 @@ import com.newzet.api.category.business.service.CategoryService;
 import com.newzet.api.category.controller.dto.CategoryListResponse;
 import com.newzet.api.category.controller.dto.CategoryListResponse.CategoryResponse;
 import com.newzet.api.category.domain.Category;
+import com.newzet.api.common.response.ResponseCode;
+import com.newzet.api.common.response.SuccessResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -26,8 +28,10 @@ public class CategoryController {
 	@GetMapping("/category")
 	@Operation(summary = "카테고리 리스트 조회",
 		description = "모든 카테고리들을 담은 리스트를 조회한다.")
-	public ResponseEntity<CategoryListResponse> getCategoryList() {
+	public ResponseEntity<SuccessResponse<CategoryListResponse>> getCategoryList() {
 		CategoryListResponse categoryListResponse = categoryService.getCategories();
-		return ResponseEntity.ok(categoryListResponse);
+		SuccessResponse<CategoryListResponse> response = SuccessResponse.create(
+			ResponseCode.SUCCESS, "카테고리 목록 조회 성공", categoryListResponse);
+		return ResponseEntity.ok(response);
 	}
 }
