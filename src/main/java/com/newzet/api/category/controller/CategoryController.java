@@ -1,16 +1,11 @@
 package com.newzet.api.category.controller;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.newzet.api.category.business.service.CategoryService;
 import com.newzet.api.category.controller.dto.CategoryListResponse;
-import com.newzet.api.category.controller.dto.CategoryListResponse.CategoryResponse;
-import com.newzet.api.category.domain.Category;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
 

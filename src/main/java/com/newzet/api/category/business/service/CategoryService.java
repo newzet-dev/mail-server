@@ -3,7 +3,6 @@ package com.newzet.api.category.business.service;
 import static java.util.stream.Collectors.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.category.business.CategoryRepository;
 import com.newzet.api.category.business.dto.CategoryEntityDto;
 import com.newzet.api.category.controller.dto.CategoryListResponse;
+import com.newzet.api.category.controller.dto.CategoryResponse;
 import com.newzet.api.category.domain.Category;
 
 import lombok.RequiredArgsConstructor;
@@ -27,7 +27,7 @@ public class CategoryService {
 			.map(CategoryEntityDto::toDomain)
 			.toList();
 		return CategoryListResponse.create(categoryList.stream()
-			.map(category -> CategoryListResponse.CategoryResponse.create(category.getId(),
+			.map(category -> CategoryResponse.create(category.getId(),
 				category.getName(), category.getImageUrl(), category.getEmoji()))
 			.collect(toList()));
 	}
