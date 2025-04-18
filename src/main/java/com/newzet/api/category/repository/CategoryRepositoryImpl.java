@@ -26,11 +26,4 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 			.map(CategoryEntity::toCategoryEntityDto)
 			.collect(Collectors.toList());
 	}
-
-	@Override
-	public CategoryEntityDto getById(UUID id) {
-		return categoryJpaRepository.findById(id)
-			.orElseThrow(() -> new NoCategoryException("해당 id로 카테고리를 조회할 수 없습니다."))
-			.toCategoryEntityDto();
-	}
 }

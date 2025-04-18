@@ -9,6 +9,4 @@ import com.newzet.api.category.business.dto.CategoryEntityDto;
 public interface CategoryRepository {
 
 	List<CategoryEntityDto> findAll();
-
-	CategoryEntityDto getById(UUID id);
 }
