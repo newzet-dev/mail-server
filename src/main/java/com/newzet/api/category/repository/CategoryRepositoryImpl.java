@@ -24,6 +24,6 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 		List<CategoryEntity> categoryEntities = categoryJpaRepository.findAll();
 		return categoryEntities.stream()
 			.map(CategoryEntity::toCategoryEntityDto)
-			.collect(Collectors.toList());
+			.toList();
 	}
 }
