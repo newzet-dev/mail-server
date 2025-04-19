@@ -22,8 +22,7 @@ public class UserRepositoryImpl implements UserRepository {
 	public UserEntityDto save(String email, String nickName, String status) {
 		UserEntity user = UserEntity.create(email, nickName, status);
 		UserEntity savedUser = userJpaRepository.save(user);
-		return UserEntityDto.create(savedUser.getId(), savedUser.getEmail(),
-			savedUser.getNickName(), savedUser.getStatus().name());
+		return savedUser.toEntityDto();
 	}
 
 	@Override
@@ -46,19 +45,13 @@ public class UserRepositoryImpl implements UserRepository {
 		UserEntity user = userJpaRepository.findByEmail(email)
 			.orElseThrow(() -> new NoUserException("사용자를 찾을 수 없습니다."));
 
-		return UserEntityDto.create(user.getId(), user.getEmail(), user.getNickName(),
-			user.getStatus().name());
+		return user.toEntityDto();
 	}
 
 	@Override
 	public Optional<UserEntityDto> findOptionalByEmail(String email) {
 		return userJpaRepository.findByEmail(email)
-			.map(userEntity -> UserEntityDto.create(
-				userEntity.getId(),
-				userEntity.getEmail(),
-				userEntity.getNickName(),
-				userEntity.getStatus().name()
-			));
+			.map(UserEntity::toEntityDto);
 	}
 
 	@Override
@@ -66,7 +59,6 @@ public class UserRepositoryImpl implements UserRepository {
 		UserEntity user = userJpaRepository.findById(userId)
 			.orElseThrow(() -> new NoUserException("사용자를 찾을 수 없습니다."));
 
-		return UserEntityDto.create(user.getId(), user.getEmail(), user.getNickName(),
-			user.getStatus().name());
+		return user.toEntityDto();
 	}
 }

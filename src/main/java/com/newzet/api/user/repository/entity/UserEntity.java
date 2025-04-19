@@ -60,4 +60,8 @@ public class UserEntity {
 		this.nickName = userEntityDto.getNickname();
 		this.status = UserEntityStatus.valueOf(userEntityDto.getStatus());
 	}
+
+	public UserEntityDto toEntityDto() {
+		return UserEntityDto.create(id, email, nickName, status.name());
+	}
 }
