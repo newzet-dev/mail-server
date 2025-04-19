@@ -10,6 +10,7 @@ import com.newzet.api.user.business.dto.SignupRequest;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.user.business.dto.UserEntityDto;
 import com.newzet.api.user.domain.User;
+import com.newzet.api.user.domain.UserStatus;
 import com.newzet.api.user.exception.UserEmailDuplicateException;
 
 import lombok.RequiredArgsConstructor;
@@ -33,11 +34,12 @@ public class UserService {
 			return UniqueMailResponse.ofUnique();
 		}
 
-		UserEntityDto user = optionalUser.get();
+		UserEntityDto userEntityDto = optionalUser.get();
+		User userDomain = userEntityDto.toDomain();
 
-		if (user.isWithdrawn()) {
+		if (userDomain.isWithdrawn()) {
 			return UniqueMailResponse.ofWithDrawn();
-		} else if (user.isInactive()) {
+		} else if (userDomain.isInactive()) {
 			return UniqueMailResponse.ofInActive();
 		} else {
 			return UniqueMailResponse.ofDuplicate();
@@ -51,9 +53,9 @@ public class UserService {
 			throw new UserEmailDuplicateException(uniqueCheck.message());
 		}
 
-		UserEntityDto newUser = userRepository.save(request.email(), request.nickname(),
-			"ACTIVE");
-		User user = newUser.toDomain();
+		UserEntityDto userEntityDto = userRepository.save(request.email(), request.nickname(),
+			UserStatus.ACTIVE.name());
+		User userDomain = userEntityDto.toDomain();
 
 		//TODO: Oauth 비즈니스 로직 도입
 

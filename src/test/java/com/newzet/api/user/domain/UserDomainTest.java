@@ -6,7 +6,7 @@ import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 
-class ActiveUserTest {
+class UserDomainTest {
 
 	@Test
 	public void create_returnActiveUser() {
@@ -16,10 +16,10 @@ class ActiveUserTest {
 		String nickName = "testName";
 
 		//When
-		ActiveUser activeUser = ActiveUser.create(id, email, nickName);
+		UserDomain userDomain = UserDomain.create(id, email, nickName, "ACTIVE");
 
 		//Then
-		assertEquals(id, activeUser.getId());
-		assertEquals(email, activeUser.getEmail());
+		assertEquals(id, userDomain.getId());
+		assertEquals(email, userDomain.getEmail());
 	}
 }

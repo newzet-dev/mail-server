@@ -60,12 +60,4 @@ public class UserEntity {
 		this.nickName = userEntityDto.getNickname();
 		this.status = UserEntityStatus.valueOf(userEntityDto.getStatus());
 	}
-
-	public boolean isWithdrawn() {
-		return this.status.equals(UserEntityStatus.WITHDRAWN);
-	}
-
-	public boolean isInactive() {
-		return this.status.equals(UserEntityStatus.INACTIVE);
-	}
 }

@@ -12,4 +12,8 @@ public interface User {
 	public String getEmail();
 
 	public String getNickname();
+
+	public boolean isWithdrawn();
+
+	public boolean isInactive();
 }

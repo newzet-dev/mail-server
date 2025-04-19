@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import com.newzet.api.user.business.service.UserFactory;
 import com.newzet.api.user.domain.User;
-import com.newzet.api.user.domain.UserStatus;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -40,13 +39,4 @@ public class UserEntityDto {
 	public User toDomain() {
 		return UserFactory.create(id, email, nickname, status);
 	}
-
-	public boolean isWithdrawn() {
-		return this.status.equals(UserStatus.WITHDRAWN.name());
-	}
-
-	public boolean isInactive() {
-		return this.status.equals(UserStatus.INACTIVE.name());
-	}
-
 }

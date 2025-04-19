@@ -7,7 +7,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import com.newzet.api.user.business.service.UserFactory;
-import com.newzet.api.user.domain.ActiveUser;
+import com.newzet.api.user.domain.UserDomain;
 import com.newzet.api.user.domain.User;
 
 public class UserFactoryTest {
@@ -24,7 +24,7 @@ public class UserFactoryTest {
 		User user = UserFactory.create(id, email, nickname, status);
 
 		//Then
-		assertInstanceOf(ActiveUser.class, user);
+		assertInstanceOf(UserDomain.class, user);
 		assertEquals(id, user.getId());
 		assertEquals(email, user.getEmail());
 	}
