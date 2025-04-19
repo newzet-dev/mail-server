@@ -15,7 +15,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.user.business.dto.SignupRequest;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
-import com.newzet.api.user.business.dto.UpdateNicknameRequest;
 import com.newzet.api.user.business.dto.UserEntityDto;
 import com.newzet.api.user.domain.User;
 import com.newzet.api.user.exception.UserEmailDuplicateException;
@@ -147,28 +146,5 @@ class UserServiceTest {
 			userService.signUp(request)
 		);
 		assertTrue(exception.getMessage().contains("사용 중인 이메일입니다."));
-	}
-
-	@Test
-	void updateNickname_WhenUserExists_ThenUpdateNickname() {
-		//Given
-		UUID userId = UUID.randomUUID();
-		String email = "test@example.com";
-		String oldNickname = "oldName";
-		String newNickname = "newName";
-
-		UserEntityDto existingUser = UserEntityDto.create(
-			userId, email, oldNickname, "ACTIVE"
-		);
-
-		UpdateNicknameRequest request = new UpdateNicknameRequest(newNickname);
-		when(userRepository.getById(userId)).thenReturn(existingUser);
-
-		//When
-		userService.updateNickname(userId, request);
-		UserEntityDto.create(userId, email, newNickname, "ACTIVE");
-
-		//Then
-		verify(userRepository).update(any(UserEntityDto.class));
 	}
 }

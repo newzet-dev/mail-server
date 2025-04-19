@@ -4,23 +4,17 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.newzet.api.auth.business.dto.JwtResponse;
-import com.newzet.api.auth.domain.AuthUser;
-import com.newzet.api.auth.infrastructure.annotation.Login;
-import com.newzet.api.auth.infrastructure.annotation.RequireAuth;
 import com.newzet.api.user.business.dto.SignupRequest;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
-import com.newzet.api.user.business.dto.UpdateNicknameRequest;
 import com.newzet.api.user.business.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -48,16 +42,6 @@ public class UserController {
 		@RequestParam("v") String email) {
 		UniqueMailResponse result = userService.checkEmailUniqueness(email);
 		return ResponseEntity.ok(result);
-	}
-
-	@PutMapping("/my/nickname")
-	@RequireAuth
-	@Operation(summary = "닉네임 변경", description = "닉네임을 변경한다.")
-	public ResponseEntity<Void> updateNickname(
-		@Parameter(hidden = true) @Login AuthUser authUser,
-		@Valid @RequestBody UpdateNicknameRequest request) {
-		userService.updateNickname(authUser.getId(), request);
-		return ResponseEntity.ok().build();
 	}
 
 	//TODO: 로그아웃
