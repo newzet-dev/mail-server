@@ -2,6 +2,8 @@ package com.newzet.api.user.domain;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 
 class ActiveUserTest {
@@ -9,7 +11,7 @@ class ActiveUserTest {
 	@Test
 	public void create_returnActiveUser() {
 		//Given
-		Long id = 1L;
+		UUID id = UUID.randomUUID();
 		String email = "test@example.com";
 
 		//When

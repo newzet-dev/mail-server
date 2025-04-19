@@ -13,6 +13,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.common.cache.CacheUtil;
+import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
@@ -108,10 +109,10 @@ class NewsletterServiceTest {
 		//Given
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.empty());
-		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenThrow(new LocalLockAcquisitionException());
+		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenThrow(new LocalLockAcquisitionException("Local Lock 획득에 실패하였습니다."));
 
 		// When
-		assertThrows(LocalLockAcquisitionException.class,
+		assertThrows(InternalErrorException.class,
 			() -> newsletterService.findOrCreateNewsletter(name, domain, mailingList));
 
 		// Then

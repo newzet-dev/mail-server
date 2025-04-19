@@ -31,27 +31,23 @@ import com.newzet.api.user.repository.entity.UserEntity;
 import com.newzet.api.user.repository.repository.UserJpaRepository;
 
 @DataJpaTest
-@ComponentScan(basePackages = "com.newzet.api")
+@ComponentScan(basePackages = "com.newzet.api.subscription")
 @Import(ObjectMapper.class)
 @ExtendWith({PostgresTestContainerConfig.class, RedisTestContainerConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Transactional
 public class SubscriptionServiceTest {
 
-	@Autowired
-	private UserJpaRepository userRepository;
-
-	@Autowired
-	private NewsletterJpaRepository newsletterRepository;
-
-	@Autowired
-	private SubscriptionService subscriptionService;
-
-	@MockitoSpyBean
-	private SubscriptionRepository subscriptionRepository;
-
 	private static User user;
 	private static Newsletter newsletter;
+	@Autowired
+	private UserJpaRepository userRepository;
+	@Autowired
+	private NewsletterJpaRepository newsletterRepository;
+	@Autowired
+	private SubscriptionService subscriptionService;
+	@MockitoSpyBean
+	private SubscriptionRepository subscriptionRepository;
 
 	@BeforeEach
 	public void setUp() {

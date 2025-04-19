@@ -1,7 +1,12 @@
 package com.newzet.api.user.repository.exception;
 
-public class NoUserException extends RuntimeException {
-	public NoUserException(String route) {
-		super(String.format("[%s]-일치하는 사용자가 없습니다.", route));
+import com.newzet.api.common.exception.NewzetException;
+import com.newzet.api.common.response.ResponseCode;
+
+public class NoUserException extends NewzetException {
+	private static final ResponseCode responseCode = ResponseCode.NOT_FOUND;
+
+	public NoUserException(String message) {
+		super(message, responseCode);
 	}
 }

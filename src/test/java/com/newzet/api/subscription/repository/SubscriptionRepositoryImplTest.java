@@ -29,17 +29,14 @@ import com.newzet.api.user.repository.repository.UserJpaRepository;
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class SubscriptionRepositoryImplTest {
 
-	@Autowired
-	private SubscriptionRepositoryImpl subscriptionRepository;
-
-	@Autowired
-	private UserJpaRepository userRepository;
-
-	@Autowired
-	private NewsletterJpaRepository newsletterRepository;
-
 	private static UserEntityDto userDto;
 	private static NewsletterEntityDto newsletterDto;
+	@Autowired
+	private SubscriptionRepositoryImpl subscriptionRepository;
+	@Autowired
+	private UserJpaRepository userRepository;
+	@Autowired
+	private NewsletterJpaRepository newsletterRepository;
 
 	@BeforeEach
 	public void setUp() {

@@ -58,7 +58,7 @@ class HybridLockFactoryTest {
 		// Given
 		String key = "testLock";
 		when(redisLockFactory.tryLock(eq(key), anyLong(), anyLong()))
-			.thenThrow(new RedisLockAcquisitionException());
+			.thenThrow(new RedisLockAcquisitionException("Redis Lock 획득에 실패하였습니다."));
 		when(localLockFactory.tryLock(eq(key), anyLong(), anyLong()))
 			.thenReturn(localLock);
 

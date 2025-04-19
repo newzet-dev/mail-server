@@ -1,5 +1,7 @@
 package com.newzet.api.user.business.service;
 
+import java.util.UUID;
+
 import org.springframework.stereotype.Service;
 
 import com.newzet.api.user.domain.ActiveUser;
@@ -12,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserFactory {
 
-	public static User create(Long id, String email, String status) {
+	public static User create(UUID id, String email, String status) {
 		return ActiveUser.create(id, email);
 	}
 }
