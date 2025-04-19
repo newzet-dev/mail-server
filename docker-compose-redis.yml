@@ -3,12 +3,35 @@ services:
   redis:
     image: redis:7.0.8-alpine
     container_name: ${SPRING_REDIS_HOST}
-    command: redis-server --requirepass ${SPRING_REDIS_PASSWORD} --bind 0.0.0.0
+    command: redis-server \
+      --requirepass ${SPRING_REDIS_PASSWORD} \
+      --bind 0.0.0.0 \
+      --maxmemory 512mb \
+      --maxmemory-policy volatile-lru
+      --appendonly yes \
+      --appendfsync everysec \
+      --aof-use-rdb-preamble yes \
+      --auto-aof-rewrite-percentage 100 \
+      --auto-aof-rewrite-min-size 64mb
     ports:
       - "6379:6379"
+    restart: unless-stopped
     networks:
       - newzet-network
+    deploy:
+      resources:
+        limits:
+          memory: 600m
+    healthcheck:
+      test: ["CMD", "redis-cli, "-a", "${SPRING_REDIS_PASSWORD}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+    volumes:
+      - redis-data:/var/lib/redis
 
+volues:
+  redis-data:
 networks:
   newzet-network:
     driver: bridge

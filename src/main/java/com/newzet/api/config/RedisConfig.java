@@ -36,6 +36,7 @@ public class RedisConfig {
 		LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
 			.commandTimeout(Duration.ofMillis(500))
 			.clientOptions(ClientOptions.builder()
+				.autoReconnect(true)
 				.socketOptions(SocketOptions.builder().connectTimeout(Duration.ofMillis(1000)).build())
 				.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
 				.build())
