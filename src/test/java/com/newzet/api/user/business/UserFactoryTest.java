@@ -18,9 +18,10 @@ public class UserFactoryTest {
 		UUID id = UUID.randomUUID();
 		String email = "test@example.com";
 		String status = "ACTIVE";
+		String nickname = "testName";
 
 		//When
-		User user = UserFactory.create(id, email, status);
+		User user = UserFactory.create(id, email, nickname, status);
 
 		//Then
 		assertInstanceOf(ActiveUser.class, user);
