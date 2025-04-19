@@ -7,9 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import com.newzet.api.user.business.dto.UserEntityDto;
 import com.newzet.api.user.business.service.UserRepository;
-import com.newzet.api.user.exception.InActiveUserException;
 import com.newzet.api.user.exception.NoUserException;
-import com.newzet.api.user.exception.WithdrawnUserException;
 import com.newzet.api.user.repository.entity.UserEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -48,14 +46,6 @@ public class UserRepositoryImpl implements UserRepository {
 		UserEntity user = userJpaRepository.findByEmail(email)
 			.orElseThrow(() -> new NoUserException("사용자를 찾을 수 없습니다."));
 
-		if (user.isInactive()) {
-			throw new InActiveUserException("휴면 사용자입니다.");
-		}
-
-		if (user.isWithdrawn()) {
-			throw new WithdrawnUserException("탈퇴한 사용자입니다.");
-		}
-
 		return UserEntityDto.create(user.getId(), user.getEmail(), user.getNickName(),
 			user.getStatus().name());
 	}
@@ -75,14 +65,6 @@ public class UserRepositoryImpl implements UserRepository {
 	public UserEntityDto getById(UUID userId) {
 		UserEntity user = userJpaRepository.findById(userId)
 			.orElseThrow(() -> new NoUserException("사용자를 찾을 수 없습니다."));
-
-		if (user.isInactive()) {
-			throw new InActiveUserException("휴면 사용자입니다.");
-		}
-
-		if (user.isWithdrawn()) {
-			throw new WithdrawnUserException("탈퇴한 사용자입니다.");
-		}
 
 		return UserEntityDto.create(user.getId(), user.getEmail(), user.getNickName(),
 			user.getStatus().name());

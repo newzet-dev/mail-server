@@ -14,9 +14,7 @@ import org.springframework.context.annotation.Import;
 
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.user.business.dto.UserEntityDto;
-import com.newzet.api.user.exception.InActiveUserException;
 import com.newzet.api.user.exception.NoUserException;
-import com.newzet.api.user.exception.WithdrawnUserException;
 import com.newzet.api.user.repository.repository.UserRepositoryImpl;
 
 @DataJpaTest
@@ -100,32 +98,6 @@ class UserRepositoryImplTest {
 	}
 
 	@Test
-	public void getByEmail_whenUserIsInactive_throwInActiveUserException() {
-		//Given
-		String email = "inactive@example.com";
-		String status = "INACTIVE";
-		String nickName = "testName";
-
-		userRepository.save(email, nickName, status);
-
-		//When, Then
-		assertThrows(InActiveUserException.class, () -> userRepository.getByEmail(email));
-	}
-
-	@Test
-	public void getByEmail_whenUserIsWithdrawn_throwWithdrawnUserException() {
-		//Given
-		String email = "withdrawn@example.com";
-		String status = "WITHDRAWN";
-		String nickName = "testName";
-
-		userRepository.save(email, nickName, status);
-
-		//When, Then
-		assertThrows(WithdrawnUserException.class, () -> userRepository.getByEmail(email));
-	}
-
-	@Test
 	public void getById_whenUserExist_returnUserEntityDto() {
 		//Given
 		String email = "exist@example.com";
@@ -150,34 +122,6 @@ class UserRepositoryImplTest {
 
 		//When, Then
 		assertThrows(NoUserException.class, () -> userRepository.getById(randomId));
-	}
-
-	@Test
-	public void getById_whenUserIsInactive_throwInActiveUserException() {
-		//Given
-		String email = "inactive@example.com";
-		String status = "INACTIVE";
-		String nickName = "testName";
-
-		UserEntityDto savedUser = userRepository.save(email, nickName, status);
-		UUID userId = savedUser.getId();
-
-		//When, Then
-		assertThrows(InActiveUserException.class, () -> userRepository.getById(userId));
-	}
-
-	@Test
-	public void getById_whenUserIsWithdrawn_throwWithdrawnUserException() {
-		//Given
-		String email = "withdrawn@example.com";
-		String status = "WITHDRAWN";
-		String nickName = "testName";
-
-		UserEntityDto savedUser = userRepository.save(email, nickName, status);
-		UUID userId = savedUser.getId();
-
-		//When, Then
-		assertThrows(WithdrawnUserException.class, () -> userRepository.getById(userId));
 	}
 
 	@Test
