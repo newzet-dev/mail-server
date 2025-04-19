@@ -35,11 +35,11 @@ public class UserService {
 		}
 
 		UserEntityDto userEntityDto = optionalUser.get();
-		User userDomain = userEntityDto.toDomain();
+		User user = userEntityDto.toDomain();
 
-		if (userDomain.isWithdrawn()) {
+		if (user.isWithdrawn()) {
 			return UniqueMailResponse.ofWithDrawn();
-		} else if (userDomain.isInactive()) {
+		} else if (user.isInactive()) {
 			return UniqueMailResponse.ofInActive();
 		} else {
 			return UniqueMailResponse.ofDuplicate();
@@ -55,7 +55,7 @@ public class UserService {
 
 		UserEntityDto userEntityDto = userRepository.save(request.email(), request.nickname(),
 			UserStatus.ACTIVE.name());
-		User userDomain = userEntityDto.toDomain();
+		User user = userEntityDto.toDomain();
 
 		//TODO: Oauth 비즈니스 로직 도입
 
