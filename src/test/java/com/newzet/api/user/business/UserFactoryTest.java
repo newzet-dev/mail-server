@@ -25,5 +25,6 @@ public class UserFactoryTest {
 		//Then
 		assertInstanceOf(ActiveUser.class, user);
 		assertEquals(id, user.getId());
+		assertEquals(email, user.getEmail());
 	}
 }

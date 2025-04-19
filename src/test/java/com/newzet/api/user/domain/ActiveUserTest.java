@@ -13,9 +13,10 @@ class ActiveUserTest {
 		//Given
 		UUID id = UUID.randomUUID();
 		String email = "test@example.com";
+		String nickName = "testName";
 
 		//When
-		ActiveUser activeUser = ActiveUser.create(id, email);
+		ActiveUser activeUser = ActiveUser.create(id, email, nickName);
 
 		//Then
 		assertEquals(id, activeUser.getId());
