@@ -26,7 +26,7 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 	@Override
 	public SubscriptionEntityDto create(UserEntityDto userDto, NewsletterEntityDto newsletterDto) {
 		UserEntity user = UserEntity.create(userDto.getId(), userDto.getEmail(),
-			userDto.getStatus());
+			userDto.getNickname(), userDto.getStatus());
 		NewsletterEntity newsletter = NewsletterEntity.create(newsletterDto.getId(),
 			newsletterDto.getName(), newsletterDto.getDomain(), newsletterDto.getMailingList(),
 			newsletterDto.getStatus());

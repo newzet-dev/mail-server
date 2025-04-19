@@ -14,7 +14,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserFactory {
 
+	public static User create(UUID id, String email, String nickname, String status) {
+		return ActiveUser.create(id, email, nickname);
+	}
+
 	public static User create(UUID id, String email, String status) {
-		return ActiveUser.create(id, email);
+		return create(id, email, "", status);
 	}
 }

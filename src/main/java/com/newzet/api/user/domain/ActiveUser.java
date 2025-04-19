@@ -14,13 +14,14 @@ public class ActiveUser implements User {
 
 	private final UUID id;
 	private final String email;
+	private final String nickname;
 
-	public static ActiveUser create(UUID id, String email) {
-		return new ActiveUser(id, email);
+	public static ActiveUser create(UUID id, String email, String nickname) {
+		return new ActiveUser(id, email, nickname);
 	}
 
 	@Override
 	public UserEntityDto toEntityDto() {
-		return UserEntityDto.create(id, email, "ACTIVE");
+		return UserEntityDto.create(id, email, nickname, "ACTIVE");
 	}
 }
