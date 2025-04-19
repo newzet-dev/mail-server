@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.newzet.api.user.domain.ActiveUser;
 import com.newzet.api.user.domain.User;
+import com.newzet.api.user.domain.UserDomain;
 
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
@@ -14,7 +14,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class UserFactory {
 
-	public static User create(UUID id, String email, String status) {
-		return ActiveUser.create(id, email);
+	public static User create(UUID id, String email, String nickname, String status) {
+		return UserDomain.create(id, email, nickname, status);
 	}
 }

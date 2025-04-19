@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.newzet.api.user.business.dto.UserEntityDto;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -31,21 +33,31 @@ public class UserEntity {
 	@Column(unique = true)
 	private String email;
 
+	private String nickName;
+
 	@Enumerated(EnumType.STRING)
 	private UserEntityStatus status;
 
-	public static UserEntity create(String email, String status) {
+	public static UserEntity create(String email, String nickName, String status) {
 		return UserEntity.builder()
 			.email(email)
+			.nickName(nickName)
 			.status(UserEntityStatus.valueOf(status))
 			.build();
 	}
 
-	public static UserEntity create(UUID id, String email, String status) {
+	public static UserEntity create(UUID id, String email, String nickName, String status) {
 		return UserEntity.builder()
 			.id(id)
 			.email(email)
+			.nickName(nickName)
 			.status(UserEntityStatus.valueOf(status))
 			.build();
+	}
+
+	public void update(UserEntityDto userEntityDto) {
+		this.email = userEntityDto.getEmail();
+		this.nickName = userEntityDto.getNickname();
+		this.status = UserEntityStatus.valueOf(userEntityDto.getStatus());
 	}
 }

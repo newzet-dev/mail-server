@@ -40,7 +40,7 @@ public class SubscriptionRepositoryImplTest {
 
 	@BeforeEach
 	public void setUp() {
-		UserEntity user = userRepository.save(UserEntity.create("test@example.com", "ACTIVE"));
+		UserEntity user = userRepository.save(UserEntity.create("test@example.com", "test","ACTIVE"));
 		userDto = UserEntityDto.create(user.getId(), user.getEmail(), user.getStatus().name());
 
 		NewsletterEntity newsletter = newsletterRepository.save(NewsletterEntity.create("test",
