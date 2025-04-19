@@ -16,7 +16,7 @@ spring:
     hibernate:
       ddl-auto: ${SPRING_JPA_DDL}
       jdbc:
-        time-zon: Asia/Seoul
+        time-zone: Asia/Seoul
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
     show-sql: ${SPRING_JPA_SHOW_SQL}
@@ -26,6 +26,9 @@ spring:
       host: ${SPRING_REDIS_HOST}
       port: ${SPRING_REDIS_PORT}
       password: ${SPRING_REDIS_PASSWORD}
+
+jwt:
+  secret: ${JWT_SECRET}
 
 management:
   endpoints:

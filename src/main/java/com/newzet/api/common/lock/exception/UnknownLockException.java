@@ -1,7 +1,9 @@
 package com.newzet.api.common.lock.exception;
 
-public class UnknownLockException extends RuntimeException{
-	public UnknownLockException(Class<?> lockType) {
-		super("Unknown lock type: " + lockType.getName());
+import com.newzet.api.common.exception.InternalErrorException;
+
+public class UnknownLockException extends InternalErrorException {
+	public UnknownLockException(String message) {
+		super(message);
 	}
 }
