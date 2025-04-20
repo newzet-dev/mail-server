@@ -2,6 +2,7 @@ package com.newzet.api.newsletter.business.dto;
 
 import java.util.UUID;
 
+import com.newzet.api.newsletter.domain.Color;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
 
 import lombok.AccessLevel;
@@ -25,11 +26,11 @@ public class NewsletterCacheDto {
 	private final String status;
 	private final String dayOfWeek;
 	private final String subscriptionUrl;
-	private final String color;
+	private final Color color;
 
 	public static NewsletterCacheDto create(UUID id, String name, String categoryName, String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
-		String detail, String status, String dayOfWeek, String subscriptionUrl, String color) {
+		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {
 		return NewsletterCacheDto.builder()
 			.id(id)
 			.name(name)

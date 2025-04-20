@@ -2,6 +2,7 @@ package com.newzet.api.newsletter.business.dto;
 
 import java.util.UUID;
 
+import com.newzet.api.newsletter.domain.Color;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
 
@@ -26,12 +27,12 @@ public class NewsletterEntityDto {
 	private final String status;
 	private final String dayOfWeek;
 	private final String subscriptionUrl;
-	private final String color;
+	private final Color color;
 
 	public static NewsletterEntityDto create(UUID id, String name, String categoryName,
 		String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
-		String detail, String status, String dayOfWeek, String subscriptionUrl, String color) {
+		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {
 		return NewsletterEntityDto.builder()
 			.id(id)
 			.name(name)
@@ -52,6 +53,6 @@ public class NewsletterEntityDto {
 	public Newsletter toDomain() {
 		return Newsletter.create(id, name, categoryName, domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
-			subscriptionUrl, color);
+			subscriptionUrl, Color.valueOf(color));
 	}
 }
