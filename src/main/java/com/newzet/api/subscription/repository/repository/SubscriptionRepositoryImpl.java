@@ -6,6 +6,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
+import com.newzet.api.category.repository.CategoryEntity;
+import com.newzet.api.category.repository.CategoryJpaRepository;
+import com.newzet.api.category.repository.exception.NoCategoryException;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
@@ -25,22 +28,31 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
 	@Override
 	public SubscriptionEntityDto create(UserEntityDto userDto, NewsletterEntityDto newsletterDto) {
-		UserEntity user = UserEntity.create(userDto.getId(), userDto.getEmail(),
-			userDto.getNickname(), userDto.getStatus());
-		NewsletterEntity newsletter = NewsletterEntity.create(newsletterDto.getId(),
-			newsletterDto.getName(), newsletterDto.getDomain(), newsletterDto.getMailingList(),
-			newsletterDto.getStatus());
-
-		SubscriptionEntity subscriptionEntity = SubscriptionEntity.create(user, newsletter,
-			LocalDateTime.now(), null);
-		return subscriptionJpaRepository.save(subscriptionEntity).toEntityDto();
+		// UserEntity user = UserEntity.create(userDto.getId(), userDto.getEmail(),
+		// 	userDto.getNickname(), userDto.getStatus());
+		// CategoryEntity categoryEntity = categoryJpaRepository.findByName(
+		// 		newsletterDto.getCategoryName())
+		// 	.orElseThrow(() -> new NoCategoryException("해당 이름의 카테고리를 찾을 수 없습니다."));
+		// NewsletterEntity newsletter = NewsletterEntity.create(newsletterDto.getId(),
+		// 	newsletterDto.getName(), categoryEntity, newsletterDto.getDomain(),
+		// 	newsletterDto.getMailingList(),
+		// 	newsletterDto.getPriority(), newsletterDto.getImageUrl(),
+		// 	newsletterDto.getDescription(),
+		// 	newsletterDto.getDetail(), newsletterDto.getStatus(), newsletterDto.getDayOfWeek(),
+		// 	newsletterDto.getSubscriptionUrl(), newsletterDto.getColor(), LocalDateTime.now());
+		//
+		// SubscriptionEntity subscriptionEntity = SubscriptionEntity.create(user, newsletter,
+		// 	LocalDateTime.now(), null);
+		// return subscriptionJpaRepository.save(subscriptionEntity).toEntityDto();
+		return null;
 	}
 
 	@Override
 	public Optional<SubscriptionEntityDto> findByUserIdAndNewsletterId(UUID userId,
-		Long newsletterId) {
-		return subscriptionJpaRepository.findByUserIdAndNewsletterId(userId, newsletterId)
-			.map(SubscriptionEntity::toEntityDto);
+		UUID newsletterId) {
+		// return subscriptionJpaRepository.findByUserIdAndNewsletterId(userId, newsletterId)
+		// 	.map(SubscriptionEntity::toEntityDto);
+		return null;
 	}
 
 	@Override
