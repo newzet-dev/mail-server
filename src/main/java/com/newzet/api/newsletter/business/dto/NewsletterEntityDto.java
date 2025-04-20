@@ -53,6 +53,6 @@ public class NewsletterEntityDto {
 	public Newsletter toDomain() {
 		return Newsletter.create(id, name, categoryName, domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
-			subscriptionUrl, Color.valueOf(color));
+			subscriptionUrl, color);
 	}
 }
