@@ -8,4 +8,12 @@ public interface User {
 	public UserEntityDto toEntityDto();
 
 	public UUID getId();
+
+	public String getEmail();
+
+	public String getNickname();
+
+	public boolean isWithdrawn();
+
+	public boolean isInactive();
 }
