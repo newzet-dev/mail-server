@@ -73,8 +73,7 @@ public class NewsletterEntity {
 
 	public static NewsletterEntity create(String name, CategoryEntity category, String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
-		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color,
-		LocalDateTime deletedAt) {
+		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {
 		return NewsletterEntity.builder()
 			.name(name)
 			.category(category)
@@ -88,7 +87,6 @@ public class NewsletterEntity {
 			.dayOfWeek(dayOfWeek)
 			.subscriptionUrl(subscriptionUrl)
 			.color(color)
-			.deletedAt(deletedAt)
 			.build();
 	}
 
