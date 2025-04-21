@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
-import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Color;
 
@@ -13,12 +12,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
-import jakarta.persistence.FetchType;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -44,6 +38,7 @@ public class NewsletterEntity {
 	private String name;
 
 	private String categoryName;
+	// join, index 조회, 정합성...
 
 	@Column(unique = true, nullable = false)
 	private String domain;
@@ -69,11 +64,13 @@ public class NewsletterEntity {
 
 	private LocalDateTime deletedAt;
 
-	public static NewsletterEntity create(String name, String domain, String mailingList) {
+	public static NewsletterEntity create(String name, String domain, String mailingList,
+		String status) {
 		return NewsletterEntity.builder()
 			.name(name)
 			.domain(domain)
 			.mailingList(mailingList)
+			.status(NewsletterEntityStatus.valueOf(status).toString())
 			.build();
 	}
 

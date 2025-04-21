@@ -7,10 +7,12 @@ import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
 @Getter
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
+@Builder(access = AccessLevel.PROTECTED)
 public class Newsletter {
 	private final UUID id;
 	private final String name;
@@ -26,7 +28,9 @@ public class Newsletter {
 	private final String subscriptionUrl;
 	private final Color color;
 
-	public static Newsletter create(UUID id, String name, String domain, String mailingList) {
+	// TODO: 삭제 예정
+	public static Newsletter create(UUID id, String name, String domain, String mailingList,
+		String status) {
 		return new Newsletter(id, name, null, domain, mailingList,
 			null, null, null, null, null,
 			null, null, null);
@@ -35,9 +39,21 @@ public class Newsletter {
 	public static Newsletter create(UUID id, String name, String categoryName, String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
 		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {
-		return new Newsletter(id, name, categoryName, domain,
-			mailingList, priority, imageUrl, description,
-			detail, status, dayOfWeek, subscriptionUrl, color);
+		return Newsletter.builder()
+			.id(id)
+			.name(name)
+			.categoryName(categoryName)
+			.domain(domain)
+			.mailingList(mailingList)
+			.priority(priority)
+			.imageUrl(imageUrl)
+			.description(description)
+			.detail(detail)
+			.status(status)
+			.dayOfWeek(dayOfWeek)
+			.subscriptionUrl(subscriptionUrl)
+			.color(color)
+			.build();
 	}
 
 	public NewsletterCacheDto toCacheDto() {
