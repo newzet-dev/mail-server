@@ -106,6 +106,23 @@ class JwtValidatorTest {
 	}
 
 	@Test
+	public void validateRefreshToken_givenNullStoredTokenValue_throwsTokenBadRequestException() {
+		//Given
+		Date future = new Date(System.currentTimeMillis() + 1000 * 60);
+		Token nullValueToken = Token.of(TokenType.REFRESH, null, userId.toString(), new Date(),
+			future);
+		TokenDTO nullValueTokenDTO = nullValueToken.toTokenDTO();
+
+		//When
+		when(tokenRepository.findToken(userId, deviceType)).thenReturn(nullValueTokenDTO);
+
+		//Then
+		assertThatThrownBy(
+			() -> JWTValidator.validateRefreshToken(nullValueToken, userId, deviceType))
+			.isInstanceOf(TokenBadRequestException.class);
+	}
+
+	@Test
 	public void validateRefreshToken_whenExpiredToken_throwAccessTokenExpiredException() {
 		//Given
 		Date past = new Date(System.currentTimeMillis() - 1000 * 60);
