@@ -1,28 +1,21 @@
 package com.newzet.api.common.cache.local;
 
 import java.util.Optional;
-import java.util.concurrent.TimeUnit;
 
 import org.springframework.stereotype.Component;
 
 import com.github.benmanes.caffeine.cache.Cache;
-import com.github.benmanes.caffeine.cache.Caffeine;
 import com.newzet.api.common.cache.CacheUtil;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
+@RequiredArgsConstructor
 public class LocalCacheUtil implements CacheUtil {
 
 	private final Cache<String, CacheEntry<?>> cache;
-
-	public LocalCacheUtil() {
-		this.cache = Caffeine.newBuilder()
-			.expireAfterWrite(10, TimeUnit.MINUTES)
-			.maximumSize(10_000)
-			.build();
-	}
 
 	@Override
 	public <T> Optional<T> get(String key, Class<T> classType) {

@@ -3,11 +3,16 @@ package com.newzet.api.common.cache;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
+import com.newzet.api.common.cache.local.CacheEntry;
 import com.newzet.api.common.cache.local.LocalCacheUtil;
+
 
 public class LocalCacheUtilTest {
 
@@ -15,7 +20,8 @@ public class LocalCacheUtilTest {
 
 	@BeforeEach
 	void setUp() {
-		localCacheUtil = new LocalCacheUtil();
+		Cache<String, CacheEntry<?>> cache = Caffeine.newBuilder().expireAfterWrite(1, TimeUnit.MINUTES).build();
+		localCacheUtil = new LocalCacheUtil(cache);
 	}
 
 	@Test
