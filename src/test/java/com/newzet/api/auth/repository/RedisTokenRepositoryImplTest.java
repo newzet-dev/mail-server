@@ -3,7 +3,6 @@ package com.newzet.api.auth.repository;
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import java.util.Date;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -16,9 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
-import com.newzet.api.auth.business.service.JwtFactory;
-import com.newzet.api.auth.domain.Token;
-import com.newzet.api.auth.domain.TokenType;
+import com.newzet.api.auth.business.dto.TokenDTO;
 
 @ExtendWith(MockitoExtension.class)
 class RedisTokenRepositoryImplTest {
@@ -29,9 +26,6 @@ class RedisTokenRepositoryImplTest {
 	@Mock
 	private ValueOperations<String, String> valueOperations;
 
-	@Mock
-	private JwtFactory jwtFactory;
-
 	private RedisTokenRepositoryImpl tokenRepository;
 	private UUID userId;
 	private String deviceType;
@@ -39,7 +33,7 @@ class RedisTokenRepositoryImplTest {
 	@BeforeEach
 	void setUp() {
 		lenient().when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-		tokenRepository = new RedisTokenRepositoryImpl(redisTemplate, jwtFactory);
+		tokenRepository = new RedisTokenRepositoryImpl(redisTemplate);
 		userId = UUID.randomUUID();
 		deviceType = "web";
 	}
@@ -47,15 +41,15 @@ class RedisTokenRepositoryImplTest {
 	@Test
 	public void saveToken_storesTokenInRedis() {
 		//Given
-		Token token = Token.of(TokenType.REFRESH, "token-value", userId.toString(), new Date(),
-			new Date());
+		String tokenValue = "token-value";
+		TokenDTO tokenDTO = TokenDTO.from(tokenValue);
 		String expectedKey = "refreshToken:" + userId + ":" + deviceType;
 
 		//When
-		tokenRepository.saveToken(userId, deviceType, token);
+		tokenRepository.saveToken(userId, deviceType, tokenDTO);
 
 		//Then
-		verify(valueOperations).set(eq(expectedKey), eq(token.getValue()), anyLong(),
+		verify(valueOperations).set(eq(expectedKey), eq(tokenDTO.value()), anyLong(),
 			eq(TimeUnit.MILLISECONDS));
 		verify(valueOperations).set(startsWith("refresh-time:"), anyString(), anyLong(),
 			eq(TimeUnit.MILLISECONDS));
@@ -65,32 +59,29 @@ class RedisTokenRepositoryImplTest {
 	public void findToken_whenTokenExists_returnToken() {
 		//Given
 		String tokenValue = "token-value";
-		Token token = Token.of(TokenType.REFRESH, tokenValue, userId.toString(), new Date(),
-			new Date());
+		TokenDTO tokenDTO = TokenDTO.from(tokenValue);
 		String expectedKey = "refreshToken:" + userId + ":" + deviceType;
 
 		when(valueOperations.get(expectedKey)).thenReturn(tokenValue);
-		when(jwtFactory.parseToken(tokenValue)).thenReturn(Optional.of(token));
 
 		//When
-		Optional<Token> result = tokenRepository.findToken(userId, deviceType);
+		TokenDTO result = tokenRepository.findToken(userId, deviceType);
 
 		//Then
-		assertThat(result).isPresent();
-		assertThat(result.get()).isEqualTo(token);
+		assertThat(result.value()).isEqualTo(tokenDTO.value());
 	}
 
 	@Test
-	public void findToken_whenTokenDoesNotExist_returnEmpty() {
+	public void findToken_whenTokenDoesNotExist_returnNullToken() {
 		//Given
 		String expectedKey = "refreshToken:" + userId + ":" + deviceType;
 		when(valueOperations.get(expectedKey)).thenReturn(null);
 
 		//When
-		Optional<Token> result = tokenRepository.findToken(userId, deviceType);
+		TokenDTO result = tokenRepository.findToken(userId, deviceType);
 
 		//Then
-		assertThat(result).isEmpty();
+		assertThat(result.value()).isNull();
 	}
 
 	@Test

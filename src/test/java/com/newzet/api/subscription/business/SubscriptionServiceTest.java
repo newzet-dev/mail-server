@@ -52,7 +52,7 @@ public class SubscriptionServiceTest {
 	@BeforeEach
 	public void setUp() {
 		UserEntity userEntity = userRepository.save(
-			UserEntity.create("test@example.com", "ACTIVE"));
+			UserEntity.create("test@example.com", "test","ACTIVE"));
 		user = UserEntityDto.create(userEntity.getId(), userEntity.getEmail(),
 			userEntity.getStatus().name()).toDomain();
 
