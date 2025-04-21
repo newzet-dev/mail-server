@@ -13,6 +13,8 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.newzet.api.auth.business.dto.TokenDTO;
+import com.newzet.api.auth.business.service.JwtFactory;
 import com.newzet.api.auth.business.service.TokenRepository;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
@@ -27,13 +29,16 @@ class JwtValidatorTest {
 	@Mock
 	private TokenRepository tokenRepository;
 
+	@Mock
+	private JwtFactory jwtFactory;
+
 	private JwtValidator JWTValidator;
 	private UUID userId;
 	private String deviceType;
 
 	@BeforeEach
 	void setUp() {
-		JWTValidator = new JwtValidator(tokenRepository);
+		JWTValidator = new JwtValidator(tokenRepository, jwtFactory);
 		userId = UUID.randomUUID();
 		deviceType = "web";
 	}
@@ -78,8 +83,10 @@ class JwtValidatorTest {
 		String tokenValue = "refresh-token-value";
 		Token token = Token.of(TokenType.REFRESH, tokenValue, userId.toString(), new Date(),
 			future);
+		TokenDTO tokenDTO = token.toTokenDTO();
 
-		when(tokenRepository.findToken(userId, deviceType)).thenReturn(Optional.of(token));
+		when(tokenRepository.findToken(userId, deviceType)).thenReturn(tokenDTO);
+		when(jwtFactory.parseToken(tokenDTO.value())).thenReturn(Optional.of(token));
 		when(tokenRepository.getLastRefreshTime(userId, deviceType)).thenReturn(Optional.of(0L));
 
 		//When, Then
@@ -118,8 +125,10 @@ class JwtValidatorTest {
 		Token requestToken = Token.of(TokenType.REFRESH, "different-value", userId.toString(),
 			new Date(),
 			future);
+		TokenDTO storedTokenDTO = requestToken.toTokenDTO();
 
-		when(tokenRepository.findToken(userId, deviceType)).thenReturn(Optional.of(storedToken));
+		when(tokenRepository.findToken(userId, deviceType)).thenReturn(storedTokenDTO);
+		when(jwtFactory.parseToken(storedTokenDTO.value())).thenReturn(Optional.of(storedToken));
 
 		//When, Then
 		assertThatThrownBy(
@@ -135,9 +144,12 @@ class JwtValidatorTest {
 		String tokenValue = "refresh-token-value";
 		Token token = Token.of(TokenType.REFRESH, tokenValue, userId.toString(), new Date(),
 			future);
+		TokenDTO tokenDTO = token.toTokenDTO();
+
 		long recentTime = System.currentTimeMillis() - 30 * 1000;
 
-		when(tokenRepository.findToken(userId, deviceType)).thenReturn(Optional.of(token));
+		when(tokenRepository.findToken(userId, deviceType)).thenReturn(tokenDTO);
+		when(jwtFactory.parseToken(tokenDTO.value())).thenReturn(Optional.of(token));
 		when(tokenRepository.getLastRefreshTime(userId, deviceType)).thenReturn(
 			Optional.of(recentTime));
 
