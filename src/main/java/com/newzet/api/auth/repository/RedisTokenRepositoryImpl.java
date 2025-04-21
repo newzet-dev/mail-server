@@ -9,9 +9,8 @@ import java.util.concurrent.TimeUnit;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
 
-import com.newzet.api.auth.business.service.JwtFactory;
+import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.TokenRepository;
-import com.newzet.api.auth.domain.Token;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,21 +22,20 @@ public class RedisTokenRepositoryImpl implements TokenRepository {
 	private static final long REFRESH_REQUEST_INTERVAL_LIMIT = 60 * 1000L;
 
 	private final RedisTemplate<String, String> redisTemplate;
-	private final JwtFactory jwtFactory;
 
 	@Override
-	public void saveToken(UUID userId, String deviceType, Token token) {
+	public void saveToken(UUID userId, String deviceType, TokenDTO tokenDTO) {
 		String key = generateKey(userId, deviceType);
 		redisTemplate.opsForValue()
-			.set(key, token.getValue(), REFRESH_TOKEN_VALIDITY_MILLISECONDS, TimeUnit.MILLISECONDS);
+			.set(key, tokenDTO.value(), REFRESH_TOKEN_VALIDITY_MILLISECONDS, TimeUnit.MILLISECONDS);
 		updateLastRefreshTime(userId, deviceType);
 	}
 
 	@Override
-	public Optional<Token> findToken(UUID userId, String deviceType) {
+	public TokenDTO findToken(UUID userId, String deviceType) {
 		String key = generateKey(userId, deviceType);
 		String tokenValue = redisTemplate.opsForValue().get(key);
-		return jwtFactory.parseToken(tokenValue);
+		return TokenDTO.from(tokenValue);
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.newzet.api.auth.business.dto.JwtRefreshRequest;
 import com.newzet.api.auth.business.dto.JwtResponse;
+import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.exception.TokenBadRequestException;
@@ -33,7 +34,9 @@ public class JwtService {
 		Token newAccessToken = jwtFactory.createAccessToken(userId);
 		Token newRefreshToken = jwtFactory.createRefreshToken(userId);
 
-		tokenRepository.saveToken(userId, deviceType, newRefreshToken);
+		TokenDTO newRefreshTokenDTO = newRefreshToken.toTokenDTO();
+
+		tokenRepository.saveToken(userId, deviceType, newRefreshTokenDTO);
 		tokenRepository.updateLastRefreshTime(userId, deviceType);
 
 		return new JwtResponse(newAccessToken.getValue(), newRefreshToken.getValue());
