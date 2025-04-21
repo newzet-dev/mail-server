@@ -7,7 +7,7 @@ import lombok.Builder;
 public record TokenDTO(
 	String value
 ) {
-	public static TokenDTO of(String value) {
+	public static TokenDTO from(String value) {
 		return TokenDTO.builder().value(value).build();
 	}
 }
