@@ -42,7 +42,7 @@ class RedisTokenRepositoryImplTest {
 	public void saveToken_storesTokenInRedis() {
 		//Given
 		String tokenValue = "token-value";
-		TokenDTO tokenDTO = TokenDTO.of(tokenValue);
+		TokenDTO tokenDTO = TokenDTO.from(tokenValue);
 		String expectedKey = "refreshToken:" + userId + ":" + deviceType;
 
 		//When
@@ -59,7 +59,7 @@ class RedisTokenRepositoryImplTest {
 	public void findToken_whenTokenExists_returnToken() {
 		//Given
 		String tokenValue = "token-value";
-		TokenDTO tokenDTO = TokenDTO.of(tokenValue);
+		TokenDTO tokenDTO = TokenDTO.from(tokenValue);
 		String expectedKey = "refreshToken:" + userId + ":" + deviceType;
 
 		when(valueOperations.get(expectedKey)).thenReturn(tokenValue);

@@ -35,7 +35,7 @@ public class RedisTokenRepositoryImpl implements TokenRepository {
 	public TokenDTO findToken(UUID userId, String deviceType) {
 		String key = generateKey(userId, deviceType);
 		String tokenValue = redisTemplate.opsForValue().get(key);
-		return TokenDTO.of(tokenValue);
+		return TokenDTO.from(tokenValue);
 	}
 
 	@Override

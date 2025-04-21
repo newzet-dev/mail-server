@@ -39,6 +39,6 @@ public class Token {
 	}
 
 	public TokenDTO toTokenDTO() {
-		return TokenDTO.of(this.value);
+		return TokenDTO.from(this.value);
 	}
 }
