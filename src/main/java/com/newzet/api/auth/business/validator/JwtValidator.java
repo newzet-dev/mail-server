@@ -4,6 +4,8 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Component;
 
+import com.newzet.api.auth.business.dto.TokenDTO;
+import com.newzet.api.auth.business.service.JwtFactory;
 import com.newzet.api.auth.business.service.TokenRepository;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.exception.TokenBadRequestException;
@@ -19,6 +21,7 @@ public class JwtValidator {
 	private static final long REFRESH_RATE_LIMIT_MILLISECONDS = 60 * 1000;
 
 	private final TokenRepository tokenRepository;
+	private final JwtFactory jwtFactory;
 
 	public void validateRefreshToken(Token token, UUID userId, String deviceType) {
 		if (!token.isRefreshToken()) {
@@ -29,11 +32,16 @@ public class JwtValidator {
 			throw new TokenExpiredException("리프레시 토큰이 만료되었습니다.");
 		}
 
-		String storedTokenValue = tokenRepository.findToken(userId, deviceType)
-			.map(Token::getValue)
-			.orElseThrow(() -> new TokenBadRequestException("저장된 리프레시 토큰이 없습니다. 재로그인이 필요합니다."));
+		TokenDTO storedTokenDTO = tokenRepository.findToken(userId, deviceType);
 
-		if (!storedTokenValue.equals(token.getValue())) {
+		if (storedTokenDTO.value() == null) {
+			throw new TokenBadRequestException("저장된 리프레시 토큰이 없습니다. 재로그인이 필요합니다.");
+		}
+
+		Token storedToken = jwtFactory.parseToken(storedTokenDTO.value())
+			.orElseThrow(() -> new TokenBadRequestException("유효하지 않은 토큰입니다."));
+
+		if (!storedToken.isSameValue(token.getValue())) {
 			tokenRepository.removeToken(userId, deviceType);
 			throw new TokenStolenException("리프레시 토큰이 일치하지 않습니다. 토큰 탈취 가능성.");
 		}

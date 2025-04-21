@@ -16,6 +16,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.auth.business.dto.JwtRefreshRequest;
 import com.newzet.api.auth.business.dto.JwtResponse;
+import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.validator.JwtValidator;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
@@ -60,6 +61,7 @@ class JwtServiceTest {
 		Token newRefreshToken = Token.of(TokenType.REFRESH, "new-refresh-token", userId.toString(),
 			new Date(),
 			future);
+		TokenDTO newRefreshTokenDTO = newRefreshToken.toTokenDTO();
 
 		when(jwtFactory.parseToken(refreshTokenValue)).thenReturn(Optional.of(refreshToken));
 		when(jwtFactory.createAccessToken(userId)).thenReturn(newAccessToken);
@@ -72,7 +74,7 @@ class JwtServiceTest {
 		//Then
 		assertThat(response.accessToken()).isEqualTo(newAccessToken.getValue());
 		assertThat(response.refreshToken()).isEqualTo(newRefreshToken.getValue());
-		verify(tokenRepository).saveToken(userId, deviceType, newRefreshToken);
+		verify(tokenRepository).saveToken(userId, deviceType, newRefreshTokenDTO);
 		verify(tokenRepository).updateLastRefreshTime(userId, deviceType);
 	}
 
