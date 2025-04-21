@@ -2,6 +2,8 @@ package com.newzet.api.auth.domain;
 
 import java.util.Date;
 
+import com.newzet.api.auth.business.dto.TokenDTO;
+
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -30,5 +32,13 @@ public class Token {
 
 	public boolean isRefreshToken() {
 		return this.type.equals(TokenType.REFRESH);
+	}
+
+	public boolean isSameValue(String value) {
+		return this.value.equals(value);
+	}
+
+	public TokenDTO toTokenDTO() {
+		return TokenDTO.of(this.value);
 	}
 }
