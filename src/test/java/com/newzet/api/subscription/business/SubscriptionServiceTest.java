@@ -19,6 +19,7 @@ import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.fixture.NewsletterFixture;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
@@ -52,17 +53,13 @@ public class SubscriptionServiceTest {
 	@BeforeEach
 	public void setUp() {
 		UserEntity userEntity = userRepository.save(
-			UserEntity.create("test@example.com", "test","ACTIVE"));
+			UserEntity.create("test@example.com", "test", "ACTIVE"));
 		user = UserEntityDto.create(userEntity.getId(), userEntity.getEmail(),
 			userEntity.getStatus().name()).toDomain();
 
 		NewsletterEntity newsletterEntity = newsletterRepository.save(
-			NewsletterEntity.create("test",
-				"test@example.com", "test123", "REGISTERED"));
-		newsletter = NewsletterEntityDto.create(newsletterEntity.getId(),
-			newsletterEntity.getName(),
-			newsletterEntity.getDomain(), newsletterEntity.getMailingList(),
-			newsletterEntity.getStatus().name()).toDomain();
+			NewsletterFixture.createDefaultEntity());
+		newsletter = NewsletterFixture.createDtoByEntity(newsletterEntity).toDomain();
 	}
 
 	@Test

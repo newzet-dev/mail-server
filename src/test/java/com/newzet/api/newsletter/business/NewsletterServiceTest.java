@@ -19,6 +19,7 @@ import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.fixture.NewsletterFixture;
 
 @ExtendWith(MockitoExtension.class)
 class NewsletterServiceTest {
@@ -28,8 +29,7 @@ class NewsletterServiceTest {
 	private final String domain = "test@example.com";
 	private final String mailingList = "test123";
 	private final String status = "UNREGISTERED";
-	private final NewsletterEntityDto entityDto = NewsletterEntityDto.create(1L, name, domain,
-		mailingList, status);
+	private final NewsletterEntityDto entityDto = NewsletterFixture.createDefaultDto();
 	@Mock
 	private NewsletterRepository newsletterRepository;
 	@Mock
@@ -44,8 +44,7 @@ class NewsletterServiceTest {
 	@Test
 	void findOrCreateNewsletter_whenNewsletterExistsInCache_ReturnNewsletterInCache() {
 		// Given
-		NewsletterCacheDto cacheDto = NewsletterCacheDto.create(1L, name, domain, mailingList,
-			status);
+		NewsletterCacheDto cacheDto = NewsletterFixture.createDefaultCacheDto();
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.of(cacheDto));
 

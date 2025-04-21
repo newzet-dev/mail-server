@@ -15,6 +15,7 @@ import org.springframework.context.annotation.Import;
 
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.fixture.NewsletterFixture;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
@@ -43,10 +44,8 @@ public class SubscriptionRepositoryImplTest {
 		UserEntity user = userRepository.save(UserEntity.create("test@example.com", "test","ACTIVE"));
 		userDto = UserEntityDto.create(user.getId(), user.getEmail(), user.getStatus().name());
 
-		NewsletterEntity newsletter = newsletterRepository.save(NewsletterEntity.create("test",
-			"test@example.com", "test123", "REGISTERED"));
-		newsletterDto = NewsletterEntityDto.create(newsletter.getId(), newsletter.getName(),
-			newsletter.getDomain(), newsletter.getMailingList(), newsletter.getStatus().name());
+		NewsletterEntity newsletter = newsletterRepository.save(NewsletterFixture.createDefaultEntity());
+		newsletterDto = NewsletterFixture.createDtoByEntity(newsletter);
 	}
 
 	@Test
