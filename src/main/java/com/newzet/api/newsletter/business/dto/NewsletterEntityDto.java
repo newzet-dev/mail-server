@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.newzet.api.newsletter.domain.Color;
 import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.newsletter.repository.NewsletterEntity;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -54,5 +54,11 @@ public class NewsletterEntityDto {
 		return Newsletter.create(id, name, categoryName, domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
 			subscriptionUrl, color);
+	}
+
+	public NewsletterEntity toEntity() {
+		return NewsletterEntity.create(id, name, categoryName, domain,
+			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
+			subscriptionUrl, color, null);
 	}
 }

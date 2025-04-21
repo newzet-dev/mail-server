@@ -26,6 +26,12 @@ public class Newsletter {
 	private final String subscriptionUrl;
 	private final Color color;
 
+	public static Newsletter create(UUID id, String name, String domain, String mailingList) {
+		return new Newsletter(id, name, null, domain, mailingList,
+			null, null, null, null, null,
+			null, null, null);
+	}
+
 	public static Newsletter create(UUID id, String name, String categoryName, String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
 		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {

@@ -43,9 +43,7 @@ public class NewsletterEntity {
 	@Column(nullable = false)
 	private String name;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "category_id")
-	private CategoryEntity category;
+	private String categoryName;
 
 	@Column(unique = true, nullable = false)
 	private String domain;
@@ -71,12 +69,20 @@ public class NewsletterEntity {
 
 	private LocalDateTime deletedAt;
 
-	public static NewsletterEntity create(String name, CategoryEntity category, String domain,
+	public static NewsletterEntity create(String name, String domain, String mailingList) {
+		return NewsletterEntity.builder()
+			.name(name)
+			.domain(domain)
+			.mailingList(mailingList)
+			.build();
+	}
+
+	public static NewsletterEntity create(String name, String categoryName, String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
 		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {
 		return NewsletterEntity.builder()
 			.name(name)
-			.category(category)
+			.categoryName(categoryName)
 			.domain(domain)
 			.mailingList(mailingList)
 			.priority(priority)
@@ -90,15 +96,14 @@ public class NewsletterEntity {
 			.build();
 	}
 
-	public static NewsletterEntity create(UUID id, String name, CategoryEntity category,
-		String domain,
-		String mailingList, Integer priority, String imageUrl, String description,
+	public static NewsletterEntity create(UUID id, String name, String categoryName,
+		String domain, String mailingList, Integer priority, String imageUrl, String description,
 		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color,
 		LocalDateTime deletedAt) {
 		return NewsletterEntity.builder()
 			.id(id)
 			.name(name)
-			.category(category)
+			.categoryName(categoryName)
 			.domain(domain)
 			.mailingList(mailingList)
 			.priority(priority)
@@ -114,7 +119,7 @@ public class NewsletterEntity {
 	}
 
 	public NewsletterEntityDto toEntityDto() {
-		return NewsletterEntityDto.create(id, name, category.getName(), domain,
+		return NewsletterEntityDto.create(id, name, categoryName, domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
 			subscriptionUrl, color);
 	}
