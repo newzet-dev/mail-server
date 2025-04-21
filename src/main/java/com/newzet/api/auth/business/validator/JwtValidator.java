@@ -34,8 +34,12 @@ public class JwtValidator {
 
 		TokenDTO storedTokenDTO = tokenRepository.findToken(userId, deviceType);
 
+		if (storedTokenDTO.value() == null) {
+			throw new TokenBadRequestException("저장된 리프레시 토큰이 없습니다. 재로그인이 필요합니다.");
+		}
+
 		Token storedToken = jwtFactory.parseToken(storedTokenDTO.value())
-			.orElseThrow(() -> new TokenBadRequestException("저장된 리프레시 토큰이 없습니다. 재로그인이 필요합니다."));
+			.orElseThrow(() -> new TokenBadRequestException("유효하지 않은 토큰입니다."));
 
 		if (!storedToken.isSameValue(token.getValue())) {
 			tokenRepository.removeToken(userId, deviceType);
