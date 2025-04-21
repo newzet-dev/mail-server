@@ -28,31 +28,19 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
 	@Override
 	public SubscriptionEntityDto create(UserEntityDto userDto, NewsletterEntityDto newsletterDto) {
-		// UserEntity user = UserEntity.create(userDto.getId(), userDto.getEmail(),
-		// 	userDto.getNickname(), userDto.getStatus());
-		// CategoryEntity categoryEntity = categoryJpaRepository.findByName(
-		// 		newsletterDto.getCategoryName())
-		// 	.orElseThrow(() -> new NoCategoryException("해당 이름의 카테고리를 찾을 수 없습니다."));
-		// NewsletterEntity newsletter = NewsletterEntity.create(newsletterDto.getId(),
-		// 	newsletterDto.getName(), categoryEntity, newsletterDto.getDomain(),
-		// 	newsletterDto.getMailingList(),
-		// 	newsletterDto.getPriority(), newsletterDto.getImageUrl(),
-		// 	newsletterDto.getDescription(),
-		// 	newsletterDto.getDetail(), newsletterDto.getStatus(), newsletterDto.getDayOfWeek(),
-		// 	newsletterDto.getSubscriptionUrl(), newsletterDto.getColor(), LocalDateTime.now());
-		//
-		// SubscriptionEntity subscriptionEntity = SubscriptionEntity.create(user, newsletter,
-		// 	LocalDateTime.now(), null);
-		// return subscriptionJpaRepository.save(subscriptionEntity).toEntityDto();
-		return null;
+		UserEntity user = UserEntity.create(userDto.getId(), userDto.getEmail(),
+			userDto.getNickname(), userDto.getStatus());
+		NewsletterEntity newsletter = newsletterDto.toEntity();
+		SubscriptionEntity subscriptionEntity = SubscriptionEntity.create(user, newsletter,
+			LocalDateTime.now(), null);
+		return subscriptionJpaRepository.save(subscriptionEntity).toEntityDto();
 	}
 
 	@Override
 	public Optional<SubscriptionEntityDto> findByUserIdAndNewsletterId(UUID userId,
 		UUID newsletterId) {
-		// return subscriptionJpaRepository.findByUserIdAndNewsletterId(userId, newsletterId)
-		// 	.map(SubscriptionEntity::toEntityDto);
-		return null;
+		return subscriptionJpaRepository.findByUserIdAndNewsletterId(userId, newsletterId)
+			.map(SubscriptionEntity::toEntityDto);
 	}
 
 	@Override
