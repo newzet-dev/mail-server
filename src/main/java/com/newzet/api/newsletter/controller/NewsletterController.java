@@ -15,19 +15,24 @@ import com.newzet.api.newsletter.business.NewsletterService;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/newsletter")
+@Tag(name = "뉴스레터", description = "뉴스레터 관련 API")
 public class NewsletterController {
 
 	private final NewsletterService newsletterService;
 
 	@GetMapping
+	@Operation(summary = "뉴스레터 리스트 조회",
+		description = "뉴스레터 이름 혹은 카테고리 id로 뉴스테러 리스트를 조회한다.")
 	public ResponseEntity<SuccessResponse<NewsletterListResponse>> getNewsletterListByNameOrCategoryId(
-		@RequestParam("name") String name,
-		@RequestParam("categoryId") String categoryId) {
+		@RequestParam(value = "name", required = false) String name,
+		@RequestParam(value = "categoryId", required = false) String categoryId) {
 		NewsletterListResponse newsletterListResponse = newsletterService.searchNewsletterListByNameOrCategoryId(
 			name, UUID.fromString(categoryId));
 		SuccessResponse<NewsletterListResponse> response = SuccessResponse.create(
@@ -37,6 +42,8 @@ public class NewsletterController {
 	}
 
 	@GetMapping("/{newsletterId}")
+	@Operation(summary = "뉴스레터 상세정보 조회",
+		description = "뉴스레터 id로 뉴스테러를 조회한다.")
 	public ResponseEntity<SuccessResponse<NewsletterInfoResponse>> getNewsletterById(
 		@PathVariable("newsletterId") String newsletterId) {
 		NewsletterInfoResponse newsletterInfoResponse = newsletterService.getNewsLetterById(
