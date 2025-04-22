@@ -20,6 +20,7 @@ import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
+import com.newzet.api.common.util.exception.UuidConvertFailException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
@@ -138,11 +139,36 @@ class NewsletterServiceTest {
 
 		// When
 		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
-			newsletter.getName(), categoryEntity.getId());
+			newsletter.getName(), String.valueOf(categoryEntity.getId()));
 
 		// Then
 		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class));
 		assertEquals(1, searchList.newsletterList().size());
+	}
+
+	@Test
+	public void searchNewsletterListByNameOrCategoryId_whenCategoryIdIsNull() {
+		// Given
+		NewsletterEntity newsletter = NewsletterFixture.createEntityWithId();
+		List<NewsletterEntity> newsletterList = new ArrayList<>();
+		newsletterList.add(newsletter);
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class)))
+			.thenReturn(newsletterList);
+
+		// When
+		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
+			newsletter.getName(), String.valueOf(categoryEntity.getId()));
+
+		// Then
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class));
+		assertEquals(1, searchList.newsletterList().size());
+	}
+
+	@Test
+	public void searchNewsletterListByNameOrCategoryId_Invalid_CategoryId_throwException() {
+		// When Then
+		assertThrows(UuidConvertFailException.class, () -> newsletterService.searchNewsletterListByNameOrCategoryId(
+			"test", "wrong uuid"));
 	}
 
 	@Test
@@ -154,7 +180,7 @@ class NewsletterServiceTest {
 
 		// When
 		NewsletterInfoResponse newsletterInfoResponse = newsletterService.getNewsLetterById(
-			newsletter.getId());
+			String.valueOf(newsletter.getId()));
 
 		// Then
 		verify(newsletterRepository, times(1)).getById(any(UUID.class));

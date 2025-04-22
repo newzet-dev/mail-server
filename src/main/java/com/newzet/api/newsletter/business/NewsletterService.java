@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
+import com.newzet.api.common.util.UuidConverter;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
@@ -42,10 +43,7 @@ public class NewsletterService {
 
 	public NewsletterListResponse searchNewsletterListByNameOrCategoryId(String name,
 		String categoryId) {
-		UUID categoryUuid = null;
-		if (categoryId != null && !categoryId.isEmpty()) {
-			categoryUuid = UUID.fromString(categoryId);
-		}
+		UUID categoryUuid = UuidConverter.convert(categoryId);
 		List<NewsletterResponse> newsletterResponseList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
 				name, categoryUuid).stream()
 			.map(newsletterEntity -> NewsletterResponse.create(newsletterEntity.getId(),
@@ -57,7 +55,7 @@ public class NewsletterService {
 	}
 
 	public NewsletterInfoResponse getNewsLetterById(String newsletterId) {
-		UUID newsletterUuid = UUID.fromString(newsletterId);
+		UUID newsletterUuid = UuidConverter.convert(newsletterId);
 		NewsletterEntity newsletterEntity = newsletterRepository.getById(newsletterUuid);
 		return NewsletterInfoResponse.create(newsletterEntity.getId(), newsletterEntity.getName(),
 			newsletterEntity.getImageUrl(), newsletterEntity.getDetail(),
