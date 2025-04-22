@@ -15,10 +15,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.newzet.api.category.repository.CategoryEntity;
+import com.newzet.api.category.repository.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
-import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
@@ -40,11 +40,15 @@ import com.newzet.api.user.repository.repository.UserJpaRepository;
 public class SubscriptionServiceTest {
 
 	private static User user;
-	private static Newsletter newsletter;
+	private static NewsletterEntity newsletterEntity;
+	private static CategoryEntity categoryEntity;
+
 	@Autowired
 	private UserJpaRepository userRepository;
 	@Autowired
 	private NewsletterJpaRepository newsletterRepository;
+	@Autowired
+	private CategoryJpaRepository categoryRepository;
 	@Autowired
 	private SubscriptionService subscriptionService;
 	@MockitoSpyBean
@@ -57,15 +61,15 @@ public class SubscriptionServiceTest {
 		user = UserEntityDto.create(userEntity.getId(), userEntity.getEmail(),
 			userEntity.getStatus().name()).toDomain();
 
-		NewsletterEntity newsletterEntity = newsletterRepository.save(
-			NewsletterFixture.createDefaultEntity());
-		newsletter = NewsletterFixture.createDtoByEntity(newsletterEntity).toDomain();
+		categoryEntity = categoryRepository.save(CategoryEntity.create("test", "test", "test"));
+		newsletterEntity = newsletterRepository.save(
+			NewsletterFixture.createDefaultEntity(categoryEntity));
 	}
 
 	@Test
 	public void addSubscription_whenSubscriptionNoExist_createNewSubscription() {
 		//When
-		subscriptionService.addSubscription(user, newsletter);
+		subscriptionService.addSubscription(user, newsletterEntity);
 
 		//Then
 		verify(subscriptionRepository, times(1)).create(any(), any());
@@ -76,10 +80,10 @@ public class SubscriptionServiceTest {
 	public void subscribe_whenSubscription_doNothing() {
 		//Given
 		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletter.toEntityDto());
+			user.toEntityDto(), newsletterEntity);
 
 		//When
-		subscriptionService.addSubscription(user, newsletter);
+		subscriptionService.addSubscription(user, newsletterEntity);
 
 		//Then
 		Subscription reactivatedSubscription = subscriptionRepository.getById(
@@ -95,11 +99,11 @@ public class SubscriptionServiceTest {
 	public void subscribe_whenSubscriptionIsDeleted_updateDeletedAtIsNull() {
 		//Given
 		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletter.toEntityDto());
+			user.toEntityDto(), newsletterEntity);
 		subscriptionService.deleteSubscription(subscriptionDto.getId());
 
 		//When
-		subscriptionService.addSubscription(user, newsletter);
+		subscriptionService.addSubscription(user, newsletterEntity);
 
 		//Then
 		Subscription reactivatedSubscription = subscriptionRepository.getById(
@@ -115,7 +119,7 @@ public class SubscriptionServiceTest {
 	public void deleteSubscription() {
 		//Given
 		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletter.toEntityDto());
+			user.toEntityDto(), newsletterEntity);
 
 		//When
 		subscriptionService.deleteSubscription(subscriptionDto.getId());

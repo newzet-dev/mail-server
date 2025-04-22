@@ -6,13 +6,14 @@ import org.junit.jupiter.api.Test;
 
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
+import com.newzet.api.newsletter.repository.NewsletterEntity;
 
 class NewsletterTest {
 
 	@Test
 	public void 뉴스레터_생성() {
 		//When
-		Newsletter newsletter = NewsletterFixture.createDefaultDomain();
+		NewsletterEntity newsletter = NewsletterFixture.createDefaultEntity();
 
 		//Then
 		// assertEquals(1L, newsletter.getId());
@@ -29,7 +30,7 @@ class NewsletterTest {
 		String domain = "test@example.com";
 		String mailingList = "test123";
 		String status = "UNREGISTERED";
-		Newsletter newsletter = NewsletterFixture.createDefaultDomain();
+		NewsletterEntity newsletter = NewsletterFixture.createDefaultEntity();
 
 		//When
 		NewsletterCacheDto dto = newsletter.toCacheDto();

@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 
 import org.junit.jupiter.api.Test;
@@ -12,14 +13,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
-import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
+import com.newzet.api.newsletter.repository.NewsletterEntity;
 
 @ExtendWith(MockitoExtension.class)
 class NewsletterServiceTest {
@@ -29,7 +30,8 @@ class NewsletterServiceTest {
 	private final String domain = "test@example.com";
 	private final String mailingList = "test123";
 	private final String status = "UNREGISTERED";
-	private final NewsletterEntityDto entityDto = NewsletterFixture.createDefaultDto();
+	private final CategoryEntity categoryEntity = CategoryEntity.create(UUID.randomUUID(), "test", "test", "test");
+	private final NewsletterEntity entity = NewsletterFixture.createDefaultEntity(categoryEntity);
 	@Mock
 	private NewsletterRepository newsletterRepository;
 	@Mock
@@ -44,12 +46,12 @@ class NewsletterServiceTest {
 	@Test
 	void findOrCreateNewsletter_whenNewsletterExistsInCache_ReturnNewsletterInCache() {
 		// Given
-		NewsletterCacheDto cacheDto = NewsletterFixture.createDefaultCacheDto();
+		NewsletterCacheDto cacheDto = NewsletterFixture.createDefaultCacheDto(categoryEntity);
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.of(cacheDto));
 
 		// When
-		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain,
+		NewsletterEntity newsletter = newsletterService.findOrCreateNewsletter(name, domain,
 			mailingList);
 
 		// Then
@@ -65,10 +67,10 @@ class NewsletterServiceTest {
 			Optional.empty());
 		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenReturn(lock);
 		when(newsletterRepository.findByDomainOrMailingList(domain, mailingList)).thenReturn(
-			Optional.of(entityDto));
+			Optional.of(entity));
 
 		// When
-		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
+		NewsletterEntity newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
 
 		// Then
 		verifyValue(newsletter);
@@ -88,10 +90,10 @@ class NewsletterServiceTest {
 		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenReturn(lock);
 		when(newsletterRepository.findByDomainOrMailingList(domain, mailingList)).thenReturn(
 			Optional.empty());
-		when(newsletterRepository.save(any(), any(), any(), any())).thenReturn(entityDto);
+		when(newsletterRepository.save(any(), any(), any(), any())).thenReturn(entity);
 
 		// When
-		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
+		NewsletterEntity newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
 
 		// Then
 		verifyValue(newsletter);
@@ -121,7 +123,7 @@ class NewsletterServiceTest {
 		verify(lockFactory, never()).unlock(lock);
 	}
 
-	private void verifyValue(Newsletter newsletter) {
+	private void verifyValue(NewsletterEntity newsletter) {
 		assertEquals(name, newsletter.getName());
 		assertEquals(domain, newsletter.getDomain());
 		assertEquals(mailingList, newsletter.getMailingList());
