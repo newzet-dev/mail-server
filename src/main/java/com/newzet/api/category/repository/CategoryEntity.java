@@ -2,7 +2,6 @@ package com.newzet.api.category.repository;
 
 import java.util.UUID;
 
-import org.checkerframework.checker.units.qual.C;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.newzet.api.category.business.dto.CategoryEntityDto;
@@ -52,7 +51,7 @@ public class CategoryEntity {
 			.build();
 	}
 
-	public CategoryEntityDto toCategoryEntityDto() {
+	public CategoryEntityDto toEntityDto() {
 		return CategoryEntityDto.create(id, name, imageUrl, emoji);
 	}
 

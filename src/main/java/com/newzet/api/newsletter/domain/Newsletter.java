@@ -2,6 +2,7 @@ package com.newzet.api.newsletter.domain;
 
 import java.util.UUID;
 
+import com.newzet.api.category.domain.Category;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 
@@ -16,7 +17,7 @@ import lombok.Getter;
 public class Newsletter {
 	private final UUID id;
 	private final String name;
-	private final String categoryName;
+	private final Category category;
 	private final String domain;
 	private final String mailingList;
 	private final Integer priority;
@@ -36,13 +37,13 @@ public class Newsletter {
 			null, null, null);
 	}
 
-	public static Newsletter create(UUID id, String name, String categoryName, String domain,
+	public static Newsletter create(UUID id, String name, Category category, String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
 		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {
 		return Newsletter.builder()
 			.id(id)
 			.name(name)
-			.categoryName(categoryName)
+			.category(category)
 			.domain(domain)
 			.mailingList(mailingList)
 			.priority(priority)
@@ -57,13 +58,13 @@ public class Newsletter {
 	}
 
 	public NewsletterCacheDto toCacheDto() {
-		return NewsletterCacheDto.create(id, name, categoryName, domain,
+		return NewsletterCacheDto.create(id, name, category, domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
 			subscriptionUrl, color);
 	}
 
 	public NewsletterEntityDto toEntityDto() {
-		return NewsletterEntityDto.create(id, name, categoryName, domain,
+		return NewsletterEntityDto.create(id, name, category.toEntityDto(), domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
 			subscriptionUrl, color);
 	}

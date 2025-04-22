@@ -122,7 +122,7 @@ public class NewsletterEntity {
 	}
 
 	public NewsletterEntityDto toEntityDto() {
-		return NewsletterEntityDto.create(id, name, category.getName(), domain,
+		return NewsletterEntityDto.create(id, name, category.toEntityDto(), domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
 			subscriptionUrl, color);
 	}
