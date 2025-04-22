@@ -5,6 +5,7 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Color;
 
@@ -12,7 +13,10 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -37,7 +41,9 @@ public class NewsletterEntity {
 	@Column(nullable = false)
 	private String name;
 
-	private String categoryName;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "category_id")
+	private CategoryEntity category;
 	// join, index 조회, 정합성...
 
 	@Column(unique = true, nullable = false)
@@ -74,12 +80,12 @@ public class NewsletterEntity {
 			.build();
 	}
 
-	public static NewsletterEntity create(String name, String categoryName, String domain,
+	public static NewsletterEntity create(String name, CategoryEntity category, String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
 		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {
 		return NewsletterEntity.builder()
 			.name(name)
-			.categoryName(categoryName)
+			.category(category)
 			.domain(domain)
 			.mailingList(mailingList)
 			.priority(priority)
@@ -93,14 +99,14 @@ public class NewsletterEntity {
 			.build();
 	}
 
-	public static NewsletterEntity create(UUID id, String name, String categoryName,
+	public static NewsletterEntity create(UUID id, String name, CategoryEntity category,
 		String domain, String mailingList, Integer priority, String imageUrl, String description,
 		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color,
 		LocalDateTime deletedAt) {
 		return NewsletterEntity.builder()
 			.id(id)
 			.name(name)
-			.categoryName(categoryName)
+			.category(category)
 			.domain(domain)
 			.mailingList(mailingList)
 			.priority(priority)
@@ -116,7 +122,7 @@ public class NewsletterEntity {
 	}
 
 	public NewsletterEntityDto toEntityDto() {
-		return NewsletterEntityDto.create(id, name, categoryName, domain,
+		return NewsletterEntityDto.create(id, name, category.getName(), domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
 			subscriptionUrl, color);
 	}

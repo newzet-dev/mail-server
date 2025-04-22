@@ -21,9 +21,7 @@ public class NewsletterFixture {
 	}
 
 	public static NewsletterEntityDto createDtoByEntity(NewsletterEntity entity) {
-		return NewsletterEntityDto.create(entity.getId(), entity.getName(), entity.getCategoryName(),
-			entity.getDomain(), entity.getMailingList(), entity.getPriority(), entity.getImageUrl(), entity.getDescription(),
-			entity.getDetail(), entity.getStatus(), entity.getDayOfWeek(), entity.getSubscriptionUrl(), entity.getColor());
+		return entity.toEntityDto();
 	}
 
 	public static NewsletterEntity createDefaultEntity() {

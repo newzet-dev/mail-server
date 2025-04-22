@@ -1,16 +1,15 @@
 package com.newzet.api.newsletter.business;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
-import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
-import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
-import com.newzet.api.common.lock.exception.UnknownLockException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
@@ -38,6 +37,18 @@ public class NewsletterService {
 		return findByDomainOnCache(domain)
 			.orElseGet(() -> findOrCreateByDomainOrMailingListWithLock(name, domain, mailingList));
 	}
+
+	public List<Newsletter> searchNewsletterListByNameOrCategoryId(String name, UUID categoryId) {
+		return newsletterRepository.findNewsLetterListByNameOrCategoryId(name, categoryId)
+			.stream().map(NewsletterEntityDto::toDomain)
+			.toList();
+	}
+
+	public Newsletter getNewsLetterById(UUID newsletterId) {
+		return newsletterRepository.getById(newsletterId)
+			.toDomain();
+	}
+
 
 	private Optional<Newsletter> findByDomainOnCache(String domain) {
 		return cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)
