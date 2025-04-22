@@ -4,17 +4,17 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.repository.NewsletterEntity;
 
 public interface NewsletterRepository {
 
-	NewsletterEntityDto save(String name, String domain, String mailingList, String status);
+	NewsletterEntity save(String name, String domain, String mailingList, String status);
 
-	Optional<NewsletterEntityDto> findByDomainOrMailingList(String domain, String mailingList);
+	Optional<NewsletterEntity> findByDomainOrMailingList(String domain, String mailingList);
 
-	List<NewsletterEntityDto> findNewsLetterListByNameOrCategoryId(String name, UUID categoryId);
+	List<NewsletterEntity> findNewsLetterListByNameOrCategoryId(String name, UUID categoryId);
 
-	NewsletterEntityDto getById(UUID id);
+	NewsletterEntity getById(UUID id);
 
-	List<NewsletterEntityDto> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList);
+	List<NewsletterEntity> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList);
 }

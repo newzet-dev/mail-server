@@ -3,12 +3,10 @@ package com.newzet.api.newsletter.repository;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import com.newzet.api.newsletter.business.NewsletterRepository;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 
 import lombok.RequiredArgsConstructor;
@@ -20,42 +18,34 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 	private final NewsletterJpaRepository newsletterJpaRepository;
 
 	@Override
-	public NewsletterEntityDto save(String name, String domain, String mailingList, String status) {
-		// NewsletterEntity newsletterEntity = NewsletterEntity.create(name, domain, mailingList,
-		// 	status);
-		// NewsletterEntity savedNewsletterEntity = newsletterJpaRepository.save(newsletterEntity);
-		// return savedNewsletterEntity.toEntityDto();
-		return null;
+	public NewsletterEntity save(String name, String domain, String mailingList, String status) {
+		NewsletterEntity newsletterEntity = NewsletterEntity.create(name, domain, mailingList,
+			status);
+		return newsletterJpaRepository.save(newsletterEntity);
 	}
 
 	@Override
-	public Optional<NewsletterEntityDto> findByDomainOrMailingList(String domain,
+	public Optional<NewsletterEntity> findByDomainOrMailingList(String domain,
 		String mailingList) {
-		return newsletterJpaRepository.findNewsletterByDomainOrMailingList(domain, mailingList)
-			.map(NewsletterEntity::toEntityDto);
+		return newsletterJpaRepository.findNewsletterByDomainOrMailingList(domain, mailingList);
 	}
 
 	@Override
-	public List<NewsletterEntityDto> findNewsLetterListByNameOrCategoryId(String name,
+	public List<NewsletterEntity> findNewsLetterListByNameOrCategoryId(String name,
 		UUID categoryId) {
-		return newsletterJpaRepository.findNewsletterListByNameOrCategoryId(name, categoryId)
-			.stream()
-			.map(NewsletterEntity::toEntityDto)
-			.toList();
+		return newsletterJpaRepository.findNewsletterListByNameOrCategoryId(name, categoryId);
 	}
 
 	@Override
-	public NewsletterEntityDto getById(UUID id) {
+	public NewsletterEntity getById(UUID id) {
 		return newsletterJpaRepository.findById(id)
-			.orElseThrow(() -> new NoNewsletterException("해당 id의 뉴스레터가 존재하지 않습니다."))
-			.toEntityDto();
+			.orElseThrow(() -> new NoNewsletterException("해당 id의 뉴스레터가 존재하지 않습니다."));
 	}
 
 	@Override
-	public List<NewsletterEntityDto> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList) {
+	public List<NewsletterEntity> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList) {
 		return newsletterJpaRepository.findAll().stream()
 			.filter(newsletterEntity -> categoryIdList.contains(newsletterEntity.getId()))
-			.map(NewsletterEntity::toEntityDto)
 			.toList();
 	}
 }

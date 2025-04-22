@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.newzet.api.category.repository.CategoryEntity;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.domain.Color;
 
 import jakarta.persistence.Column;
@@ -121,8 +121,8 @@ public class NewsletterEntity {
 			.build();
 	}
 
-	public NewsletterEntityDto toEntityDto() {
-		return NewsletterEntityDto.create(id, name, category.toEntityDto(), domain,
+	public NewsletterCacheDto toCacheDto() {
+		return NewsletterCacheDto.create(id, name, category, domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
 			subscriptionUrl, color);
 	}
