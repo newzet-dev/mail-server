@@ -42,6 +42,7 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 			.orElseThrow(() -> new NoNewsletterException("해당 id의 뉴스레터가 존재하지 않습니다."));
 	}
 
+	//TODO: 다음 이슈에서 뉴스레터 추천 API 구현할때 사용할 예정
 	@Override
 	public List<NewsletterEntity> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList) {
 		return newsletterJpaRepository.findAll().stream()

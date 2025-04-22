@@ -76,7 +76,7 @@ public class NewsletterEntity {
 			.name(name)
 			.domain(domain)
 			.mailingList(mailingList)
-			.status(NewsletterEntityStatus.valueOf(status).toString())
+			.status(status)
 			.build();
 	}
 

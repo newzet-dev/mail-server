@@ -2,6 +2,7 @@ package com.newzet.api.newsletter.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.junit.jupiter.api.Test;
@@ -11,7 +12,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import com.newzet.api.category.repository.CategoryEntity;
+import com.newzet.api.category.repository.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
+import com.newzet.api.newsletter.fixture.NewsletterFixture;
 
 @DataJpaTest
 @Import(NewsletterRepositoryImpl.class)
@@ -21,6 +25,10 @@ class NewsletterRepositoryImplTest {
 
 	@Autowired
 	private NewsletterRepositoryImpl newsletterRepository;
+	@Autowired
+	private CategoryJpaRepository categoryJpaRepository;
+	@Autowired
+	private NewsletterJpaRepository newsletterJpaRepository;
 
 	private static void verifyFindByDomainOrMailingList(NewsletterEntity n1,
 		NewsletterEntity n2) {
@@ -100,6 +108,62 @@ class NewsletterRepositoryImplTest {
 
 		// Then
 		assertEquals(Optional.empty(), foundNewsletter);
+	}
+
+	@Test
+	public void findNewsletterListByNameOrCategoryId_WithName() {
+		//Given
+		NewsletterEntity savedNewsletter = saveNewsletter();
+
+		//When
+		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
+			savedNewsletter.getName(), null);
+
+		//Then
+		assertEquals(1, newsletterList.size());
+		assertEquals(newsletterList.get(0).getName(), savedNewsletter.getName());
+	}
+
+	@Test
+	public void findNewsletterListByNameOrCategoryId_WithCategoryId() {
+		//Given
+		CategoryEntity category = categoryJpaRepository.save(CategoryEntity.create("testCategory", "test", "test"));
+		NewsletterEntity newsletter = newsletterJpaRepository.save(NewsletterFixture.createDefaultEntity(category));
+
+		//When
+		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(null, category.getId());
+
+		//Then
+		assertEquals(1, newsletterList.size());
+		assertEquals(newsletterList.get(0).getName(), newsletter.getName());
+		assertEquals(category.getId(), newsletter.getCategory().getId());
+	}
+
+	@Test
+	public void findNewsletterListByNameOrCategoryId_WithName_andCategoryId() {
+		//Given
+		CategoryEntity category = categoryJpaRepository.save(CategoryEntity.create("testCategory", "test", "test"));
+		NewsletterEntity newsletter = newsletterJpaRepository.save(NewsletterFixture.createDefaultEntity(category));
+
+		//When
+		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(newsletter.getName(), category.getId());
+
+		//Then
+		assertEquals(1, newsletterList.size());
+		assertEquals(newsletterList.get(0).getName(), newsletter.getName());
+		assertEquals(category.getId(), newsletter.getCategory().getId());
+	}
+
+	@Test
+	public void getNewsletterById() {
+		//Given
+		NewsletterEntity newsletter = newsletterJpaRepository.save(NewsletterFixture.createDefaultEntity());
+
+		//When
+		NewsletterEntity getNewsletterEntity = newsletterRepository.getById(newsletter.getId());
+
+		//Then
+		assertEquals(newsletter, getNewsletterEntity);
 	}
 
 	private NewsletterEntity saveNewsletter() {
