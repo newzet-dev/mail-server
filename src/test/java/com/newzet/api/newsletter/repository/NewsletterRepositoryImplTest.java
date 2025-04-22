@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -16,6 +17,7 @@ import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.category.repository.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
+import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 
 @DataJpaTest
 @Import(NewsletterRepositoryImpl.class)
@@ -127,11 +129,14 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void findNewsletterListByNameOrCategoryId_WithCategoryId() {
 		//Given
-		CategoryEntity category = categoryJpaRepository.save(CategoryEntity.create("testCategory", "test", "test"));
-		NewsletterEntity newsletter = newsletterJpaRepository.save(NewsletterFixture.createDefaultEntity(category));
+		CategoryEntity category = categoryJpaRepository.save(
+			CategoryEntity.create("testCategory", "test", "test"));
+		NewsletterEntity newsletter = newsletterJpaRepository.save(
+			NewsletterFixture.createDefaultEntity(category));
 
 		//When
-		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(null, category.getId());
+		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
+			null, category.getId());
 
 		//Then
 		assertEquals(1, newsletterList.size());
@@ -142,11 +147,14 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void findNewsletterListByNameOrCategoryId_WithName_andCategoryId() {
 		//Given
-		CategoryEntity category = categoryJpaRepository.save(CategoryEntity.create("testCategory", "test", "test"));
-		NewsletterEntity newsletter = newsletterJpaRepository.save(NewsletterFixture.createDefaultEntity(category));
+		CategoryEntity category = categoryJpaRepository.save(
+			CategoryEntity.create("testCategory", "test", "test"));
+		NewsletterEntity newsletter = newsletterJpaRepository.save(
+			NewsletterFixture.createDefaultEntity(category));
 
 		//When
-		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(newsletter.getName(), category.getId());
+		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
+			newsletter.getName(), category.getId());
 
 		//Then
 		assertEquals(1, newsletterList.size());
@@ -157,13 +165,24 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void getNewsletterById() {
 		//Given
-		NewsletterEntity newsletter = newsletterJpaRepository.save(NewsletterFixture.createDefaultEntity());
+		NewsletterEntity newsletter = newsletterJpaRepository.save(
+			NewsletterFixture.createDefaultEntity());
 
 		//When
 		NewsletterEntity getNewsletterEntity = newsletterRepository.getById(newsletter.getId());
 
 		//Then
 		assertEquals(newsletter, getNewsletterEntity);
+	}
+
+	@Test
+	public void getNewsletterById_With_NonExistentId() {
+		// Given
+		UUID nonExistentId = UUID.randomUUID();
+
+		//When Then
+		assertThrows(NoNewsletterException.class,
+			() -> newsletterRepository.getById(nonExistentId));
 	}
 
 	private NewsletterEntity saveNewsletter() {
