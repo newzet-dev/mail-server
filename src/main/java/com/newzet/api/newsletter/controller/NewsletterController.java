@@ -1,7 +1,5 @@
 package com.newzet.api.newsletter.controller;
 
-import java.util.UUID;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -33,12 +31,8 @@ public class NewsletterController {
 	public ResponseEntity<SuccessResponse<NewsletterListResponse>> getNewsletterListByNameOrCategoryId(
 		@RequestParam(value = "name", required = false) String name,
 		@RequestParam(value = "categoryId", required = false) String categoryId) {
-		UUID categoryUuid = null;
-		if (categoryId != null && !categoryId.isEmpty()) {
-			categoryUuid = UUID.fromString(categoryId);
-		}
 		NewsletterListResponse newsletterListResponse = newsletterService.searchNewsletterListByNameOrCategoryId(
-			name, categoryUuid);
+			name, categoryId);
 		SuccessResponse<NewsletterListResponse> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "뉴스레터 목록 조회 성공", newsletterListResponse);
 
@@ -51,7 +45,7 @@ public class NewsletterController {
 	public ResponseEntity<SuccessResponse<NewsletterInfoResponse>> getNewsletterById(
 		@PathVariable("newsletterId") String newsletterId) {
 		NewsletterInfoResponse newsletterInfoResponse = newsletterService.getNewsLetterById(
-			UUID.fromString(newsletterId));
+			newsletterId);
 		SuccessResponse<NewsletterInfoResponse> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "뉴스레터 상세정보 조회 성공", newsletterInfoResponse);
 

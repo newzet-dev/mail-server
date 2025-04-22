@@ -41,9 +41,13 @@ public class NewsletterService {
 	}
 
 	public NewsletterListResponse searchNewsletterListByNameOrCategoryId(String name,
-		UUID categoryId) {
+		String categoryId) {
+		UUID categoryUuid = null;
+		if (categoryId != null && !categoryId.isEmpty()) {
+			categoryUuid = UUID.fromString(categoryId);
+		}
 		List<NewsletterResponse> newsletterResponseList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
-				name, categoryId).stream()
+				name, categoryUuid).stream()
 			.map(newsletterEntity -> NewsletterResponse.create(newsletterEntity.getId(),
 				newsletterEntity.getName(), newsletterEntity.getImageUrl(),
 				newsletterEntity.getDescription(), newsletterEntity.getPriority()))
@@ -52,8 +56,9 @@ public class NewsletterService {
 		return NewsletterListResponse.create(newsletterResponseList);
 	}
 
-	public NewsletterInfoResponse getNewsLetterById(UUID newsletterId) {
-		NewsletterEntity newsletterEntity = newsletterRepository.getById(newsletterId);
+	public NewsletterInfoResponse getNewsLetterById(String newsletterId) {
+		UUID newsletterUuid = UUID.fromString(newsletterId);
+		NewsletterEntity newsletterEntity = newsletterRepository.getById(newsletterUuid);
 		return NewsletterInfoResponse.create(newsletterEntity.getId(), newsletterEntity.getName(),
 			newsletterEntity.getImageUrl(), newsletterEntity.getDetail(),
 			newsletterEntity.getStatus(),
