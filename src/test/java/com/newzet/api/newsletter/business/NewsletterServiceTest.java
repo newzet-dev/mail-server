@@ -3,6 +3,8 @@ package com.newzet.api.newsletter.business;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.locks.Lock;
@@ -19,6 +21,8 @@ import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
+import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
+import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 
@@ -121,6 +125,40 @@ class NewsletterServiceTest {
 		verify(newsletterRepository, never()).findByDomainOrMailingList(domain, mailingList);
 		verify(cacheUtil, never()).set(eq(CACHE_DOMAIN_PREFIX + domain), any(), anyLong());
 		verify(lockFactory, never()).unlock(lock);
+	}
+
+	@Test
+	public void searchNewsletterListByNameOrCategoryId() {
+		// Given
+		NewsletterEntity newsletter = NewsletterFixture.createEntityWithId();
+		List<NewsletterEntity> newsletterList = new ArrayList<>();
+		newsletterList.add(newsletter);
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class)))
+			.thenReturn(newsletterList);
+
+		// When
+		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
+			newsletter.getName(), categoryEntity.getId());
+
+		// Then
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class));
+		assertEquals(1, searchList.newsletterList().size());
+	}
+
+	@Test
+	public void getNewsletterById() {
+		// Given
+		NewsletterEntity newsletter = NewsletterFixture.createEntityWithId();
+		when(newsletterRepository.getById(any(UUID.class)))
+			.thenReturn(newsletter);
+
+		// When
+		NewsletterInfoResponse newsletterInfoResponse = newsletterService.getNewsLetterById(
+			newsletter.getId());
+
+		// Then
+		verify(newsletterRepository, times(1)).getById(any(UUID.class));
+		assertEquals(newsletterInfoResponse.id(), newsletter.getId().toString());
 	}
 
 	private void verifyValue(NewsletterEntity newsletter) {

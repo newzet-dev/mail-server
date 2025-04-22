@@ -14,17 +14,24 @@ public class NewsletterFixture {
 	private static final String mailingList = "test123";
 
 	public static NewsletterEntity createDefaultEntity() {
-		return NewsletterEntity.create(name, CategoryEntity.create(UUID.randomUUID(), "test", "test", "test"), domain,
-			mailingList,1,"test","test","test","test","test","test", Color.DEFAULT);
+		return NewsletterEntity.create(name,
+			CategoryEntity.create(UUID.randomUUID(), "test", "test", "test"), domain,
+			mailingList, 1, "test", "test", "test", "test", "test", "test", Color.DEFAULT);
+	}
+
+	public static NewsletterEntity createEntityWithId() {
+		return NewsletterEntity.create(UUID.randomUUID(), name,
+			CategoryEntity.create(UUID.randomUUID(), "test", "test", "test"), domain,
+			mailingList, 1, "test", "test", "test", "test", "test", "test", Color.DEFAULT, null);
 	}
 
 	public static NewsletterEntity createDefaultEntity(CategoryEntity categoryEntity) {
 		return NewsletterEntity.create(name, categoryEntity, domain,
-			mailingList,1,"test","test","test","test","test","test", Color.DEFAULT);
+			mailingList, 1, "test", "test", "test", "test", "test", "test", Color.DEFAULT);
 	}
 
 	public static NewsletterCacheDto createDefaultCacheDto(CategoryEntity categoryEntity) {
 		return NewsletterCacheDto.create(UUID.randomUUID(), name, categoryEntity, domain,
-			mailingList,1,"test","test","test","test","test","test", Color.DEFAULT);
+			mailingList, 1, "test", "test", "test", "test", "test", "test", Color.DEFAULT);
 	}
 }
