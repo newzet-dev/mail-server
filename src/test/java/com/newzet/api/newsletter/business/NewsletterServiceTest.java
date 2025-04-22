@@ -152,15 +152,33 @@ class NewsletterServiceTest {
 		NewsletterEntity newsletter = NewsletterFixture.createEntityWithId();
 		List<NewsletterEntity> newsletterList = new ArrayList<>();
 		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class)))
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class)))
 			.thenReturn(newsletterList);
 
 		// When
 		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
-			newsletter.getName(), String.valueOf(categoryEntity.getId()));
+			newsletter.getName(), null);
 
 		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class));
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class));
+		assertEquals(1, searchList.newsletterList().size());
+	}
+
+	@Test
+	public void searchNewsletterListByNameOrCategoryId_whenCategoryIdEmpty() {
+		// Given
+		NewsletterEntity newsletter = NewsletterFixture.createEntityWithId();
+		List<NewsletterEntity> newsletterList = new ArrayList<>();
+		newsletterList.add(newsletter);
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class)))
+			.thenReturn(newsletterList);
+
+		// When
+		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
+			newsletter.getName(), "");
+
+		// Then
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class));
 		assertEquals(1, searchList.newsletterList().size());
 	}
 
