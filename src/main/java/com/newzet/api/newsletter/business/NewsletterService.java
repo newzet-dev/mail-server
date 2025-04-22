@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
+import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
@@ -48,11 +49,16 @@ public class NewsletterService {
 				newsletterEntity.getDescription(), newsletterEntity.getPriority()))
 			.toList();
 
-		return new NewsletterListResponse(newsletterResponseList);
+		return NewsletterListResponse.create(newsletterResponseList);
 	}
 
-	public NewsletterEntity getNewsLetterById(UUID newsletterId) {
-		return newsletterRepository.getById(newsletterId);
+	public NewsletterInfoResponse getNewsLetterById(UUID newsletterId) {
+		NewsletterEntity newsletterEntity = newsletterRepository.getById(newsletterId);
+		return NewsletterInfoResponse.create(newsletterEntity.getId(), newsletterEntity.getName(),
+			newsletterEntity.getImageUrl(), newsletterEntity.getDetail(),
+			newsletterEntity.getStatus(),
+			newsletterEntity.getDayOfWeek(), newsletterEntity.getSubscriptionUrl(), false,
+			newsletterEntity.getCategory().getName());
 	}
 
 	private Optional<NewsletterEntity> findByDomainOnCache(String domain) {
