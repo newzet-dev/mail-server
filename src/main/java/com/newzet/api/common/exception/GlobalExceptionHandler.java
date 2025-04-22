@@ -31,6 +31,15 @@ public class GlobalExceptionHandler {
 		return problemDetail;
 	}
 
+	@ExceptionHandler(IllegalArgumentException.class)
+	public ProblemDetail handleUUIDConvertEx(IllegalArgumentException e) {
+		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.OK);
+		problemDetail.setTitle("UUID Convert Error");
+		problemDetail.setProperty("code", ResponseCode.INVALID_ARGUMENTS);
+		problemDetail.setProperty("message", e.getMessage());
+		return problemDetail;
+	}
+
 	@ExceptionHandler(Exception.class)
 	public ProblemDetail handleUnknownException(Exception e) {
 		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.OK);
