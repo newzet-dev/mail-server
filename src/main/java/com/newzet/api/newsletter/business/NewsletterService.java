@@ -11,6 +11,8 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
+import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
+import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 
@@ -37,14 +39,21 @@ public class NewsletterService {
 			.orElseGet(() -> findOrCreateByDomainOrMailingListWithLock(name, domain, mailingList));
 	}
 
-	public List<NewsletterEntity> searchNewsletterListByNameOrCategoryId(String name, UUID categoryId) {
-		return newsletterRepository.findNewsLetterListByNameOrCategoryId(name, categoryId);
+	public NewsletterListResponse searchNewsletterListByNameOrCategoryId(String name,
+		UUID categoryId) {
+		List<NewsletterResponse> newsletterResponseList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
+				name, categoryId).stream()
+			.map(newsletterEntity -> NewsletterResponse.create(newsletterEntity.getId(),
+				newsletterEntity.getName(), newsletterEntity.getImageUrl(),
+				newsletterEntity.getDescription(), newsletterEntity.getPriority()))
+			.toList();
+
+		return new NewsletterListResponse(newsletterResponseList);
 	}
 
 	public NewsletterEntity getNewsLetterById(UUID newsletterId) {
 		return newsletterRepository.getById(newsletterId);
 	}
-
 
 	private Optional<NewsletterEntity> findByDomainOnCache(String domain) {
 		return cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)
