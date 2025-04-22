@@ -27,14 +27,18 @@ public class NewsletterController {
 
 	private final NewsletterService newsletterService;
 
-	@GetMapping
+	@GetMapping("/search")
 	@Operation(summary = "뉴스레터 리스트 조회",
 		description = "뉴스레터 이름 혹은 카테고리 id로 뉴스테러 리스트를 조회한다.")
 	public ResponseEntity<SuccessResponse<NewsletterListResponse>> getNewsletterListByNameOrCategoryId(
 		@RequestParam(value = "name", required = false) String name,
 		@RequestParam(value = "categoryId", required = false) String categoryId) {
+		UUID categoryUuid = null;
+		if (categoryId != null && !categoryId.isEmpty()) {
+			categoryUuid = UUID.fromString(categoryId);
+		}
 		NewsletterListResponse newsletterListResponse = newsletterService.searchNewsletterListByNameOrCategoryId(
-			name, UUID.fromString(categoryId));
+			name, categoryUuid);
 		SuccessResponse<NewsletterListResponse> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "뉴스레터 목록 조회 성공", newsletterListResponse);
 
