@@ -14,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.data.redis.core.RedisTemplate;
 
+import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.JwtFactory;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.config.JwtTestConfig;
@@ -38,6 +39,7 @@ class RedisTokenRepositoryImplIntegrationTest {
 	private UUID userId;
 	private String deviceType;
 	private Token refreshToken;
+	private TokenDTO refreshTokenDTO;
 
 	@BeforeEach
 	void setUp() {
@@ -47,15 +49,17 @@ class RedisTokenRepositoryImplIntegrationTest {
 		deviceType = "mobile";
 
 		refreshToken = jwtFactory.createRefreshToken(userId);
+		refreshTokenDTO = refreshToken.toTokenDTO();
 	}
 
 	@Test
 	public void saveToken_whenValidInputs_thenTokenIsStored() {
 		// When
-		tokenRepository.saveToken(userId, deviceType, refreshToken);
+		tokenRepository.saveToken(userId, deviceType, refreshTokenDTO);
 
 		// Then
-		Optional<Token> foundToken = tokenRepository.findToken(userId, deviceType);
+		TokenDTO foundTokenDTO = tokenRepository.findToken(userId, deviceType);
+		Optional<Token> foundToken = jwtFactory.parseToken(foundTokenDTO.value());
 
 		assertThat(foundToken).isPresent();
 		assertThat(foundToken.get().getValue()).isEqualTo(refreshToken.getValue());
@@ -64,34 +68,35 @@ class RedisTokenRepositoryImplIntegrationTest {
 	}
 
 	@Test
-	public void findToken_whenTokenDoesNotExist_thenReturnsEmpty() {
+	public void findToken_whenTokenDoesNotExist_thenReturnsNullTokenValue() {
 		// Given
 		UUID nonExistingUserId = UUID.randomUUID();
 
 		// When
-		Optional<Token> result = tokenRepository.findToken(nonExistingUserId, deviceType);
+		TokenDTO result = tokenRepository.findToken(nonExistingUserId, deviceType);
 
 		// Then
-		assertThat(result).isEmpty();
+		assertThat(result.value()).isNull();
 	}
 
 	@Test
 	public void removeToken_whenTokenExists_thenTokenIsRemoved() {
 		// Given
-		tokenRepository.saveToken(userId, deviceType, refreshToken);
+		tokenRepository.saveToken(userId, deviceType, refreshTokenDTO);
+		UUID nonExistingUserId = UUID.randomUUID();
 
 		// When
 		tokenRepository.removeToken(userId, deviceType);
 
 		// Then
-		Optional<Token> result = tokenRepository.findToken(userId, deviceType);
-		assertThat(result).isEmpty();
+		TokenDTO result = tokenRepository.findToken(nonExistingUserId, deviceType);
+		assertThat(result.value()).isNull();
 	}
 
 	@Test
 	public void getLastRefreshTime_whenTimeIsSet_thenReturnsCorrectTime() {
 		// Given
-		tokenRepository.saveToken(userId, deviceType, refreshToken);
+		tokenRepository.saveToken(userId, deviceType, refreshTokenDTO);
 		long beforeUpdate = System.currentTimeMillis();
 
 		// When
@@ -119,21 +124,22 @@ class RedisTokenRepositoryImplIntegrationTest {
 	@Test
 	public void saveToken_whenCalledMultipleTimesForSameUser_thenOverwritesPreviousToken() {
 		// Given
-		tokenRepository.saveToken(userId, deviceType, refreshToken);
+		tokenRepository.saveToken(userId, deviceType, refreshTokenDTO);
 
 		sleep(1000);
 
 		Token newRefreshToken = jwtFactory.createRefreshToken(userId);
+		TokenDTO newRefreshTokenDTO = newRefreshToken.toTokenDTO();
 
 		// When
-		tokenRepository.saveToken(userId, deviceType, newRefreshToken);
+		tokenRepository.saveToken(userId, deviceType, newRefreshTokenDTO);
 
 		// Then
-		Optional<Token> foundToken = tokenRepository.findToken(userId, deviceType);
+		TokenDTO foundTokenDTO = tokenRepository.findToken(userId, deviceType);
 
-		assertThat(foundToken).isPresent();
-		assertThat(foundToken.get().getValue()).isEqualTo(newRefreshToken.getValue());
-		assertThat(foundToken.get().getValue()).isNotEqualTo(refreshToken.getValue());
+		assertThat(foundTokenDTO).isNotNull();
+		assertThat(foundTokenDTO.value()).isEqualTo(newRefreshToken.getValue());
+		assertThat(foundTokenDTO.value()).isNotEqualTo(refreshToken.getValue());
 	}
 
 	@Test
@@ -141,23 +147,24 @@ class RedisTokenRepositoryImplIntegrationTest {
 		// Given
 		String otherDeviceType = "desktop";
 		Token otherDeviceToken = jwtFactory.createRefreshToken(userId);
+		TokenDTO otherDeviceTokenDTO = otherDeviceToken.toTokenDTO();
 
 		// When
-		tokenRepository.saveToken(userId, deviceType, refreshToken);
-		tokenRepository.saveToken(userId, otherDeviceType, otherDeviceToken);
+		tokenRepository.saveToken(userId, deviceType, refreshTokenDTO);
+		tokenRepository.saveToken(userId, otherDeviceType, otherDeviceTokenDTO);
 
 		// Then
-		Optional<Token> mobileToken = tokenRepository.findToken(userId, deviceType);
-		Optional<Token> desktopToken = tokenRepository.findToken(userId, otherDeviceType);
+		TokenDTO mobileToken = tokenRepository.findToken(userId, deviceType);
+		TokenDTO desktopToken = tokenRepository.findToken(userId, otherDeviceType);
 
-		assertThat(mobileToken).isPresent();
-		assertThat(desktopToken).isPresent();
-		assertThat(mobileToken.get().getValue()).isEqualTo(refreshToken.getValue());
-		assertThat(desktopToken.get().getValue()).isEqualTo(otherDeviceToken.getValue());
+		assertThat(mobileToken).isNotNull();
+		assertThat(desktopToken).isNotNull();
+		assertThat(mobileToken.value()).isEqualTo(refreshToken.getValue());
+		assertThat(desktopToken.value()).isEqualTo(otherDeviceToken.getValue());
 
 		tokenRepository.removeToken(userId, deviceType);
 
-		assertThat(tokenRepository.findToken(userId, deviceType)).isEmpty();
-		assertThat(tokenRepository.findToken(userId, otherDeviceType)).isPresent();
+		assertThat(tokenRepository.findToken(userId, deviceType)).isNotNull();
+		assertThat(tokenRepository.findToken(userId, otherDeviceType)).isNotNull();
 	}
 }
