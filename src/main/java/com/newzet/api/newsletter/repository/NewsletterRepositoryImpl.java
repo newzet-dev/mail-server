@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import com.newzet.api.newsletter.business.NewsletterRepository;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 
 import lombok.RequiredArgsConstructor;
@@ -18,35 +19,40 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 	private final NewsletterJpaRepository newsletterJpaRepository;
 
 	@Override
-	public NewsletterEntity save(String name, String domain, String mailingList, String status) {
+	public NewsletterEntityDto save(String name, String domain, String mailingList, String status) {
 		NewsletterEntity newsletterEntity = NewsletterEntity.create(name, domain, mailingList,
 			status);
-		return newsletterJpaRepository.save(newsletterEntity);
+		return newsletterJpaRepository.save(newsletterEntity).toEntityDto();
 	}
 
 	@Override
-	public Optional<NewsletterEntity> findByDomainOrMailingList(String domain,
+	public Optional<NewsletterEntityDto> findByDomainOrMailingList(String domain,
 		String mailingList) {
-		return newsletterJpaRepository.findNewsletterByDomainOrMailingList(domain, mailingList);
+		return newsletterJpaRepository.findNewsletterByDomainOrMailingList(domain, mailingList)
+			.map(NewsletterEntity::toEntityDto);
 	}
 
 	@Override
-	public List<NewsletterEntity> findNewsLetterListByNameOrCategoryId(String name,
+	public List<NewsletterEntityDto> findNewsLetterListByNameOrCategoryId(String name,
 		UUID categoryId) {
-		return newsletterJpaRepository.findNewsletterListByNameOrCategoryId(name, categoryId);
+		return newsletterJpaRepository.findNewsletterListByNameOrCategoryId(name, categoryId).stream()
+			.map(NewsletterEntity::toEntityDto)
+			.toList();
 	}
 
 	@Override
-	public NewsletterEntity getById(UUID id) {
+	public NewsletterEntityDto getById(UUID id) {
 		return newsletterJpaRepository.findById(id)
-			.orElseThrow(() -> new NoNewsletterException("해당 id의 뉴스레터가 존재하지 않습니다."));
+			.orElseThrow(() -> new NoNewsletterException("해당 id의 뉴스레터가 존재하지 않습니다."))
+			.toEntityDto();
 	}
 
 	//TODO: 다음 이슈에서 뉴스레터 추천 API 구현할때 사용할 예정
 	@Override
-	public List<NewsletterEntity> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList) {
+	public List<NewsletterEntityDto> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList) {
 		return newsletterJpaRepository.findAll().stream()
 			.filter(newsletterEntity -> categoryIdList.contains(newsletterEntity.getId()))
+			.map(NewsletterEntity::toEntityDto)
 			.toList();
 	}
 }

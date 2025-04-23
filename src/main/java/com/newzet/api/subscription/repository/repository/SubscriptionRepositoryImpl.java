@@ -6,6 +6,7 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import com.newzet.api.subscription.business.service.SubscriptionRepository;
@@ -23,10 +24,11 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 	private final SubscriptionJpaRepository subscriptionJpaRepository;
 
 	@Override
-	public SubscriptionEntityDto create(UserEntityDto userDto, NewsletterEntity newsletterEntity) {
+	public SubscriptionEntityDto create(UserEntityDto userDto, NewsletterEntityDto newsletterDto) {
 		UserEntity user = UserEntity.create(userDto.getId(), userDto.getEmail(),
 			userDto.getNickname(), userDto.getStatus());
-		SubscriptionEntity subscriptionEntity = SubscriptionEntity.create(user, newsletterEntity,
+		NewsletterEntity newsletter = newsletterDto.toEntity();
+		SubscriptionEntity subscriptionEntity = SubscriptionEntity.create(user, newsletter,
 			LocalDateTime.now(), null);
 		return subscriptionJpaRepository.save(subscriptionEntity).toEntityDto();
 	}

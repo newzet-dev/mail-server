@@ -2,9 +2,10 @@ package com.newzet.api.newsletter.business.dto;
 
 import java.util.UUID;
 
-import com.newzet.api.category.domain.Category;
+import com.newzet.api.category.business.dto.CategoryEntityDto;
 import com.newzet.api.newsletter.domain.Color;
 import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.repository.NewsletterEntity;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -14,10 +15,10 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @Builder(access = AccessLevel.PROTECTED)
 @RequiredArgsConstructor(access = AccessLevel.PRIVATE)
-public class NewsletterCacheDto {
+public class NewsletterEntityDto {
 	private final UUID id;
 	private final String name;
-	private final Category category;
+	private final CategoryEntityDto category;
 	private final String domain;
 	private final String mailingList;
 	private final Integer priority;
@@ -29,11 +30,11 @@ public class NewsletterCacheDto {
 	private final String subscriptionUrl;
 	private final Color color;
 
-	public static NewsletterCacheDto create(UUID id, String name, Category category,
+	public static NewsletterEntityDto create(UUID id, String name, CategoryEntityDto category,
 		String domain,
 		String mailingList, Integer priority, String imageUrl, String description,
 		String detail, String status, String dayOfWeek, String subscriptionUrl, Color color) {
-		return NewsletterCacheDto.builder()
+		return NewsletterEntityDto.builder()
 			.id(id)
 			.name(name)
 			.category(category)
@@ -51,9 +52,14 @@ public class NewsletterCacheDto {
 	}
 
 	public Newsletter toDomain() {
-		return Newsletter.create(id, name, category, domain,
+		return Newsletter.create(id, name, category.toDomain(), domain,
 			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
 			subscriptionUrl, color);
 	}
 
+	public NewsletterEntity toEntity() {
+		return NewsletterEntity.create(id, name, category.toEntity(), domain,
+			mailingList, priority, imageUrl, description, detail, status, dayOfWeek,
+			subscriptionUrl, color,null);
+	}
 }

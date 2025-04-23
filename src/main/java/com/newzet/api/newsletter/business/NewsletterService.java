@@ -12,11 +12,11 @@ import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.util.UuidConverter;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
-import com.newzet.api.newsletter.repository.NewsletterEntity;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -36,7 +36,7 @@ public class NewsletterService {
 	private final CacheUtil cacheUtil;
 	private final LockFactory lockFactory;
 
-	public NewsletterEntity findOrCreateNewsletter(String name, String domain, String mailingList) {
+	public NewsletterEntityDto findOrCreateNewsletter(String name, String domain, String mailingList) {
 		return findByDomainOnCache(domain)
 			.orElseGet(() -> findOrCreateByDomainOrMailingListWithLock(name, domain, mailingList));
 	}
@@ -56,20 +56,20 @@ public class NewsletterService {
 
 	public NewsletterInfoResponse getNewsLetterById(String newsletterId) {
 		UUID newsletterUuid = UuidConverter.convert(newsletterId);
-		NewsletterEntity newsletterEntity = newsletterRepository.getById(newsletterUuid);
-		return NewsletterInfoResponse.create(newsletterEntity.getId(), newsletterEntity.getName(),
-			newsletterEntity.getImageUrl(), newsletterEntity.getDetail(),
-			newsletterEntity.getStatus(),
-			newsletterEntity.getDayOfWeek(), newsletterEntity.getSubscriptionUrl(), false,
-			newsletterEntity.getCategory().getName());
+		NewsletterEntityDto newsletter = newsletterRepository.getById(newsletterUuid);
+		return NewsletterInfoResponse.create(newsletter.getId(), newsletter.getName(),
+			newsletter.getImageUrl(), newsletter.getDetail(),
+			newsletter.getStatus(),
+			newsletter.getDayOfWeek(), newsletter.getSubscriptionUrl(), false,
+			newsletter.getCategory().getName());
 	}
 
-	private Optional<NewsletterEntity> findByDomainOnCache(String domain) {
+	private Optional<NewsletterEntityDto> findByDomainOnCache(String domain) {
 		return cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)
-			.map(NewsletterCacheDto::toEntity);
+			.map(newsletterCacheDto -> newsletterCacheDto.toDomain().toEntityDto());
 	}
 
-	private NewsletterEntity findOrCreateByDomainOrMailingListWithLock(String name, String domain,
+	private NewsletterEntityDto findOrCreateByDomainOrMailingListWithLock(String name, String domain,
 		String mailingList) {
 		Lock lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
 			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
@@ -81,22 +81,22 @@ public class NewsletterService {
 		}
 	}
 
-	private NewsletterEntity findOrCreateByDomainOrMailingListInDatabase(String name, String domain,
+	private NewsletterEntityDto findOrCreateByDomainOrMailingListInDatabase(String name, String domain,
 		String mailingList) {
 		return newsletterRepository
 			.findByDomainOrMailingList(domain, mailingList)
 			.map(newsletter -> {
-				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(),
+				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toDomain().toCacheDto(),
 					CACHE_DURATION);
 				return newsletter;
 			})
 			.orElseGet(() -> createNewsletter(name, domain, mailingList));
 	}
 
-	private NewsletterEntity createNewsletter(String name, String domain, String mailingList) {
-		NewsletterEntity savedNewsletter = newsletterRepository.save(name, domain, mailingList,
+	private NewsletterEntityDto createNewsletter(String name, String domain, String mailingList) {
+		NewsletterEntityDto savedNewsletter = newsletterRepository.save(name, domain, mailingList,
 			NewsletterStatus.UNREGISTERED.name());
-		cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, savedNewsletter.toCacheDto(), CACHE_DURATION);
+		cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, savedNewsletter.toDomain().toCacheDto(), CACHE_DURATION);
 		return savedNewsletter;
 	}
 }
