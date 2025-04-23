@@ -34,15 +34,16 @@ public class LockAspect {
 
 		Lock lock = lockFactory.tryLock(prefix + ":" + key, waitTime, leaseTime);
 
+		// 현재 쓰레드에 트랜잭션이 열려 있다면 해제 예약
 		if (TransactionSynchronizationManager.isSynchronizationActive()) {
 			TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
 				@Override
 				public void afterCompletion(int status) {
-					lockFactory.unlock(lock); // 트랜잭션 커밋/롤백 후에 해제
+					lockFactory.unlock(lock);
 				}
 			});
 		} else {
-			// 비트랜잭션 환경에서는 바로 unlock
+			// 트랜잭션 없으면 즉시 해제
 			lockFactory.unlock(lock);
 		}
 

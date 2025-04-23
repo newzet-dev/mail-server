@@ -15,10 +15,7 @@ public class LockTestService {
 	public void run(String domain, List<String> trace) {
 		trace.add("1.서비스 로직 진입");
 		innerDBMethod(trace);
-	}
 
-	private void innerDBMethod(List<String> trace) {
-		trace.add("2.DB 접근이 발생하는 내부 메서드 진입");
 		TransactionSynchronizationManager.registerSynchronization(
 			new TransactionSynchronization() {
 				@Override
@@ -27,5 +24,9 @@ public class LockTestService {
 				}
 			}
 		);
+	}
+
+	private void innerDBMethod(List<String> trace) {
+		trace.add("2.DB 접근이 발생하는 내부 메서드 진입");
 	}
 }
