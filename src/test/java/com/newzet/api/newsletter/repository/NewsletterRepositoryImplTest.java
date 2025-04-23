@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Import;
 import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.category.repository.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
+import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
 import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 
@@ -32,8 +33,8 @@ class NewsletterRepositoryImplTest {
 	@Autowired
 	private NewsletterJpaRepository newsletterJpaRepository;
 
-	private static void verifyFindByDomainOrMailingList(NewsletterEntity n1,
-		NewsletterEntity n2) {
+	private static void verifyFindByDomainOrMailingList(NewsletterEntityDto n1,
+		NewsletterEntityDto n2) {
 		assertEquals((n1.getId()), n2.getId());
 		assertEquals(n1.getDomain(), n2.getDomain());
 		assertEquals(n1.getName(), n2.getName());
@@ -50,7 +51,7 @@ class NewsletterRepositoryImplTest {
 		String status = "REGISTERED";
 
 		// When
-		NewsletterEntity savedNewsletter = newsletterRepository
+		NewsletterEntityDto savedNewsletter = newsletterRepository
 			.save(name, domain, mailingList, status);
 
 		// Then
@@ -62,10 +63,10 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void findByDomainOrMailingList_whenNewsletterExist_returnNewsletterEntity() {
 		//Given
-		NewsletterEntity savedNewsletter = saveNewsletter();
+		NewsletterEntityDto savedNewsletter = saveNewsletter();
 
 		//When
-		Optional<NewsletterEntity> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
 			savedNewsletter.getDomain(), savedNewsletter.getMailingList());
 
 		// Then
@@ -76,10 +77,10 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void findByDomainOrMailingList_whenNewsletterExistByDomain_returnNewsletterEntity() {
 		//Given
-		NewsletterEntity savedNewsletter = saveNewsletter();
+		NewsletterEntityDto savedNewsletter = saveNewsletter();
 
 		//When
-		Optional<NewsletterEntity> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
 			savedNewsletter.getDomain(), null);
 
 		// Then
@@ -90,10 +91,10 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void findByDomainOrMailingList_whenNewsletterExistByMailingList_returnNewsletterEntity() {
 		//Given
-		NewsletterEntity savedNewsletter = saveNewsletter();
+		NewsletterEntityDto savedNewsletter = saveNewsletter();
 
 		//When
-		Optional<NewsletterEntity> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
 			"noexist@domain.com",
 			savedNewsletter.getMailingList());
 
@@ -105,7 +106,7 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void findByDomainOrMailingList_whenNewsletterNoExist_returnEmpty() {
 		//When
-		Optional<NewsletterEntity> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
+		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
 			"test@example.com", "test123");
 
 		// Then
@@ -115,10 +116,10 @@ class NewsletterRepositoryImplTest {
 	@Test
 	public void findNewsletterListByNameOrCategoryId_WithName() {
 		//Given
-		NewsletterEntity savedNewsletter = saveNewsletter();
+		NewsletterEntityDto savedNewsletter = saveNewsletter();
 
 		//When
-		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
+		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
 			savedNewsletter.getName(), null);
 
 		//Then
@@ -135,7 +136,7 @@ class NewsletterRepositoryImplTest {
 			NewsletterFixture.createDefaultEntity(category));
 
 		//When
-		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
+		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
 			null, category.getId());
 
 		//Then
@@ -153,7 +154,7 @@ class NewsletterRepositoryImplTest {
 			NewsletterFixture.createDefaultEntity(category));
 
 		//When
-		List<NewsletterEntity> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
+		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
 			newsletter.getName(), category.getId());
 
 		//Then
@@ -169,10 +170,12 @@ class NewsletterRepositoryImplTest {
 			NewsletterFixture.createDefaultEntity());
 
 		//When
-		NewsletterEntity getNewsletterEntity = newsletterRepository.getById(newsletter.getId());
+		NewsletterEntityDto getNewsletterEntity = newsletterRepository.getById(newsletter.getId());
 
 		//Then
-		assertEquals(newsletter, getNewsletterEntity);
+		assertEquals(newsletter.getName(), getNewsletterEntity.getName());
+		assertEquals(newsletter.getDomain(), getNewsletterEntity.getDomain());
+		assertEquals(newsletter.getMailingList(), getNewsletterEntity.getMailingList());
 	}
 
 	@Test
@@ -185,7 +188,7 @@ class NewsletterRepositoryImplTest {
 			() -> newsletterRepository.getById(nonExistentId));
 	}
 
-	private NewsletterEntity saveNewsletter() {
+	private NewsletterEntityDto saveNewsletter() {
 		String name = "test";
 		String domain = "test@example.com";
 		String mailingList = "test123";

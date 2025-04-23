@@ -69,7 +69,7 @@ public class SubscriptionServiceTest {
 	@Test
 	public void addSubscription_whenSubscriptionNoExist_createNewSubscription() {
 		//When
-		subscriptionService.addSubscription(user, newsletterEntity);
+		subscriptionService.addSubscription(user, newsletterEntity.toEntityDto());
 
 		//Then
 		verify(subscriptionRepository, times(1)).create(any(), any());
@@ -80,10 +80,10 @@ public class SubscriptionServiceTest {
 	public void subscribe_whenSubscription_doNothing() {
 		//Given
 		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletterEntity);
+			user.toEntityDto(), newsletterEntity.toEntityDto());
 
 		//When
-		subscriptionService.addSubscription(user, newsletterEntity);
+		subscriptionService.addSubscription(user, newsletterEntity.toEntityDto());
 
 		//Then
 		Subscription reactivatedSubscription = subscriptionRepository.getById(
@@ -99,11 +99,11 @@ public class SubscriptionServiceTest {
 	public void subscribe_whenSubscriptionIsDeleted_updateDeletedAtIsNull() {
 		//Given
 		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletterEntity);
+			user.toEntityDto(), newsletterEntity.toEntityDto());
 		subscriptionService.deleteSubscription(subscriptionDto.getId());
 
 		//When
-		subscriptionService.addSubscription(user, newsletterEntity);
+		subscriptionService.addSubscription(user, newsletterEntity.toEntityDto());
 
 		//Then
 		Subscription reactivatedSubscription = subscriptionRepository.getById(
@@ -119,7 +119,7 @@ public class SubscriptionServiceTest {
 	public void deleteSubscription() {
 		//Given
 		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletterEntity);
+			user.toEntityDto(), newsletterEntity.toEntityDto());
 
 		//When
 		subscriptionService.deleteSubscription(subscriptionDto.getId());

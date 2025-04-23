@@ -30,7 +30,7 @@ class NewsletterTest {
 		String domain = "test@example.com";
 		String mailingList = "test123";
 		String status = "UNREGISTERED";
-		NewsletterEntity newsletter = NewsletterFixture.createDefaultEntity();
+		Newsletter newsletter = NewsletterFixture.createDefaultDomain();
 
 		//When
 		NewsletterCacheDto dto = newsletter.toCacheDto();

@@ -56,7 +56,7 @@ public class SubscriptionRepositoryImplTest {
 	public void create_returnSubscriptionEntityDto() {
 		//When
 		SubscriptionEntityDto subscription = subscriptionRepository.create(userDto,
-			newsletterEntity);
+			newsletterEntity.toEntityDto());
 
 		//Then
 		assertTrue(subscriptionRepository.findByUserIdAndNewsletterId(
@@ -67,7 +67,7 @@ public class SubscriptionRepositoryImplTest {
 	public void findByUserIdAndNewsletterId_whenExist_returnSubscriptionEntityDto() {
 		//Given
 		SubscriptionEntityDto subscription = subscriptionRepository.create(userDto,
-			newsletterEntity);
+			newsletterEntity.toEntityDto());
 
 		//When, Then
 		assertTrue(subscriptionRepository.findByUserIdAndNewsletterId(
@@ -88,7 +88,7 @@ public class SubscriptionRepositoryImplTest {
 	public void save() {
 		//Given
 		SubscriptionEntityDto original = subscriptionRepository.create(userDto,
-			newsletterEntity);
+			newsletterEntity.toEntityDto());
 		SubscriptionEntityDto changed = SubscriptionEntityDto.create(
 			original.getId(), LocalDateTime.MAX, LocalDateTime.MIN);
 
