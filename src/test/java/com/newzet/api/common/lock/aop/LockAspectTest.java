@@ -45,7 +45,7 @@ class LockAspectTest {
 		when(lockFactory.tryLock(anyString(), anyLong(), anyLong()))
 			.thenReturn(mockLock);
 		doAnswer(invocation -> {
-			trace.add("락 해제됨");
+			trace.add("4.최종적으로 락 해제됨");
 			return null; // void 리턴이므로 null
 		}).when(lockFactory).unlock(any(Lock.class));
 
@@ -57,9 +57,10 @@ class LockAspectTest {
 		InOrder inOrder = inOrder(lockFactory, mockLock); // 순서대로 호출되어야함을 의미
 		inOrder.verify(lockFactory).tryLock(anyString(), anyLong(), anyLong());
 		inOrder.verify(lockFactory).unlock(any(Lock.class));
-		assertThat(trace).containsExactly("business run!",
-			"트랜잭션 커밋 이후 후처리 실행됨",
-			"락 해제됨");
+		assertThat(trace).containsExactly("1.서비스 로직 진입",
+			"2.DB 접근이 발생하는 내부 메서드 진입",
+			"3.트랜잭션 커밋 완료",
+			"4.최종적으로 락 해제됨");
 
 	}
 
