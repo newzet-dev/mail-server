@@ -11,8 +11,8 @@ import org.springframework.transaction.support.TransactionSynchronizationManager
 @Transactional
 public class LockTestService {
 
-	@WithLock(prefix = "test:domain", domain = "domain123")
-	public void run(List<String> trace) {
+	@WithLock(prefix = "test:domain", key = "#domain")
+	public void run(String domain, List<String> trace) {
 		trace.add("1.서비스 로직 진입");
 		innerDBMethod(trace);
 	}

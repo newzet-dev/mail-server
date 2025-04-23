@@ -51,7 +51,7 @@ class LockAspectTest {
 
 
 		// when
-		lockTestService.run(trace);
+		lockTestService.run("domain123", trace);
 
 		// then
 		InOrder inOrder = inOrder(lockFactory, mockLock); // 순서대로 호출되어야함을 의미

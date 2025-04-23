@@ -9,8 +9,7 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface WithLock {
 	String prefix();
-	String domain();
-
+	String key();
 	long waitTime() default 1000*5L;
 	long leaseTime() default 1000*3L;
 }
