@@ -56,7 +56,7 @@ class LockAspectTest {
 		// then
 		InOrder inOrder = inOrder(lockFactory, mockLock); // 순서대로 호출되어야함을 의미
 		inOrder.verify(lockFactory).tryLock(anyString(), anyLong(), anyLong());
-		inOrder.verify(mockLock).unlock();
+		inOrder.verify(lockFactory).unlock(any(Lock.class));
 		assertThat(trace).containsExactly("business run!",
 			"트랜잭션 커밋 이후 후처리 실행됨",
 			"락 해제됨");
