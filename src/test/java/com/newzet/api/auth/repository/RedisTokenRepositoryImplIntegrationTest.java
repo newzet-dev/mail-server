@@ -18,11 +18,12 @@ import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.JwtFactory;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.config.JwtTestConfig;
+import com.newzet.api.config.OAuthTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
 
 @ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class,
-	JwtTestConfig.class})
+	JwtTestConfig.class, OAuthTestConfig.class})
 @SpringBootTest
 @ComponentScan(basePackages = {"com.newzet.api.auth", "com.newzet.api.common"})
 class RedisTokenRepositoryImplIntegrationTest {
