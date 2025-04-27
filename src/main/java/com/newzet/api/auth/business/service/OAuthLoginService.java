@@ -145,17 +145,16 @@ public class OAuthLoginService {
 
 	@Transactional
 	public JwtResponse linkOAuthWithUser(User user, String oauthMappingEntityId,
-		OAuthProvider provider,
-		String deviceType) {
-		Optional<OAuthMappingEntityDto> OAuthMappingEntity =
+		OAuthProvider provider, String deviceType) {
+		Optional<OAuthMappingEntityDto> oAuthMappingEntityDto =
 			oAuthRepository.findByOauthMappingEntityIdAndProvider(
 				UUID.fromString(oauthMappingEntityId), provider);
 
-		if (OAuthMappingEntity.isEmpty()) {
+		if (oAuthMappingEntityDto.isEmpty()) {
 			throw new OAuthNotFoundException("OAuth 정보를 찾을 수 없습니다.");
 		}
 
-		OAuthMappingEntityDto mapping = OAuthMappingEntity.get();
+		OAuthMappingEntityDto mapping = oAuthMappingEntityDto.get();
 		OAuthMappingEntityDto updatedMapping = mapping.withUserId(user.getId());
 		oAuthRepository.update(updatedMapping);
 
