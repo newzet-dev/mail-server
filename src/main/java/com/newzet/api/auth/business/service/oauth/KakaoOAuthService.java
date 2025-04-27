@@ -47,11 +47,15 @@ public class KakaoOAuthService implements OAuthService {
 			.append("&redirect_uri=").append(redirectUri)
 			.append("&response_type=code");
 
+		appendStateIfPresent(url, state);
+
+		return url.toString();
+	}
+
+	private void appendStateIfPresent(StringBuilder url, String state) {
 		if (state != null) {
 			url.append("&state=").append(state);
 		}
-
-		return url.toString();
 	}
 
 	@Override
