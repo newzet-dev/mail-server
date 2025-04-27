@@ -18,7 +18,7 @@ import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import com.newzet.api.auth.domain.OAuthUserInfo;
-import com.newzet.api.auth.exception.OAuthException;
+import com.newzet.api.auth.exception.OAuthErrorException;
 
 @ExtendWith(MockitoExtension.class)
 class KakaoOAuthServiceTest {
@@ -130,7 +130,7 @@ class KakaoOAuthServiceTest {
 		)).thenThrow(new RestClientException("API Error"));
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthErrorException.class)
 			.isThrownBy(() -> kakaoOAuthService.getUserInfo(code));
 	}
 
@@ -159,7 +159,7 @@ class KakaoOAuthServiceTest {
 		)).thenThrow(new RestClientException("API Error"));
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthErrorException.class)
 			.isThrownBy(() -> kakaoOAuthService.getUserInfo(code));
 	}
 
@@ -191,7 +191,7 @@ class KakaoOAuthServiceTest {
 		)).thenReturn(userInfoResponseEntity);
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthErrorException.class)
 			.isThrownBy(() -> kakaoOAuthService.getUserInfo(code));
 	}
 
@@ -289,7 +289,7 @@ class KakaoOAuthServiceTest {
 		)).thenReturn(tokenResponseEntity);
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthErrorException.class)
 			.isThrownBy(() -> kakaoOAuthService.getUserInfo(code));
 	}
 
@@ -322,7 +322,7 @@ class KakaoOAuthServiceTest {
 		)).thenReturn(userInfoResponseEntity);
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthErrorException.class)
 			.isThrownBy(() -> kakaoOAuthService.getUserInfo(code));
 	}
 
@@ -384,7 +384,7 @@ class KakaoOAuthServiceTest {
 		)).thenReturn(tokenResponseEntity);
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthErrorException.class)
 			.isThrownBy(() -> kakaoOAuthService.getUserInfo(code));
 	}
 

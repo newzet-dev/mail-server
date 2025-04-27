@@ -1,6 +1,6 @@
 package com.newzet.api.auth.domain;
 
-import com.newzet.api.auth.exception.OAuthException;
+import com.newzet.api.auth.exception.OAuthErrorException;
 
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -19,7 +19,7 @@ public class OAuthUserInfo {
 		OAuthProvider provider, OAuthToken oauthToken) {
 
 		if (socialUserId == null) {
-			throw new OAuthException("응답에서 socialUserId를 찾을 수 없습니다.");
+			throw new OAuthErrorException("응답이 올바르지 않아 socialUserId가 전달되지 않았습니다.");
 		}
 
 		return OAuthUserInfo.builder()

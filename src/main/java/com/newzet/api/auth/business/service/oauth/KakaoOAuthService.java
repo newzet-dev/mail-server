@@ -14,7 +14,7 @@ import org.springframework.web.client.RestTemplate;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
 import com.newzet.api.auth.domain.OAuthUserInfo;
-import com.newzet.api.auth.exception.OAuthException;
+import com.newzet.api.auth.exception.OAuthErrorException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -88,7 +88,7 @@ public class KakaoOAuthService implements OAuthService {
 			return kakaoTokenResponse.toDomain();
 
 		} catch (Exception e) {
-			throw new OAuthException("카카오 로그인 처리 중 오류가 발생했습니다.");
+			throw new OAuthErrorException("카카오 로그인 처리 중 오류가 발생했습니다.");
 		}
 	}
 
@@ -111,7 +111,7 @@ public class KakaoOAuthService implements OAuthService {
 			return userInfoResponse.toDomain(OAuthProvider.KAKAO, oauthToken);
 
 		} catch (Exception e) {
-			throw new OAuthException("카카오 로그인 처리 중 오류가 발생했습니다.");
+			throw new OAuthErrorException("카카오 로그인 처리 중 오류가 발생했습니다.");
 		}
 	}
 

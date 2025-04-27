@@ -21,8 +21,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.newzet.api.auth.business.dto.JwtResponse;
-import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
 import com.newzet.api.auth.business.dto.OAuthLoginResponse;
+import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
 import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.oauth.OAuthRepository;
 import com.newzet.api.auth.business.service.oauth.OAuthService;
@@ -31,7 +31,8 @@ import com.newzet.api.auth.domain.OAuthToken;
 import com.newzet.api.auth.domain.OAuthUserInfo;
 import com.newzet.api.auth.domain.Token;
 import com.newzet.api.auth.domain.TokenType;
-import com.newzet.api.auth.exception.OAuthException;
+import com.newzet.api.auth.exception.OAuthBadRequestException;
+import com.newzet.api.auth.exception.OAuthNotFoundException;
 import com.newzet.api.user.business.dto.UserEntityDto;
 import com.newzet.api.user.business.service.UserFactory;
 import com.newzet.api.user.business.service.UserRepository;
@@ -97,7 +98,7 @@ class OAuthLoginServiceTest {
 		when(kakaoOAuthService.isBackendRedirect()).thenReturn(false);
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthBadRequestException.class)
 			.isThrownBy(() -> oAuthLoginService.getOAuthLoginUrl(provider, state))
 			.withMessage("이 제공자는 백엔드 리다이렉트를 지원하지 않습니다.");
 	}
@@ -215,7 +216,7 @@ class OAuthLoginServiceTest {
 			.thenReturn(Optional.empty());
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthNotFoundException.class)
 			.isThrownBy(
 				() -> oAuthLoginService.linkOAuthWithUser(user, oAuthMappingEntityId.toString(),
 					provider, deviceType))
@@ -269,7 +270,7 @@ class OAuthLoginServiceTest {
 		when(userRepository.getById(userId)).thenThrow(new NoUserException("User not found"));
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthNotFoundException.class)
 			.isThrownBy(() -> {
 				ReflectionTestUtils.invokeMethod(oAuthLoginService, "generateTokensForUser", userId,
 					deviceType);
@@ -370,7 +371,7 @@ class OAuthLoginServiceTest {
 		OAuthProvider provider = OAuthProvider.UNSUPPORTED;
 
 		// When, Then
-		assertThatExceptionOfType(OAuthException.class)
+		assertThatExceptionOfType(OAuthBadRequestException.class)
 			.isThrownBy(() -> {
 				ReflectionTestUtils.invokeMethod(oAuthLoginService, "getOAuthService", provider);
 			})

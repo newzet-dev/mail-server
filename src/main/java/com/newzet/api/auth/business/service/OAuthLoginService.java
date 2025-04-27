@@ -19,7 +19,8 @@ import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
 import com.newzet.api.auth.domain.OAuthUserInfo;
 import com.newzet.api.auth.domain.Token;
-import com.newzet.api.auth.exception.OAuthException;
+import com.newzet.api.auth.exception.OAuthBadRequestException;
+import com.newzet.api.auth.exception.OAuthNotFoundException;
 import com.newzet.api.user.business.dto.UserEntityDto;
 import com.newzet.api.user.business.service.UserFactory;
 import com.newzet.api.user.business.service.UserRepository;
@@ -48,7 +49,7 @@ public class OAuthLoginService {
 		OAuthService oAuthService = getOAuthService(provider);
 
 		if (!oAuthService.isBackendRedirect()) {
-			throw new OAuthException("이 제공자는 백엔드 리다이렉트를 지원하지 않습니다.");
+			throw new OAuthBadRequestException("이 제공자는 백엔드 리다이렉트를 지원하지 않습니다.");
 		}
 
 		return oAuthService.getRedirectUrl(state);
@@ -151,7 +152,7 @@ public class OAuthLoginService {
 				UUID.fromString(oauthMappingEntityId), provider);
 
 		if (OAuthMappingEntity.isEmpty()) {
-			throw new OAuthException("OAuth 정보를 찾을 수 없습니다.");
+			throw new OAuthNotFoundException("OAuth 정보를 찾을 수 없습니다.");
 		}
 
 		OAuthMappingEntityDto mapping = OAuthMappingEntity.get();
@@ -177,7 +178,7 @@ public class OAuthLoginService {
 			return new JwtResponse(accessToken.getValue(), refreshToken.getValue());
 
 		} catch (NoUserException e) {
-			throw new OAuthException("연결된 사용자 계정을 찾을 수 없습니다.");
+			throw new OAuthNotFoundException("연결된 사용자 계정을 찾을 수 없습니다.");
 		}
 	}
 
@@ -186,7 +187,7 @@ public class OAuthLoginService {
 		OAuthService service = oAuthServices.get(serviceBeanName);
 
 		if (service == null) {
-			throw new OAuthException("지원하지 않는 OAuth 제공자입니다: " + provider);
+			throw new OAuthBadRequestException("지원하지 않는 OAuth 제공자입니다: " + provider);
 		}
 
 		return service;

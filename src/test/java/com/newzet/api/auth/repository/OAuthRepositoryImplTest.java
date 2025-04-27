@@ -17,7 +17,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
-import com.newzet.api.auth.exception.OAuthException;
+import com.newzet.api.auth.exception.OAuthBadRequestException;
+import com.newzet.api.auth.exception.OAuthErrorException;
 import com.newzet.api.auth.repository.entity.OAuthMappingEntity;
 
 @ExtendWith(MockitoExtension.class)
@@ -245,7 +246,7 @@ class OAuthRepositoryImplTest {
 
 		// When & Then
 		assertThatThrownBy(() -> oAuthRepository.update(entityDto))
-			.isInstanceOf(OAuthException.class)
+			.isInstanceOf(OAuthBadRequestException.class)
 			.hasMessageContaining("업데이트할 OAuth 매핑을 찾을 수 없습니다");
 	}
 
@@ -475,17 +476,17 @@ class OAuthRepositoryImplTest {
 
 	@Test
 	void ofKakao_WhenAccessTokenIsNull_ShouldThrowException() {
-		// given
+		// Given
 		String accessToken = null;
 		String refreshToken = "refresh-token";
 		Long expiresIn = 3600L;
 		String tokenType = "bearer";
 		String scope = "profile";
 
-		// when & then
+		// When & Then
 		assertThatThrownBy(() ->
 			OAuthToken.ofKakao(accessToken, refreshToken, expiresIn, tokenType, scope)
-		).isInstanceOf(OAuthException.class)
+		).isInstanceOf(OAuthErrorException.class)
 			.hasMessage("카카오 토큰 응답이 올바르지 않습니다.");
 	}
 }

@@ -2,7 +2,7 @@ package com.newzet.api.auth.domain;
 
 import java.time.LocalDateTime;
 
-import com.newzet.api.auth.exception.OAuthException;
+import com.newzet.api.auth.exception.OAuthErrorException;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -25,7 +25,7 @@ public class OAuthToken {
 		String tokenType, String scope) {
 
 		if (accessToken == null) {
-			throw new OAuthException("카카오 토큰 응답이 올바르지 않습니다.");
+			throw new OAuthErrorException("카카오 토큰 응답이 올바르지 않습니다.");
 		}
 
 		return OAuthToken.builder()

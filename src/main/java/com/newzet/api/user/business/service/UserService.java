@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.auth.business.dto.JwtResponse;
 import com.newzet.api.auth.business.service.OAuthLoginService;
-import com.newzet.api.auth.exception.OAuthException;
+import com.newzet.api.auth.exception.OAuthBadRequestException;
 import com.newzet.api.user.business.dto.SignupRequest;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.user.business.dto.UserEntityDto;
@@ -67,7 +67,7 @@ public class UserService {
 				request.provider(),
 				request.deviceType()
 			);
-		} catch (OAuthException e) {
+		} catch (OAuthBadRequestException e) {
 			userRepository.delete(user.getId());
 			throw e;
 		}
