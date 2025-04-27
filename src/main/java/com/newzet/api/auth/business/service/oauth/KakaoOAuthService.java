@@ -11,7 +11,6 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
 import com.newzet.api.auth.domain.OAuthUserInfo;
@@ -27,7 +26,6 @@ public class KakaoOAuthService implements OAuthService {
 	private static final String KAKAO_USER_INFO_URI = "https://kapi.kakao.com/v2/user/me";
 	private static final String KAKAO_AUTHORIZE_URI = "https://kauth.kakao.com/oauth/authorize";
 	private final RestTemplate restTemplate;
-	private final ObjectMapper objectMapper;
 
 	@Value("${oauth.kakao.client-id}")
 	private String clientId;
