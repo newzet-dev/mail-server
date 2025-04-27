@@ -83,19 +83,9 @@ public class KakaoOAuthService implements OAuthService {
 				KakaoTokenResponse.class
 			);
 
-			KakaoTokenResponse tokenResponse = response.getBody();
+			KakaoTokenResponse kakaoTokenResponse = response.getBody();
 
-			if (tokenResponse == null || tokenResponse.accessToken() == null) {
-				throw new OAuthException("카카오 토큰 응답이 올바르지 않습니다.");
-			}
-
-			return OAuthToken.ofKakao(
-				tokenResponse.accessToken(),
-				tokenResponse.refreshToken(),
-				tokenResponse.expiresIn(),
-				tokenResponse.tokenType() != null ? tokenResponse.tokenType() : "bearer",
-				tokenResponse.scope()
-			);
+			return kakaoTokenResponse.toDomain();
 
 		} catch (Exception e) {
 			throw new OAuthException("카카오 로그인 처리 중 오류가 발생했습니다.");
@@ -118,24 +108,7 @@ public class KakaoOAuthService implements OAuthService {
 
 			KakaoUserInfoResponse userInfoResponse = response.getBody();
 
-			if (userInfoResponse == null || userInfoResponse.id() == null) {
-				throw new OAuthException("카카오 응답에서 id를 찾을 수 없습니다.");
-			}
-
-			String id = userInfoResponse.id();
-			String email = null;
-			String name = "Unknown";
-
-			if (userInfoResponse.kakaoAccount() != null) {
-				email = userInfoResponse.kakaoAccount().email();
-
-				if (userInfoResponse.kakaoAccount().profile() != null &&
-					userInfoResponse.kakaoAccount().profile().nickname() != null) {
-					name = userInfoResponse.kakaoAccount().profile().nickname();
-				}
-			}
-
-			return OAuthUserInfo.create(id, email, name, OAuthProvider.KAKAO, oauthToken);
+			return userInfoResponse.toDomain(OAuthProvider.KAKAO, oauthToken);
 
 		} catch (Exception e) {
 			throw new OAuthException("카카오 로그인 처리 중 오류가 발생했습니다.");

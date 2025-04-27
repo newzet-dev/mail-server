@@ -1,6 +1,7 @@
 package com.newzet.api.auth.business.service.oauth;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.newzet.api.auth.domain.OAuthToken;
 
 public record KakaoTokenResponse(
 	@JsonProperty("access_token") String accessToken,
@@ -10,4 +11,8 @@ public record KakaoTokenResponse(
 	@JsonProperty("token_type") String tokenType,
 	String scope
 ) {
+	public OAuthToken toDomain() {
+		return OAuthToken.ofKakao(this.accessToken, this.refreshToken, this.expiresIn,
+			this.tokenType, this.scope);
+	}
 }

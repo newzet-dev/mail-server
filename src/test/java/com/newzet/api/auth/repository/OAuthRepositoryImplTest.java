@@ -4,6 +4,7 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -427,15 +428,15 @@ class OAuthRepositoryImplTest {
 	}
 
 	@Test
-	void update_WhenEntityExistsAndAccessTokenIsNull_ThenDoNotUpdateToken() {
+	void update_WhenAccessTokenIsNull_ThenDoNotUpdateToken() {
 		// Given
 		UUID id = UUID.randomUUID();
 		UUID userId = UUID.randomUUID();
 
-		OAuthToken existingToken = OAuthToken.ofKakao("access-token", "refresh-token", 3600L,
+		OAuthToken nullAccessToken = new OAuthToken(OAuthProvider.KAKAO, null, "refresh-token",
+			"bearer", 3600L, "profile", LocalDateTime.now());
+		OAuthToken existingToken = OAuthToken.ofKakao("existing-token", "refresh-token", 3600L,
 			"bearer", "profile");
-		OAuthToken nullAccessToken = OAuthToken.ofKakao(null, "refresh-token", 3600L, "bearer",
-			"profile");
 
 		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
 			id,
@@ -460,6 +461,7 @@ class OAuthRepositoryImplTest {
 		);
 
 		OAuthMappingEntity existingEntity = OAuthMappingEntity.fromEntityDto(existingDto);
+		String originalAccessToken = existingEntity.getAccessToken();
 
 		when(oAuthMappingJpaRepository.findById(id)).thenReturn(Optional.of(existingEntity));
 
@@ -468,6 +470,22 @@ class OAuthRepositoryImplTest {
 
 		// Then
 		verify(oAuthMappingJpaRepository).findById(id);
-		assertThat(existingEntity.getAccessToken()).isEqualTo("access-token"); // should not change
+		assertThat(existingEntity.getAccessToken()).isEqualTo(originalAccessToken);
+	}
+
+	@Test
+	void ofKakao_WhenAccessTokenIsNull_ShouldThrowException() {
+		// given
+		String accessToken = null;
+		String refreshToken = "refresh-token";
+		Long expiresIn = 3600L;
+		String tokenType = "bearer";
+		String scope = "profile";
+
+		// when & then
+		assertThatThrownBy(() ->
+			OAuthToken.ofKakao(accessToken, refreshToken, expiresIn, tokenType, scope)
+		).isInstanceOf(OAuthException.class)
+			.hasMessage("카카오 토큰 응답이 올바르지 않습니다.");
 	}
 }
