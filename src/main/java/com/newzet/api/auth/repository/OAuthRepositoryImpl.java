@@ -8,7 +8,7 @@ import org.springframework.stereotype.Repository;
 import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
 import com.newzet.api.auth.business.service.oauth.OAuthRepository;
 import com.newzet.api.auth.domain.OAuthProvider;
-import com.newzet.api.auth.exception.OAuthBadRequestException;
+import com.newzet.api.auth.exception.OAuthNotFoundException;
 import com.newzet.api.auth.repository.entity.OAuthMappingEntity;
 
 import lombok.RequiredArgsConstructor;
@@ -43,17 +43,9 @@ public class OAuthRepositoryImpl implements OAuthRepository {
 	@Override
 	public void update(OAuthMappingEntityDto entityDto) {
 		OAuthMappingEntity existingEntity = oAuthMappingJpaRepository.findById(entityDto.getId())
-			.orElseThrow(() -> new OAuthBadRequestException(
+			.orElseThrow(() -> new OAuthNotFoundException(
 				"업데이트할 OAuth 매핑을 찾을 수 없습니다: " + entityDto.getId()));
 
-		if (entityDto.getUserId() != null) {
-			existingEntity.linkToUser(entityDto.getUserId());
-		}
-
-		if (entityDto.getOauthToken().getAccessToken() != null && !entityDto.getOauthToken()
-			.getAccessToken()
-			.equals(existingEntity.getAccessToken())) {
-			existingEntity.updateToken(entityDto.getOauthToken());
-		}
+		existingEntity.updateFromDto(entityDto);
 	}
 }

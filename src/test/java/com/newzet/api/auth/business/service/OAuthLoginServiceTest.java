@@ -26,6 +26,7 @@ import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
 import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.oauth.OAuthRepository;
 import com.newzet.api.auth.business.service.oauth.OAuthService;
+import com.newzet.api.auth.domain.OAuthMapping;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
 import com.newzet.api.auth.domain.OAuthUserInfo;
@@ -582,29 +583,17 @@ class OAuthLoginServiceTest {
 	}
 
 	private OAuthUserInfo mockOAuthUserInfo() {
-		OAuthToken oauthToken = OAuthToken.builder()
-			.provider(OAuthProvider.KAKAO)
-			.accessToken("fake-token")
-			.refreshToken("fake-token")
-			.tokenPrefix("Bearer")
-			.expiresIn(10000L)
-			.scope("test")
-			.issuedAt(LocalDateTime.now())
-			.build();
+		OAuthToken oauthToken = OAuthToken.ofKakao(
+			"fake-token", "fake-token", 10000L, "Bearer", "test");
+
 		return OAuthUserInfo.create("social-user-123", "test@example.com", "Test User",
 			OAuthProvider.KAKAO, oauthToken);
 	}
 
 	private OAuthMappingEntityDto mockExistingMapping() {
-		OAuthToken oauthToken = OAuthToken.builder()
-			.provider(OAuthProvider.KAKAO)
-			.accessToken("fake-token")
-			.refreshToken("fake-token")
-			.tokenPrefix("Bearer")
-			.expiresIn(10000L)
-			.scope("test")
-			.issuedAt(LocalDateTime.now())
-			.build();
+		OAuthToken oauthToken = OAuthToken.ofKakao(
+			"fake-token", "fake-token", 10000L, "Bearer", "test");
+
 		return OAuthMappingEntityDto.create(
 			oAuthMappingEntityId,
 			"social-user-123",
@@ -618,21 +607,15 @@ class OAuthLoginServiceTest {
 	}
 
 	private OAuthMappingEntityDto mockTemporaryMapping() {
-		OAuthToken oauthToken = OAuthToken.builder()
-			.provider(OAuthProvider.KAKAO)
-			.accessToken("fake-token")
-			.refreshToken("fake-token")
-			.tokenPrefix("Bearer")
-			.expiresIn(10000L)
-			.scope("test")
-			.issuedAt(LocalDateTime.now())
-			.build();
-		return OAuthMappingEntityDto.createTemporary(
-			"social-user-123",
+		OAuthToken oauthToken = OAuthToken.ofKakao(
+			"fake-token", "fake-token", 10000L, "Bearer", "test");
+
+		OAuthMapping oAuthMapping = OAuthMapping.createTemporary("social-user-123",
 			"test@example.com",
 			"Test User",
 			OAuthProvider.KAKAO,
-			oauthToken
-		);
+			oauthToken);
+
+		return oAuthMapping.toDto();
 	}
 }

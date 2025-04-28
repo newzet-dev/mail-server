@@ -85,24 +85,10 @@ public class OAuthMappingEntity {
 		return entity;
 	}
 
-	public void linkToUser(UUID userId) {
-		this.userId = userId;
-		this.temporary = false;
-	}
-
-	public void updateToken(OAuthToken oauthToken) {
-		if (oauthToken != null) {
-			this.accessToken = oauthToken.getAccessToken();
-			this.refreshToken = oauthToken.getRefreshToken();
-			this.tokenPrefix = oauthToken.getTokenPrefix();
-			this.expiresIn = oauthToken.getExpiresIn();
-			this.scope = oauthToken.getScope();
-			this.tokenIssuedAt = oauthToken.getIssuedAt();
-		}
-	}
-
 	public OAuthMappingEntityDto toEntityDto() {
-		OAuthToken oauthToken = buildOAuthToken();
+		OAuthToken oauthToken = OAuthToken.create(
+			provider, accessToken, refreshToken, expiresIn, tokenPrefix, scope
+		);
 
 		return OAuthMappingEntityDto.create(
 			id,
@@ -116,19 +102,27 @@ public class OAuthMappingEntity {
 		);
 	}
 
-	private OAuthToken buildOAuthToken() {
-		if (accessToken == null) {
-			return null;
+	public void updateFromDto(OAuthMappingEntityDto dto) {
+		if (dto.getUserId() != null) {
+			this.userId = dto.getUserId();
 		}
 
-		return OAuthToken.builder()
-			.provider(provider)
-			.accessToken(accessToken)
-			.refreshToken(refreshToken)
-			.tokenPrefix(tokenPrefix)
-			.expiresIn(expiresIn)
-			.scope(scope)
-			.issuedAt(tokenIssuedAt != null ? tokenIssuedAt : LocalDateTime.now())
-			.build();
+		if (dto.getOauthToken() != null) {
+			OAuthToken token = dto.getOauthToken();
+			this.accessToken = token.getAccessToken();
+			this.refreshToken = token.getRefreshToken();
+			this.tokenPrefix = token.getTokenPrefix();
+			this.expiresIn = token.getExpiresIn();
+			this.scope = token.getScope();
+			this.tokenIssuedAt = token.getIssuedAt();
+		}
+
+		if (dto.getSocialUserEmail() != null) {
+			this.socialUserEmail = dto.getSocialUserEmail();
+		}
+		if (dto.getSocialUserName() != null) {
+			this.socialUserName = dto.getSocialUserName();
+		}
+		this.temporary = dto.isTemporary();
 	}
 }

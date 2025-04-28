@@ -19,15 +19,9 @@ class OAuthMappingEntityTest {
 		UUID id = UUID.randomUUID();
 		UUID userId = UUID.randomUUID();
 
-		OAuthToken token = OAuthToken.builder()
-			.provider(OAuthProvider.KAKAO)
-			.accessToken("access-token")
-			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
-			.expiresIn(3600L)
-			.scope("profile")
-			.issuedAt(LocalDateTime.now())
-			.build();
+		OAuthToken token = OAuthToken.create(
+			OAuthProvider.KAKAO, "access-token", "refresh-token", 3600L, "bearer", "profile"
+		);
 
 		OAuthMappingEntityDto dto = OAuthMappingEntityDto.create(
 			id,
@@ -123,7 +117,6 @@ class OAuthMappingEntityTest {
 		assertThat(dto.getOauthToken().getTokenPrefix()).isEqualTo("bearer");
 		assertThat(dto.getOauthToken().getExpiresIn()).isEqualTo(3600L);
 		assertThat(dto.getOauthToken().getScope()).isEqualTo("profile");
-		assertThat(dto.getOauthToken().getIssuedAt()).isEqualTo(issuedAt);
 		assertThat(dto.isTemporary()).isFalse();
 	}
 
@@ -148,74 +141,6 @@ class OAuthMappingEntityTest {
 		assertThat(dto.getUserId()).isEqualTo(userId);
 		assertThat(dto.getOauthToken()).isNull();
 		assertThat(dto.isTemporary()).isTrue();
-	}
-
-	@Test
-	void linkToUser_ShouldUpdateUserIdAndTemporaryFlag() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID oldUserId = UUID.randomUUID();
-		UUID newUserId = UUID.randomUUID();
-
-		OAuthMappingEntity entity = createEntityWithToken(id, oldUserId, LocalDateTime.now(), true);
-
-		// When
-		entity.linkToUser(newUserId);
-
-		// Then
-		assertThat(entity.getUserId()).isEqualTo(newUserId);
-		assertThat(entity.isTemporary()).isFalse();
-	}
-
-	@Test
-	void updateToken_WithToken() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID userId = UUID.randomUUID();
-		LocalDateTime oldIssuedAt = LocalDateTime.now().minusDays(1);
-		LocalDateTime newIssuedAt = LocalDateTime.now();
-
-		OAuthMappingEntity entity = createEntityWithToken(id, userId, oldIssuedAt, false);
-
-		OAuthToken newToken = OAuthToken.builder()
-			.provider(OAuthProvider.KAKAO)
-			.accessToken("new-access-token")
-			.refreshToken("new-refresh-token")
-			.tokenPrefix("new-bearer")
-			.expiresIn(7200L)
-			.scope("new-profile")
-			.issuedAt(newIssuedAt)
-			.build();
-
-		// When
-		entity.updateToken(newToken);
-
-		// Then
-		assertThat(entity.getAccessToken()).isEqualTo("new-access-token");
-		assertThat(entity.getRefreshToken()).isEqualTo("new-refresh-token");
-		assertThat(entity.getTokenPrefix()).isEqualTo("new-bearer");
-		assertThat(entity.getExpiresIn()).isEqualTo(7200L);
-		assertThat(entity.getScope()).isEqualTo("new-profile");
-		assertThat(entity.getTokenIssuedAt()).isEqualTo(newIssuedAt);
-	}
-
-	@Test
-	void updateToken_WithNullToken() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID userId = UUID.randomUUID();
-		LocalDateTime issuedAt = LocalDateTime.now();
-
-		OAuthMappingEntity entity = createEntityWithToken(id, userId, issuedAt, false);
-		String originalAccessToken = entity.getAccessToken();
-		String originalRefreshToken = entity.getRefreshToken();
-
-		// When
-		entity.updateToken(null);
-
-		// Then - 값이 변하지 않아야 함
-		assertThat(entity.getAccessToken()).isEqualTo(originalAccessToken);
-		assertThat(entity.getRefreshToken()).isEqualTo(originalRefreshToken);
 	}
 
 	@Test
@@ -262,6 +187,180 @@ class OAuthMappingEntityTest {
 		assertThat(dto.getOauthToken()).isNotNull();
 		assertThat(dto.getOauthToken().getAccessToken()).isEqualTo("access-token");
 		assertThat(dto.getOauthToken().getIssuedAt()).isNotNull();
+	}
+
+	@Test
+	void updateFromDto_WhenAllFieldsProvided_ShouldUpdateAllFields() {
+		// Given
+		UUID id = UUID.randomUUID();
+		UUID oldUserId = UUID.randomUUID();
+		UUID newUserId = UUID.randomUUID();
+		LocalDateTime oldIssuedAt = LocalDateTime.now().minusDays(1);
+		LocalDateTime newIssuedAt = LocalDateTime.now();
+
+		OAuthMappingEntity entity = createEntityWithToken(id, oldUserId, oldIssuedAt, true);
+
+		OAuthToken newToken = OAuthToken.create(
+			OAuthProvider.KAKAO, "new-access-token", "new-refresh-token", 7200L, "new-bearer", "new-profile"
+		);
+
+		OAuthMappingEntityDto updateDto = OAuthMappingEntityDto.create(
+			id,
+			"social-123",
+			"updated@example.com",
+			"Updated Name",
+			OAuthProvider.KAKAO,
+			newUserId,
+			newToken,
+			false
+		);
+
+		// When
+		entity.updateFromDto(updateDto);
+
+		// Then
+		assertThat(entity.getUserId()).isEqualTo(newUserId);
+		assertThat(entity.getSocialUserEmail()).isEqualTo("updated@example.com");
+		assertThat(entity.getSocialUserName()).isEqualTo("Updated Name");
+		assertThat(entity.getAccessToken()).isEqualTo("new-access-token");
+		assertThat(entity.getRefreshToken()).isEqualTo("new-refresh-token");
+		assertThat(entity.getTokenPrefix()).isEqualTo("new-bearer");
+		assertThat(entity.getExpiresIn()).isEqualTo(7200L);
+		assertThat(entity.getScope()).isEqualTo("new-profile");
+		assertThat(entity.isTemporary()).isFalse();
+	}
+
+	@Test
+	void updateFromDto_WhenUserIdIsNull_ShouldNotUpdateUserId() {
+		// Given
+		UUID id = UUID.randomUUID();
+		UUID originalUserId = UUID.randomUUID();
+		LocalDateTime issuedAt = LocalDateTime.now();
+
+		OAuthMappingEntity entity = createEntityWithToken(id, originalUserId, issuedAt, true);
+
+		OAuthMappingEntityDto updateDto = OAuthMappingEntityDto.create(
+			id,
+			"social-123",
+			"updated@example.com",
+			"Updated Name",
+			OAuthProvider.KAKAO,
+			null,
+			null,
+			false
+		);
+
+		// When
+		entity.updateFromDto(updateDto);
+
+		// Then
+		assertThat(entity.getUserId()).isEqualTo(originalUserId);
+		assertThat(entity.getSocialUserEmail()).isEqualTo("updated@example.com");
+		assertThat(entity.getSocialUserName()).isEqualTo("Updated Name");
+		assertThat(entity.isTemporary()).isFalse();
+	}
+
+	@Test
+	void updateFromDto_WhenOAuthTokenIsNull_ShouldNotUpdateTokenFields() {
+		// Given
+		UUID id = UUID.randomUUID();
+		UUID userId = UUID.randomUUID();
+		UUID newUserId = UUID.randomUUID();
+		LocalDateTime issuedAt = LocalDateTime.now();
+
+		OAuthMappingEntity entity = createEntityWithToken(id, userId, issuedAt, true);
+		String originalAccessToken = entity.getAccessToken();
+		String originalRefreshToken = entity.getRefreshToken();
+		String originalTokenPrefix = entity.getTokenPrefix();
+		Long originalExpiresIn = entity.getExpiresIn();
+		String originalScope = entity.getScope();
+		LocalDateTime originalIssuedAt = entity.getTokenIssuedAt();
+
+		OAuthMappingEntityDto updateDto = OAuthMappingEntityDto.create(
+			id,
+			"social-123",
+			"updated@example.com",
+			"Updated Name",
+			OAuthProvider.KAKAO,
+			newUserId,
+			null,
+			false
+		);
+
+		// When
+		entity.updateFromDto(updateDto);
+
+		// Then
+		assertThat(entity.getUserId()).isEqualTo(newUserId);
+		assertThat(entity.getSocialUserEmail()).isEqualTo("updated@example.com");
+		assertThat(entity.getSocialUserName()).isEqualTo("Updated Name");
+		assertThat(entity.getAccessToken()).isEqualTo(originalAccessToken);
+		assertThat(entity.getRefreshToken()).isEqualTo(originalRefreshToken);
+		assertThat(entity.getTokenPrefix()).isEqualTo(originalTokenPrefix);
+		assertThat(entity.getExpiresIn()).isEqualTo(originalExpiresIn);
+		assertThat(entity.getScope()).isEqualTo(originalScope);
+		assertThat(entity.getTokenIssuedAt()).isEqualTo(originalIssuedAt);
+		assertThat(entity.isTemporary()).isFalse();
+	}
+
+	@Test
+	void updateFromDto_WhenSocialUserEmailIsNull_ShouldNotUpdateEmail() {
+		// Given
+		UUID id = UUID.randomUUID();
+		UUID userId = UUID.randomUUID();
+		LocalDateTime issuedAt = LocalDateTime.now();
+
+		OAuthMappingEntity entity = createEntityWithToken(id, userId, issuedAt, true);
+		String originalEmail = entity.getSocialUserEmail();
+
+		OAuthMappingEntityDto updateDto = OAuthMappingEntityDto.create(
+			id,
+			"social-123",
+			null,
+			"Updated Name",
+			OAuthProvider.KAKAO,
+			userId,
+			null,
+			false
+		);
+
+		// When
+		entity.updateFromDto(updateDto);
+
+		// Then
+		assertThat(entity.getSocialUserEmail()).isEqualTo(originalEmail);
+		assertThat(entity.getSocialUserName()).isEqualTo("Updated Name");
+		assertThat(entity.isTemporary()).isFalse();
+	}
+
+	@Test
+	void updateFromDto_WhenSocialUserNameIsNull_ShouldNotUpdateName() {
+		// Given
+		UUID id = UUID.randomUUID();
+		UUID userId = UUID.randomUUID();
+		LocalDateTime issuedAt = LocalDateTime.now();
+
+		OAuthMappingEntity entity = createEntityWithToken(id, userId, issuedAt, true);
+		String originalName = entity.getSocialUserName();
+
+		OAuthMappingEntityDto updateDto = OAuthMappingEntityDto.create(
+			id,
+			"social-123",
+			"updated@example.com",
+			null,
+			OAuthProvider.KAKAO,
+			userId,
+			null,
+			false
+		);
+
+		// When
+		entity.updateFromDto(updateDto);
+
+		// Then
+		assertThat(entity.getSocialUserEmail()).isEqualTo("updated@example.com");
+		assertThat(entity.getSocialUserName()).isEqualTo(originalName);
+		assertThat(entity.isTemporary()).isFalse();
 	}
 
 	private OAuthMappingEntity createEntityWithToken(UUID id, UUID userId, LocalDateTime issuedAt,

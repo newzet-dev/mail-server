@@ -4,12 +4,13 @@ import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
-import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
+import org.mockito.Captor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,8 +18,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
-import com.newzet.api.auth.exception.OAuthBadRequestException;
 import com.newzet.api.auth.exception.OAuthErrorException;
+import com.newzet.api.auth.exception.OAuthNotFoundException;
 import com.newzet.api.auth.repository.entity.OAuthMappingEntity;
 
 @ExtendWith(MockitoExtension.class)
@@ -29,6 +30,9 @@ class OAuthRepositoryImplTest {
 
 	@InjectMocks
 	private OAuthRepositoryImpl oAuthRepository;
+
+	@Captor
+	private ArgumentCaptor<OAuthMappingEntity> entityCaptor;
 
 	@Test
 	void save_WhenEntityDtoProvided_ThenSaveAndReturnDto() {
@@ -176,54 +180,6 @@ class OAuthRepositoryImplTest {
 	}
 
 	@Test
-	void update_WhenEntityExists_ThenUpdateFields() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID userId = UUID.randomUUID();
-		UUID existingUserId = UUID.randomUUID();
-
-		OAuthToken oldToken = OAuthToken.ofKakao("old-access-token", "refresh-token", 3600L,
-			"bearer", "profile");
-		OAuthToken newToken = OAuthToken.ofKakao("new-access-token", "refresh-token", 3600L,
-			"bearer", "profile");
-
-		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			userId,
-			newToken,
-			false
-		);
-
-		OAuthMappingEntityDto existingDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			existingUserId,
-			oldToken,
-			true
-		);
-
-		OAuthMappingEntity existingEntity = OAuthMappingEntity.fromEntityDto(existingDto);
-
-		when(oAuthMappingJpaRepository.findById(id)).thenReturn(Optional.of(existingEntity));
-
-		// When
-		oAuthRepository.update(entityDto);
-
-		// Then
-		verify(oAuthMappingJpaRepository).findById(id);
-		assertThat(existingEntity.getUserId()).isEqualTo(userId);
-		assertThat(existingEntity.getAccessToken()).isEqualTo("new-access-token");
-		assertThat(existingEntity.isTemporary()).isFalse();
-	}
-
-	@Test
 	void update_WhenEntityNotExists_ThenThrowException() {
 		// Given
 		UUID id = UUID.randomUUID();
@@ -246,232 +202,8 @@ class OAuthRepositoryImplTest {
 
 		// When & Then
 		assertThatThrownBy(() -> oAuthRepository.update(entityDto))
-			.isInstanceOf(OAuthBadRequestException.class)
+			.isInstanceOf(OAuthNotFoundException.class)
 			.hasMessageContaining("업데이트할 OAuth 매핑을 찾을 수 없습니다");
-	}
-
-	@Test
-	void update_WhenEntityExistsAndUserIdIsNotNull_ThenLinkToUser() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID userId = UUID.randomUUID();
-		UUID existingUserId = UUID.randomUUID();
-
-		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L, "bearer",
-			"profile");
-
-		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			userId,
-			token,
-			false
-		);
-
-		OAuthMappingEntityDto existingDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			existingUserId,
-			token,
-			true
-		);
-
-		OAuthMappingEntity existingEntity = OAuthMappingEntity.fromEntityDto(existingDto);
-
-		when(oAuthMappingJpaRepository.findById(id)).thenReturn(Optional.of(existingEntity));
-
-		// When
-		oAuthRepository.update(entityDto);
-
-		// Then
-		verify(oAuthMappingJpaRepository).findById(id);
-		assertThat(existingEntity.getUserId()).isEqualTo(userId);
-	}
-
-	@Test
-	void update_WhenEntityExistsAndUserIdIsNull_ThenDoNotLinkToUser() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID existingUserId = UUID.randomUUID();
-
-		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L, "bearer",
-			"profile");
-
-		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			null,  // userId is null
-			token,
-			false
-		);
-
-		OAuthMappingEntityDto existingDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			existingUserId,
-			token,
-			true
-		);
-
-		OAuthMappingEntity existingEntity = OAuthMappingEntity.fromEntityDto(existingDto);
-
-		when(oAuthMappingJpaRepository.findById(id)).thenReturn(Optional.of(existingEntity));
-
-		// When
-		oAuthRepository.update(entityDto);
-
-		// Then
-		verify(oAuthMappingJpaRepository).findById(id);
-		assertThat(existingEntity.getUserId()).isEqualTo(existingUserId); // userId shouldn't change
-	}
-
-	@Test
-	void update_WhenEntityExistsAndAccessTokenIsDifferent_ThenUpdateToken() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID userId = UUID.randomUUID();
-
-		OAuthToken oldToken = OAuthToken.ofKakao("old-access-token", "refresh-token", 3600L,
-			"bearer", "profile");
-		OAuthToken newToken = OAuthToken.ofKakao("new-access-token", "refresh-token", 3600L,
-			"bearer", "profile");
-
-		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			userId,
-			newToken,
-			false
-		);
-
-		OAuthMappingEntityDto existingDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			userId,
-			oldToken,
-			true
-		);
-
-		OAuthMappingEntity existingEntity = OAuthMappingEntity.fromEntityDto(existingDto);
-
-		when(oAuthMappingJpaRepository.findById(id)).thenReturn(Optional.of(existingEntity));
-
-		// When
-		oAuthRepository.update(entityDto);
-
-		// Then
-		verify(oAuthMappingJpaRepository).findById(id);
-		assertThat(existingEntity.getAccessToken()).isEqualTo("new-access-token");
-	}
-
-	@Test
-	void update_WhenEntityExistsAndAccessTokenIsSame_ThenDoNotUpdateToken() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID userId = UUID.randomUUID();
-
-		String sameAccessToken = "same-access-token";
-		OAuthToken token1 = OAuthToken.ofKakao(sameAccessToken, "refresh-token", 3600L, "bearer",
-			"profile");
-		OAuthToken token2 = OAuthToken.ofKakao(sameAccessToken, "refresh-token", 3600L, "bearer",
-			"profile");
-
-		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			userId,
-			token1,
-			false
-		);
-
-		OAuthMappingEntityDto existingDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			userId,
-			token2,
-			true
-		);
-
-		OAuthMappingEntity existingEntity = OAuthMappingEntity.fromEntityDto(existingDto);
-
-		when(oAuthMappingJpaRepository.findById(id)).thenReturn(Optional.of(existingEntity));
-
-		// When
-		oAuthRepository.update(entityDto);
-
-		// Then
-		verify(oAuthMappingJpaRepository).findById(id);
-		// isTemporary 값은 변하지만 토큰은 업데이트되지 않아야 함
-	}
-
-	@Test
-	void update_WhenAccessTokenIsNull_ThenDoNotUpdateToken() {
-		// Given
-		UUID id = UUID.randomUUID();
-		UUID userId = UUID.randomUUID();
-
-		OAuthToken nullAccessToken = new OAuthToken(OAuthProvider.KAKAO, null, "refresh-token",
-			"bearer", 3600L, "profile", LocalDateTime.now());
-		OAuthToken existingToken = OAuthToken.ofKakao("existing-token", "refresh-token", 3600L,
-			"bearer", "profile");
-
-		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			userId,
-			nullAccessToken,
-			false
-		);
-
-		OAuthMappingEntityDto existingDto = OAuthMappingEntityDto.create(
-			id,
-			"social-123",
-			"user@example.com",
-			"User Name",
-			OAuthProvider.KAKAO,
-			userId,
-			existingToken,
-			true
-		);
-
-		OAuthMappingEntity existingEntity = OAuthMappingEntity.fromEntityDto(existingDto);
-		String originalAccessToken = existingEntity.getAccessToken();
-
-		when(oAuthMappingJpaRepository.findById(id)).thenReturn(Optional.of(existingEntity));
-
-		// When
-		oAuthRepository.update(entityDto);
-
-		// Then
-		verify(oAuthMappingJpaRepository).findById(id);
-		assertThat(existingEntity.getAccessToken()).isEqualTo(originalAccessToken);
 	}
 
 	@Test
@@ -487,6 +219,6 @@ class OAuthRepositoryImplTest {
 		assertThatThrownBy(() ->
 			OAuthToken.ofKakao(accessToken, refreshToken, expiresIn, tokenType, scope)
 		).isInstanceOf(OAuthErrorException.class)
-			.hasMessage("카카오 토큰 응답이 올바르지 않습니다.");
+			.hasMessage("응답이 올바르지 않아 accessToken이 전달되지 않았습니다.");
 	}
 }

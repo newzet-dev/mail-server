@@ -15,6 +15,7 @@ import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
 import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.oauth.OAuthRepository;
 import com.newzet.api.auth.business.service.oauth.OAuthService;
+import com.newzet.api.auth.domain.OAuthMapping;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
 import com.newzet.api.auth.domain.OAuthUserInfo;
@@ -112,25 +113,30 @@ public class OAuthLoginService {
 
 		OAuthToken oauthToken = userInfo.getOAuthToken();
 
-		Optional<OAuthMappingEntityDto> existingMapping =
+		Optional<OAuthMappingEntityDto> existingMappingDto =
 			oAuthRepository.findBySocialUserIdAndProvider(userInfo.getSocialUserId(), provider);
 
-		if (existingMapping.isPresent()) {
-			OAuthMappingEntityDto mapping = existingMapping.get();
+		if (existingMappingDto.isPresent()) {
+			OAuthMappingEntityDto mappingDto = existingMappingDto.get();
 
-			OAuthMappingEntityDto updatedMapping = mapping.withOAuthToken(oauthToken);
-			oAuthRepository.update(updatedMapping);
+			OAuthMapping oAuthMappingDomain = OAuthMapping.fromDto(mappingDto);
 
-			if (mapping.getUserId() != null && !mapping.isTemporary()) {
-				JwtResponse jwtResponse = generateTokensForUser(mapping.getUserId(), deviceType);
+			OAuthMapping updatedDomain = oAuthMappingDomain.updateToken(oauthToken);
+
+			OAuthMappingEntityDto updatedDto = updatedDomain.toDto();
+			oAuthRepository.update(updatedDto);
+
+			if (oAuthMappingDomain.getUserId() != null && !oAuthMappingDomain.isTemporary()) {
+				JwtResponse jwtResponse = generateTokensForUser(oAuthMappingDomain.getUserId(),
+					deviceType);
 				return OAuthLoginResponse.toJwt(jwtResponse.accessToken(),
 					jwtResponse.refreshToken());
 			} else {
-				return OAuthLoginResponse.toSignUp(updatedMapping.getId());
+				return OAuthLoginResponse.toSignUp(updatedDto.getId());
 			}
 		}
 
-		OAuthMappingEntityDto newMapping = OAuthMappingEntityDto.createTemporary(
+		OAuthMapping tempMapping = OAuthMapping.createTemporary(
 			userInfo.getSocialUserId(),
 			userInfo.getEmail(),
 			userInfo.getName(),
@@ -138,25 +144,31 @@ public class OAuthLoginService {
 			oauthToken
 		);
 
-		OAuthMappingEntityDto mapping = oAuthRepository.save(newMapping);
+		OAuthMappingEntityDto newMapping = tempMapping.toDto();
+		OAuthMappingEntityDto savedMapping = oAuthRepository.save(newMapping);
 
-		return OAuthLoginResponse.toSignUp(mapping.getId());
+		return OAuthLoginResponse.toSignUp(savedMapping.getId());
 	}
 
 	@Transactional
 	public JwtResponse linkOAuthWithUser(User user, String oauthMappingEntityId,
 		OAuthProvider provider, String deviceType) {
-		Optional<OAuthMappingEntityDto> oAuthMappingEntityDto =
+		Optional<OAuthMappingEntityDto> oAuthMappingEntityDtoOpt =
 			oAuthRepository.findByOauthMappingEntityIdAndProvider(
 				UUID.fromString(oauthMappingEntityId), provider);
 
-		if (oAuthMappingEntityDto.isEmpty()) {
+		if (oAuthMappingEntityDtoOpt.isEmpty()) {
 			throw new OAuthNotFoundException("OAuth 정보를 찾을 수 없습니다.");
 		}
 
-		OAuthMappingEntityDto mapping = oAuthMappingEntityDto.get();
-		OAuthMappingEntityDto updatedMapping = mapping.withUserId(user.getId());
-		oAuthRepository.update(updatedMapping);
+		OAuthMappingEntityDto mappingDto = oAuthMappingEntityDtoOpt.get();
+
+		OAuthMapping oAuthMappingDomain = OAuthMapping.fromDto(mappingDto);
+
+		OAuthMapping updatedDomain = oAuthMappingDomain.linkToUser(user.getId());
+
+		OAuthMappingEntityDto updatedDto = updatedDomain.toDto();
+		oAuthRepository.update(updatedDto);
 
 		return generateTokensForUser(user.getId(), deviceType);
 	}

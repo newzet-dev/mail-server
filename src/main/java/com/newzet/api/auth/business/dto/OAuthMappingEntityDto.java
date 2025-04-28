@@ -21,19 +21,6 @@ public class OAuthMappingEntityDto {
 	private final OAuthToken oauthToken;
 	private final boolean temporary;
 
-	public static OAuthMappingEntityDto createTemporary(String providerId, String providerEmail,
-		String providerName, OAuthProvider provider,
-		OAuthToken oauthToken) {
-		return OAuthMappingEntityDto.builder()
-			.socialUserId(providerId)
-			.socialUserEmail(providerEmail)
-			.socialUserName(providerName)
-			.provider(provider)
-			.oauthToken(oauthToken)
-			.temporary(true)
-			.build();
-	}
-
 	public static OAuthMappingEntityDto create(UUID id, String providerId, String providerEmail,
 		String providerName, OAuthProvider provider,
 		UUID userId, OAuthToken oauthToken, boolean temporary) {
@@ -45,32 +32,6 @@ public class OAuthMappingEntityDto {
 			.provider(provider)
 			.userId(userId)
 			.oauthToken(oauthToken)
-			.temporary(temporary)
-			.build();
-	}
-
-	public OAuthMappingEntityDto withUserId(UUID userId) {
-		return OAuthMappingEntityDto.builder()
-			.id(id)
-			.socialUserId(socialUserId)
-			.socialUserEmail(socialUserEmail)
-			.socialUserName(socialUserName)
-			.provider(provider)
-			.userId(userId)
-			.oauthToken(oauthToken)
-			.temporary(false)
-			.build();
-	}
-
-	public OAuthMappingEntityDto withOAuthToken(OAuthToken newOauthToken) {
-		return OAuthMappingEntityDto.builder()
-			.id(id)
-			.socialUserId(socialUserId)
-			.socialUserEmail(socialUserEmail)
-			.socialUserName(socialUserName)
-			.provider(provider)
-			.userId(userId)
-			.oauthToken(newOauthToken)
 			.temporary(temporary)
 			.build();
 	}
