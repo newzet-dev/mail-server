@@ -3,7 +3,6 @@ package com.newzet.api.category.business.dto;
 import java.util.UUID;
 
 import com.newzet.api.category.domain.Category;
-import com.newzet.api.category.repository.CategoryEntity;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -32,7 +31,4 @@ public class CategoryEntityDto {
 		return Category.create(id, name, imageUrl, emoji);
 	}
 
-	public CategoryEntity toEntity() {
-		return CategoryEntity.create(id, name, imageUrl, emoji);
-	}
 }

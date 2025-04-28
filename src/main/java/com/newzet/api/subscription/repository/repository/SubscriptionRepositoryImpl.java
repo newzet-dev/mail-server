@@ -8,12 +8,16 @@ import org.springframework.stereotype.Repository;
 
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
+import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
+import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import com.newzet.api.subscription.business.service.SubscriptionRepository;
 import com.newzet.api.subscription.repository.entity.SubscriptionEntity;
 import com.newzet.api.subscription.repository.exception.NoSubscriptionException;
 import com.newzet.api.user.business.dto.UserEntityDto;
+import com.newzet.api.user.exception.NoUserException;
 import com.newzet.api.user.repository.entity.UserEntity;
+import com.newzet.api.user.repository.repository.UserJpaRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -22,12 +26,15 @@ import lombok.RequiredArgsConstructor;
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
 	private final SubscriptionJpaRepository subscriptionJpaRepository;
+	private final NewsletterJpaRepository newsletterJpaRepository;
+	private final UserJpaRepository userJpaRepository;
 
 	@Override
 	public SubscriptionEntityDto create(UserEntityDto userDto, NewsletterEntityDto newsletterDto) {
-		UserEntity user = UserEntity.create(userDto.getId(), userDto.getEmail(),
-			userDto.getNickname(), userDto.getStatus());
-		NewsletterEntity newsletter = newsletterDto.toEntity();
+		UserEntity user = userJpaRepository.findById(userDto.getId())
+			.orElseThrow(() -> new NoUserException("해당 user를 찾을 수 없습니다."));
+		NewsletterEntity newsletter = newsletterJpaRepository.findById(newsletterDto.getId())
+			.orElseThrow(() -> new NoNewsletterException("해당 newsletter를 찾을 수 없습니다."));
 		SubscriptionEntity subscriptionEntity = SubscriptionEntity.create(user, newsletter,
 			LocalDateTime.now(), null);
 		return subscriptionJpaRepository.save(subscriptionEntity).toEntityDto();
