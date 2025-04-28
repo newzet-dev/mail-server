@@ -201,7 +201,8 @@ class OAuthMappingEntityTest {
 		OAuthMappingEntity entity = createEntityWithToken(id, oldUserId, oldIssuedAt, true);
 
 		OAuthToken newToken = OAuthToken.create(
-			OAuthProvider.KAKAO, "new-access-token", "new-refresh-token", 7200L, "new-bearer", "new-profile"
+			OAuthProvider.KAKAO, "new-access-token", "new-refresh-token", 7200L, "new-bearer",
+			"new-profile"
 		);
 
 		OAuthMappingEntityDto updateDto = OAuthMappingEntityDto.create(

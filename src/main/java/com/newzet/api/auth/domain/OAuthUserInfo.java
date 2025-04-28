@@ -3,7 +3,6 @@ package com.newzet.api.auth.domain;
 import com.newzet.api.auth.exception.OAuthErrorException;
 
 import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
@@ -18,7 +17,7 @@ public class OAuthUserInfo {
 
 	public static OAuthUserInfo create(String socialUserId, String email, String name,
 		OAuthProvider provider, OAuthToken oauthToken) {
-		
+
 		if (socialUserId == null) {
 			throw new OAuthErrorException("응답이 올바르지 않아 socialUserId가 전달되지 않았습니다.");
 		}
