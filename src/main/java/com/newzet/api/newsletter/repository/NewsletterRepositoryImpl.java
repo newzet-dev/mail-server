@@ -50,8 +50,7 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 	//TODO: 다음 이슈에서 뉴스레터 추천 API 구현할때 사용할 예정
 	@Override
 	public List<NewsletterEntityDto> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList) {
-		return newsletterJpaRepository.findAll().stream()
-			.filter(newsletterEntity -> categoryIdList.contains(newsletterEntity.getId()))
+		return newsletterJpaRepository.findByCategoryIdList(categoryIdList).stream()
 			.map(NewsletterEntity::toEntityDto)
 			.toList();
 	}
