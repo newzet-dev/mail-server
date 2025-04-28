@@ -4,7 +4,7 @@ import java.util.UUID;
 
 import com.newzet.api.category.domain.Category;
 import com.newzet.api.user.domain.User;
-import com.newzet.api.usercategory.dto.UserCategoryEntityDto;
+import com.newzet.api.usercategory.business.dto.UserCategoryEntityDto;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;

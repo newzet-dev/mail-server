@@ -19,6 +19,7 @@ import com.newzet.api.category.repository.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.user.repository.entity.UserEntity;
 import com.newzet.api.user.repository.repository.UserJpaRepository;
+import com.newzet.api.usercategory.repository.repository.UserCategoryRepositoryImpl;
 
 @DataJpaTest
 @Import(UserCategoryRepositoryImpl.class)

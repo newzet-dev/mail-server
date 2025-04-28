@@ -1,4 +1,4 @@
-package com.newzet.api.usercategory.dto;
+package com.newzet.api.usercategory.business.dto;
 
 import java.util.UUID;
 

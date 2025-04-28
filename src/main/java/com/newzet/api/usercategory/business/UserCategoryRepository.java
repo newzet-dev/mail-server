@@ -3,7 +3,7 @@ package com.newzet.api.usercategory.business;
 import java.util.List;
 import java.util.UUID;
 
-import com.newzet.api.usercategory.dto.UserCategoryEntityDto;
+import com.newzet.api.usercategory.business.dto.UserCategoryEntityDto;
 
 public interface UserCategoryRepository {
 

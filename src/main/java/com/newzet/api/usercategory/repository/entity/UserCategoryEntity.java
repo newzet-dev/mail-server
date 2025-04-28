@@ -1,4 +1,4 @@
-package com.newzet.api.usercategory.repository;
+package com.newzet.api.usercategory.repository.entity;
 
 import java.util.UUID;
 
@@ -6,7 +6,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.user.repository.entity.UserEntity;
-import com.newzet.api.usercategory.dto.UserCategoryEntityDto;
+import com.newzet.api.usercategory.business.dto.UserCategoryEntityDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

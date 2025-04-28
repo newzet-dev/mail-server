@@ -1,4 +1,4 @@
-package com.newzet.api.usercategory.repository;
+package com.newzet.api.usercategory.repository.repository;
 
 import java.util.List;
 import java.util.UUID;
@@ -12,7 +12,8 @@ import com.newzet.api.user.exception.NoUserException;
 import com.newzet.api.user.repository.entity.UserEntity;
 import com.newzet.api.user.repository.repository.UserJpaRepository;
 import com.newzet.api.usercategory.business.UserCategoryRepository;
-import com.newzet.api.usercategory.dto.UserCategoryEntityDto;
+import com.newzet.api.usercategory.business.dto.UserCategoryEntityDto;
+import com.newzet.api.usercategory.repository.entity.UserCategoryEntity;
 
 import lombok.RequiredArgsConstructor;
 
