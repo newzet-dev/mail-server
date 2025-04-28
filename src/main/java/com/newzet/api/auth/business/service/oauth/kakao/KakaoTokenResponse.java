@@ -1,4 +1,4 @@
-package com.newzet.api.auth.business.service.oauth;
+package com.newzet.api.auth.business.service.oauth.kakao;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.newzet.api.auth.domain.OAuthToken;

@@ -17,6 +17,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import com.newzet.api.auth.business.service.oauth.kakao.KakaoOAuthService;
+import com.newzet.api.auth.business.service.oauth.kakao.KakaoTokenResponse;
+import com.newzet.api.auth.business.service.oauth.kakao.KakaoUserInfoResponse;
 import com.newzet.api.auth.domain.OAuthUserInfo;
 import com.newzet.api.auth.exception.OAuthErrorException;
 

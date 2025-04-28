@@ -1,4 +1,4 @@
-package com.newzet.api.auth.business.service.oauth;
+package com.newzet.api.auth.business.service.oauth.kakao;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -11,6 +11,7 @@ import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
+import com.newzet.api.auth.business.service.oauth.OAuthService;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
 import com.newzet.api.auth.domain.OAuthUserInfo;
