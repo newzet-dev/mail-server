@@ -25,6 +25,7 @@ import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
+import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,7 +57,7 @@ class NewsletterServiceTest {
 			Optional.of(cacheDto));
 
 		// When
-		NewsletterEntityDto newsletter = newsletterService.findOrCreateNewsletter(name, domain,
+		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain,
 			mailingList);
 
 		// Then
@@ -75,7 +76,7 @@ class NewsletterServiceTest {
 			Optional.of(entityDto));
 
 		// When
-		NewsletterEntityDto newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
+		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
 
 		// Then
 		verifyValue(newsletter);
@@ -98,7 +99,7 @@ class NewsletterServiceTest {
 		when(newsletterRepository.save(any(), any(), any(), any())).thenReturn(entityDto);
 
 		// When
-		NewsletterEntityDto newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
+		Newsletter newsletter = newsletterService.findOrCreateNewsletter(name, domain, mailingList);
 
 		// Then
 		verifyValue(newsletter);
@@ -205,7 +206,7 @@ class NewsletterServiceTest {
 		assertEquals(newsletterInfoResponse.id(), newsletter.getId().toString());
 	}
 
-	private void verifyValue(NewsletterEntityDto newsletter) {
+	private void verifyValue(Newsletter newsletter) {
 		assertEquals(name, newsletter.getName());
 		assertEquals(domain, newsletter.getDomain());
 		assertEquals(mailingList, newsletter.getMailingList());

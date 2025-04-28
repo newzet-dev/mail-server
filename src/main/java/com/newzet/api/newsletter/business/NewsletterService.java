@@ -16,6 +16,7 @@ import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
+import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -36,7 +37,7 @@ public class NewsletterService {
 	private final CacheUtil cacheUtil;
 	private final LockFactory lockFactory;
 
-	public NewsletterEntityDto findOrCreateNewsletter(String name, String domain, String mailingList) {
+	public Newsletter findOrCreateNewsletter(String name, String domain, String mailingList) {
 		return findByDomainOnCache(domain)
 			.orElseGet(() -> findOrCreateByDomainOrMailingListWithLock(name, domain, mailingList));
 	}
@@ -64,12 +65,12 @@ public class NewsletterService {
 			newsletter.getCategory().getName());
 	}
 
-	private Optional<NewsletterEntityDto> findByDomainOnCache(String domain) {
+	private Optional<Newsletter> findByDomainOnCache(String domain) {
 		return cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)
-			.map(newsletterCacheDto -> newsletterCacheDto.toDomain().toEntityDto());
+			.map(NewsletterCacheDto::toDomain);
 	}
 
-	private NewsletterEntityDto findOrCreateByDomainOrMailingListWithLock(String name, String domain,
+	private Newsletter findOrCreateByDomainOrMailingListWithLock(String name, String domain,
 		String mailingList) {
 		Lock lock = lockFactory.tryLock(CACHE_DOMAIN_PREFIX + ":" + domain,
 			CACHE_LOCK_WAIT_TIME, CACHE_LOCK_LEASE_TIME);
@@ -81,22 +82,23 @@ public class NewsletterService {
 		}
 	}
 
-	private NewsletterEntityDto findOrCreateByDomainOrMailingListInDatabase(String name, String domain,
+	private Newsletter findOrCreateByDomainOrMailingListInDatabase(String name, String domain,
 		String mailingList) {
 		return newsletterRepository
 			.findByDomainOrMailingList(domain, mailingList)
+			.map(NewsletterEntityDto::toDomain)
 			.map(newsletter -> {
-				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toDomain().toCacheDto(),
+				cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, newsletter.toCacheDto(),
 					CACHE_DURATION);
 				return newsletter;
 			})
 			.orElseGet(() -> createNewsletter(name, domain, mailingList));
 	}
 
-	private NewsletterEntityDto createNewsletter(String name, String domain, String mailingList) {
-		NewsletterEntityDto savedNewsletter = newsletterRepository.save(name, domain, mailingList,
-			NewsletterStatus.UNREGISTERED.name());
-		cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, savedNewsletter.toDomain().toCacheDto(), CACHE_DURATION);
+	private Newsletter createNewsletter(String name, String domain, String mailingList) {
+		Newsletter savedNewsletter = newsletterRepository.save(name, domain, mailingList,
+			NewsletterStatus.UNREGISTERED.name()).toDomain();
+		cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, savedNewsletter.toCacheDto(), CACHE_DURATION);
 		return savedNewsletter;
 	}
 }

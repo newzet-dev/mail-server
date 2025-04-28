@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import com.newzet.api.subscription.domain.Subscription;
 import com.newzet.api.user.domain.User;
@@ -20,12 +20,12 @@ public class SubscriptionService {
 
 	private final SubscriptionRepository subscriptionRepository;
 
-	public void addSubscription(User user, NewsletterEntityDto newsletter) {
+	public void addSubscription(User user, Newsletter newsletter) {
 		Optional<SubscriptionEntityDto> entityDto = subscriptionRepository.findByUserIdAndNewsletterId(
 			user.getId(), newsletter.getId());
 
 		if (entityDto.isEmpty()) {
-			subscriptionRepository.create(user.toEntityDto(), newsletter);
+			subscriptionRepository.create(user.toEntityDto(), newsletter.toEntityDto());
 		} else {
 			SubscriptionEntityDto dto = entityDto.get();
 			Subscription activatedSubscription = dto.toDomain().reactivate();
