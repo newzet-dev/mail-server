@@ -10,7 +10,7 @@ import com.newzet.api.user.business.dto.UserEntityDto;
 public interface SubscriptionRepository {
 	SubscriptionEntityDto create(UserEntityDto userDto, NewsletterEntityDto newsletterDto);
 
-	Optional<SubscriptionEntityDto> findByUserIdAndNewsletterId(UUID userId, Long newsletterId);
+	Optional<SubscriptionEntityDto> findByUserIdAndNewsletterId(UUID userId, UUID newsletterId);
 
 	void save(SubscriptionEntityDto subscriptionDto);
 

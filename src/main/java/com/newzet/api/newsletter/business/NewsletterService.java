@@ -1,18 +1,21 @@
 package com.newzet.api.newsletter.business;
 
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
-import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
-import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
-import com.newzet.api.common.lock.exception.UnknownLockException;
+import com.newzet.api.common.util.UuidConverter;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
+import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
+import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
 
@@ -39,10 +42,32 @@ public class NewsletterService {
 			.orElseGet(() -> findOrCreateByDomainOrMailingListWithLock(name, domain, mailingList));
 	}
 
+	public NewsletterListResponse searchNewsletterListByNameOrCategoryId(String name,
+		String categoryId) {
+		UUID categoryUuid = UuidConverter.convert(categoryId);
+		List<NewsletterResponse> newsletterResponseList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
+				name, categoryUuid).stream()
+			.map(newsletterEntity -> NewsletterResponse.create(newsletterEntity.getId(),
+				newsletterEntity.getName(), newsletterEntity.getImageUrl(),
+				newsletterEntity.getDescription(), newsletterEntity.getPriority()))
+			.toList();
+
+		return NewsletterListResponse.create(newsletterResponseList);
+	}
+
+	public NewsletterInfoResponse getNewsLetterById(String newsletterId) {
+		UUID newsletterUuid = UuidConverter.convert(newsletterId);
+		NewsletterEntityDto newsletter = newsletterRepository.getById(newsletterUuid);
+		return NewsletterInfoResponse.create(newsletter.getId(), newsletter.getName(),
+			newsletter.getImageUrl(), newsletter.getDetail(),
+			newsletter.getStatus(),
+			newsletter.getDayOfWeek(), newsletter.getSubscriptionUrl(), false,
+			newsletter.getCategory().getName());
+	}
+
 	private Optional<Newsletter> findByDomainOnCache(String domain) {
 		return cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)
-			.map(dto -> Newsletter.create(dto.getId(), dto.getName(), dto.getDomain(),
-				dto.getMailingList(), dto.getStatus()));
+			.map(NewsletterCacheDto::toDomain);
 	}
 
 	private Newsletter findOrCreateByDomainOrMailingListWithLock(String name, String domain,

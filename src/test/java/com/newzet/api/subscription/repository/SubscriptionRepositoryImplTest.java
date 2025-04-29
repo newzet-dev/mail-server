@@ -13,8 +13,10 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import com.newzet.api.category.repository.CategoryEntity;
+import com.newzet.api.category.repository.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.fixture.NewsletterFixture;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
@@ -30,52 +32,53 @@ import com.newzet.api.user.repository.repository.UserJpaRepository;
 public class SubscriptionRepositoryImplTest {
 
 	private static UserEntityDto userDto;
-	private static NewsletterEntityDto newsletterDto;
+	private static NewsletterEntity newsletterEntity;
+	private static CategoryEntity categoryEntity;
 	@Autowired
 	private SubscriptionRepositoryImpl subscriptionRepository;
 	@Autowired
 	private UserJpaRepository userRepository;
 	@Autowired
 	private NewsletterJpaRepository newsletterRepository;
+	@Autowired
+	private CategoryJpaRepository categoryRepository;
 
 	@BeforeEach
 	public void setUp() {
 		UserEntity user = userRepository.save(UserEntity.create("test@example.com", "test","ACTIVE"));
 		userDto = UserEntityDto.create(user.getId(), user.getEmail(), user.getStatus().name());
 
-		NewsletterEntity newsletter = newsletterRepository.save(NewsletterEntity.create("test",
-			"test@example.com", "test123", "REGISTERED"));
-		newsletterDto = NewsletterEntityDto.create(newsletter.getId(), newsletter.getName(),
-			newsletter.getDomain(), newsletter.getMailingList(), newsletter.getStatus().name());
+		categoryEntity = categoryRepository.save(CategoryEntity.create("test", "test", "test"));
+		newsletterEntity = newsletterRepository.save(NewsletterFixture.createDefaultEntity(categoryEntity));
 	}
 
 	@Test
 	public void create_returnSubscriptionEntityDto() {
 		//When
 		SubscriptionEntityDto subscription = subscriptionRepository.create(userDto,
-			newsletterDto);
+			newsletterEntity.toEntityDto());
 
 		//Then
 		assertTrue(subscriptionRepository.findByUserIdAndNewsletterId(
-			userDto.getId(), newsletterDto.getId()).isPresent());
+			userDto.getId(), newsletterEntity.getId()).isPresent());
 	}
 
 	@Test
 	public void findByUserIdAndNewsletterId_whenExist_returnSubscriptionEntityDto() {
 		//Given
 		SubscriptionEntityDto subscription = subscriptionRepository.create(userDto,
-			newsletterDto);
+			newsletterEntity.toEntityDto());
 
 		//When, Then
 		assertTrue(subscriptionRepository.findByUserIdAndNewsletterId(
-			userDto.getId(), newsletterDto.getId()).isPresent());
+			userDto.getId(), newsletterEntity.getId()).isPresent());
 	}
 
 	@Test
 	public void findByUserIdAndNewsletterId_whenNoExist_returnOptionalEmpty() {
 		//When
 		Optional<SubscriptionEntityDto> foundedSubscription = subscriptionRepository.findByUserIdAndNewsletterId(
-			userDto.getId(), newsletterDto.getId());
+			userDto.getId(), newsletterEntity.getId());
 
 		//Then
 		assertTrue(foundedSubscription.isEmpty());
@@ -85,7 +88,7 @@ public class SubscriptionRepositoryImplTest {
 	public void save() {
 		//Given
 		SubscriptionEntityDto original = subscriptionRepository.create(userDto,
-			newsletterDto);
+			newsletterEntity.toEntityDto());
 		SubscriptionEntityDto changed = SubscriptionEntityDto.create(
 			original.getId(), LocalDateTime.MAX, LocalDateTime.MIN);
 
