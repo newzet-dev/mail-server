@@ -17,6 +17,7 @@ import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.util.UuidConverter;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
@@ -93,7 +94,8 @@ public class NewsletterService {
 			.toList();
 
 		int recommendNumber = 4 - advertiseNewsletterList.size();
-		List<Newsletter> randomNewsletterList = getRandomNewsletterList(newsletterListInUserCategories,
+		List<Newsletter> randomNewsletterList = getRandomNewsletterList(
+			newsletterListInUserCategories,
 			recommendNumber);
 		List<Newsletter> combinedRecommendNewsletterList = Stream.of(advertiseNewsletterList,
 				randomNewsletterList)
@@ -108,6 +110,9 @@ public class NewsletterService {
 	}
 
 	protected List<Newsletter> getRandomNewsletterList(List<Newsletter> newsletterList, int count) {
+		if (newsletterList.size() < count) {
+			throw new NotEnoughNewslettersException("추천할 뉴스레터 count 수보다 존재하는 뉴스레터 수가 적습니다.");
+		}
 		List<Newsletter> randomNewsletterList = new ArrayList<>(newsletterList);
 		Collections.shuffle(randomNewsletterList);
 		return randomNewsletterList.subList(0, count);

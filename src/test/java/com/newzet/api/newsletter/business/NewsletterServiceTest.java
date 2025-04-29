@@ -29,6 +29,7 @@ import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.common.util.exception.UuidConvertFailException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
@@ -237,7 +238,7 @@ class NewsletterServiceTest {
 	@DisplayName("뉴스레터 목록에서 특정 개수만큼 랜덤 추출하는 메서드 단위 테스트, 특정 퍼센트 이하로 평균 일치율을 달성하는지 검증")
 	@Test
 	public void shuffled_newsletterList_has_low_equals() {
-		//Given
+		// Given
 		UUID categoryId1 = UUID.randomUUID();
 		UUID categoryId2 = UUID.randomUUID();
 		UUID categoryId3 = UUID.randomUUID();
@@ -254,6 +255,7 @@ class NewsletterServiceTest {
 			.map(NewsletterEntityDto::toDomain)
 			.toList();
 
+		// When Then
 		int iterations = 10; // 랜덤 시행 10번
 		int count = 4;
 		List<Newsletter> prev = null;
@@ -276,6 +278,18 @@ class NewsletterServiceTest {
 
 		double average = overlapRatios.stream().mapToDouble(d -> d).average().orElse(0);
 		assertThat(average).isLessThan(0.3);
+	}
+
+	@Test
+	public void newsletterList_has_low_number_of_elements_than_count_throw_exception() {
+		// Given
+		int count = 4;
+		List<Newsletter> newsletterList = new ArrayList<>();
+
+		// When Then
+		assertThrows(NotEnoughNewslettersException.class,() -> newsletterService.getRandomNewsletterList(newsletterList, count));
+
+
 	}
 
 	@DisplayName("광고 뉴스레터 수가 1개일때(1번 카테고리의 다른 뉴스레터라 가정), 유저 카테고리에 해당되는 랜덤 뉴스레터 3개와 1개의 광고 뉴스레터가 전달되어야 한다.")
