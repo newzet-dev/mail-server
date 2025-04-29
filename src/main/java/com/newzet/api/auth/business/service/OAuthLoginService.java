@@ -26,7 +26,6 @@ import com.newzet.api.user.business.dto.UserEntityDto;
 import com.newzet.api.user.business.service.UserFactory;
 import com.newzet.api.user.business.service.UserRepository;
 import com.newzet.api.user.domain.User;
-import com.newzet.api.user.exception.NoUserException;
 
 import lombok.RequiredArgsConstructor;
 
