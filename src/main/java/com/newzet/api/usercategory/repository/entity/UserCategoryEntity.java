@@ -46,7 +46,7 @@ public class UserCategoryEntity {
 	}
 
 	public UserCategoryEntityDto toEntityDto() {
-		return UserCategoryEntityDto.create(id, user.toEntityDto(), category.toCategoryEntityDto());
+		return UserCategoryEntityDto.create(id, user.toEntityDto(), category.toEntityDto());
 	}
 
 }

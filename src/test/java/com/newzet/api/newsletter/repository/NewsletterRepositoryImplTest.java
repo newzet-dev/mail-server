@@ -2,10 +2,12 @@ package com.newzet.api.newsletter.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -32,6 +34,7 @@ class NewsletterRepositoryImplTest {
 	private CategoryJpaRepository categoryJpaRepository;
 	@Autowired
 	private NewsletterJpaRepository newsletterJpaRepository;
+
 
 	private static void verifyFindByDomainOrMailingList(NewsletterEntityDto n1,
 		NewsletterEntityDto n2) {
@@ -180,12 +183,37 @@ class NewsletterRepositoryImplTest {
 
 	@Test
 	public void getNewsletterById_With_NonExistentId() {
-		// Given
+		//Given
 		UUID nonExistentId = UUID.randomUUID();
 
 		//When Then
 		assertThrows(NoNewsletterException.class,
 			() -> newsletterRepository.getById(nonExistentId));
+	}
+
+	@Test
+	public void getNewsletterList_by_category_list() {
+		//Given
+		List<NewsletterEntity> newsletterEntityList = new ArrayList<>();
+		List<UUID> categoryIdList = new ArrayList<>();
+		for (int i=0;i<5;i++) {
+			CategoryEntity category = categoryJpaRepository.save(
+				CategoryEntity.create("testCategory" + i, "test", "test"));
+			NewsletterEntity newsletter = newsletterJpaRepository.save(
+				NewsletterFixture.createEntityUnique("domain#" + i, category));
+			newsletterEntityList.add(newsletter);
+			categoryIdList.add(category.getId());
+		}
+
+		//When
+		List<NewsletterEntityDto> newsLetterListByCategoryIdList = newsletterRepository.getNewsLetterListByCategoryIdList(
+			categoryIdList);
+
+		//Then
+		for (int i=0;i<5;i++) {
+			Assertions.assertThat(newsLetterListByCategoryIdList.get(i).getId()).isEqualTo(newsletterEntityList.get(i).getId());
+		}
+
 	}
 
 	private NewsletterEntityDto saveNewsletter() {
