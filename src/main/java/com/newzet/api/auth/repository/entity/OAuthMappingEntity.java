@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
+import com.newzet.api.auth.business.dto.OAuthTokenDto;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
 
@@ -124,5 +125,12 @@ public class OAuthMappingEntity {
 			this.socialUserName = dto.getSocialUserName();
 		}
 		this.temporary = dto.isTemporary();
+	}
+
+	public void updateFromTokenDto(OAuthTokenDto dto) {
+		this.accessToken = dto.accessToken();
+		this.refreshToken = dto.refreshToken();
+		this.expiresIn = dto.expiresIn();
+		this.tokenPrefix = dto.tokenType();
 	}
 }

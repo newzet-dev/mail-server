@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.newzet.api.auth.business.dto.JwtResponse;
 import com.newzet.api.auth.business.dto.OAuthLoginResponse;
 import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
+import com.newzet.api.auth.business.dto.OAuthTokenDto;
 import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.oauth.OAuthRepository;
 import com.newzet.api.auth.business.service.oauth.OAuthService;
@@ -127,7 +128,7 @@ class OAuthLoginServiceTest {
 		when(kakaoOAuthService.getUserInfo(code)).thenReturn(userInfo);
 		when(oAuthRepository.findBySocialUserIdAndProvider(anyString(), eq(provider)))
 			.thenReturn(Optional.of(mapping));
-		doNothing().when(oAuthRepository).update(any(OAuthMappingEntityDto.class));
+		doNothing().when(oAuthRepository).updateToken(any(), any(OAuthTokenDto.class));
 
 		when(jwtFactory.createAccessToken(userId)).thenReturn(accessToken);
 		when(jwtFactory.createRefreshToken(userId)).thenReturn(refreshToken);
@@ -302,7 +303,7 @@ class OAuthLoginServiceTest {
 		when(kakaoOAuthService.getUserInfo(code)).thenReturn(userInfo);
 		when(oAuthRepository.findBySocialUserIdAndProvider(anyString(), eq(provider)))
 			.thenReturn(Optional.of(mappingWithUserIdButTemporary));
-		doNothing().when(oAuthRepository).update(any(OAuthMappingEntityDto.class));
+		doNothing().when(oAuthRepository).updateToken(any(), any(OAuthTokenDto.class));
 
 		// When
 		OAuthLoginResponse response = ReflectionTestUtils.invokeMethod(
@@ -555,7 +556,7 @@ class OAuthLoginServiceTest {
 		when(kakaoOAuthService.getUserInfo(code)).thenReturn(userInfo);
 		when(oAuthRepository.findBySocialUserIdAndProvider(anyString(), eq(provider)))
 			.thenReturn(Optional.of(unusualMapping));
-		doNothing().when(oAuthRepository).update(any(OAuthMappingEntityDto.class));
+		doNothing().when(oAuthRepository).updateToken(any(), any(OAuthTokenDto.class));
 
 		// When
 		OAuthLoginResponse response = ReflectionTestUtils.invokeMethod(

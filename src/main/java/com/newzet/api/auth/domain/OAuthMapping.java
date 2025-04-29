@@ -62,23 +62,6 @@ public class OAuthMapping {
 		return linked;
 	}
 
-	public OAuthMapping updateToken(OAuthToken newOauthToken) {
-		if (newOauthToken == null) {
-			return this;
-		}
-
-		return OAuthMapping.builder()
-			.id(id)
-			.socialUserId(socialUserId)
-			.socialUserEmail(socialUserEmail)
-			.socialUserName(socialUserName)
-			.provider(provider)
-			.userId(userId)
-			.oauthToken(newOauthToken)
-			.temporary(temporary)
-			.build();
-	}
-
 	public OAuthMappingEntityDto toDto() {
 		return OAuthMappingEntityDto.create(
 			id,

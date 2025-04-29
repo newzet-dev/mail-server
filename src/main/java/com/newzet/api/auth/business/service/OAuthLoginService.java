@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.auth.business.dto.JwtResponse;
 import com.newzet.api.auth.business.dto.OAuthLoginResponse;
 import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
+import com.newzet.api.auth.business.dto.OAuthTokenDto;
 import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.oauth.OAuthRepository;
 import com.newzet.api.auth.business.service.oauth.OAuthService;
@@ -118,20 +119,16 @@ public class OAuthLoginService {
 		if (existingMappingDto.isPresent()) {
 			OAuthMappingEntityDto mappingDto = existingMappingDto.get();
 
-			OAuthMapping oAuthMappingDomain = OAuthMapping.fromDto(mappingDto);
+			OAuthTokenDto oauthTokenDto = OAuthTokenDto.from(oauthToken);
+			oAuthRepository.updateToken(mappingDto.getId(), oauthTokenDto);
 
-			OAuthMapping updatedDomain = oAuthMappingDomain.updateToken(oauthToken);
-
-			OAuthMappingEntityDto updatedDto = updatedDomain.toDto();
-			oAuthRepository.update(updatedDto);
-
-			if (oAuthMappingDomain.getUserId() != null && !oAuthMappingDomain.isTemporary()) {
-				JwtResponse jwtResponse = generateTokensForUser(oAuthMappingDomain.getUserId(),
+			if (mappingDto.getUserId() != null && !mappingDto.isTemporary()) {
+				JwtResponse jwtResponse = generateTokensForUser(mappingDto.getUserId(),
 					deviceType);
 				return OAuthLoginResponse.toJwt(jwtResponse.accessToken(),
 					jwtResponse.refreshToken());
 			} else {
-				return OAuthLoginResponse.toSignUp(updatedDto.getId());
+				return OAuthLoginResponse.toSignUp(mappingDto.getId());
 			}
 		}
 
