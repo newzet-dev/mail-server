@@ -3,7 +3,10 @@ package com.newzet.api.newsletter.business;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.concurrent.locks.Lock;
 
 import org.junit.jupiter.api.Test;
@@ -12,13 +15,18 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
+import com.newzet.api.common.util.exception.UuidConvertFailException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
+import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.fixture.NewsletterFixture;
 
 @ExtendWith(MockitoExtension.class)
 class NewsletterServiceTest {
@@ -28,8 +36,8 @@ class NewsletterServiceTest {
 	private final String domain = "test@example.com";
 	private final String mailingList = "test123";
 	private final String status = "UNREGISTERED";
-	private final NewsletterEntityDto entityDto = NewsletterEntityDto.create(1L, name, domain,
-		mailingList, status);
+	private final CategoryEntity categoryEntity = CategoryEntity.create(UUID.randomUUID(), "test", "test", "test");
+	private final NewsletterEntityDto entityDto = NewsletterFixture.createDefaultEntity().toEntityDto();
 	@Mock
 	private NewsletterRepository newsletterRepository;
 	@Mock
@@ -44,8 +52,7 @@ class NewsletterServiceTest {
 	@Test
 	void findOrCreateNewsletter_whenNewsletterExistsInCache_ReturnNewsletterInCache() {
 		// Given
-		NewsletterCacheDto cacheDto = NewsletterCacheDto.create(1L, name, domain, mailingList,
-			status);
+		NewsletterCacheDto cacheDto = NewsletterFixture.createDefaultCacheDto(categoryEntity);
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.of(cacheDto));
 
@@ -120,6 +127,83 @@ class NewsletterServiceTest {
 		verify(newsletterRepository, never()).findByDomainOrMailingList(domain, mailingList);
 		verify(cacheUtil, never()).set(eq(CACHE_DOMAIN_PREFIX + domain), any(), anyLong());
 		verify(lockFactory, never()).unlock(lock);
+	}
+
+	@Test
+	public void searchNewsletterListByNameOrCategoryId() {
+		// Given
+		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
+		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
+		newsletterList.add(newsletter);
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class)))
+			.thenReturn(newsletterList);
+
+		// When
+		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
+			newsletter.getName(), String.valueOf(categoryEntity.getId()));
+
+		// Then
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class));
+		assertEquals(1, searchList.newsletterList().size());
+	}
+
+	@Test
+	public void searchNewsletterListByNameOrCategoryId_whenCategoryIdIsNull() {
+		// Given
+		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
+		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
+		newsletterList.add(newsletter);
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class)))
+			.thenReturn(newsletterList);
+
+		// When
+		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
+			newsletter.getName(), null);
+
+		// Then
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class));
+		assertEquals(1, searchList.newsletterList().size());
+	}
+
+	@Test
+	public void searchNewsletterListByNameOrCategoryId_whenCategoryIdEmpty() {
+		// Given
+		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
+		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
+		newsletterList.add(newsletter);
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class)))
+			.thenReturn(newsletterList);
+
+		// When
+		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
+			newsletter.getName(), "");
+
+		// Then
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class));
+		assertEquals(1, searchList.newsletterList().size());
+	}
+
+	@Test
+	public void searchNewsletterListByNameOrCategoryId_Invalid_CategoryId_throwException() {
+		// When Then
+		assertThrows(UuidConvertFailException.class, () -> newsletterService.searchNewsletterListByNameOrCategoryId(
+			"test", "wrong uuid"));
+	}
+
+	@Test
+	public void getNewsletterById() {
+		// Given
+		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
+		when(newsletterRepository.getById(any(UUID.class)))
+			.thenReturn(newsletter);
+
+		// When
+		NewsletterInfoResponse newsletterInfoResponse = newsletterService.getNewsLetterById(
+			String.valueOf(newsletter.getId()));
+
+		// Then
+		verify(newsletterRepository, times(1)).getById(any(UUID.class));
+		assertEquals(newsletterInfoResponse.id(), newsletter.getId().toString());
 	}
 
 	private void verifyValue(Newsletter newsletter) {
