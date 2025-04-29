@@ -174,23 +174,18 @@ public class OAuthLoginService {
 	}
 
 	private JwtResponse generateTokensForUser(UUID userId, String deviceType) {
-		try {
-			UserEntityDto userEntityDto = userRepository.getById(userId);
-			UserFactory.create(userEntityDto.getId(), userEntityDto.getEmail(),
-				userEntityDto.getNickname(), userEntityDto.getStatus());
+		UserEntityDto userEntityDto = userRepository.getById(userId);
+		UserFactory.create(userEntityDto.getId(), userEntityDto.getEmail(),
+			userEntityDto.getNickname(), userEntityDto.getStatus());
 
-			Token accessToken = jwtFactory.createAccessToken(userId);
-			Token refreshToken = jwtFactory.createRefreshToken(userId);
+		Token accessToken = jwtFactory.createAccessToken(userId);
+		Token refreshToken = jwtFactory.createRefreshToken(userId);
 
-			TokenDTO refreshTokenDTO = refreshToken.toTokenDTO();
+		TokenDTO refreshTokenDTO = refreshToken.toTokenDTO();
 
-			tokenRepository.saveToken(userId, deviceType, refreshTokenDTO);
+		tokenRepository.saveToken(userId, deviceType, refreshTokenDTO);
 
-			return new JwtResponse(accessToken.getValue(), refreshToken.getValue());
-
-		} catch (NoUserException e) {
-			throw new OAuthNotFoundException("연결된 사용자 계정을 찾을 수 없습니다.");
-		}
+		return new JwtResponse(accessToken.getValue(), refreshToken.getValue());
 	}
 
 	private OAuthService getOAuthService(OAuthProvider provider) {

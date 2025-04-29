@@ -270,12 +270,12 @@ class OAuthLoginServiceTest {
 		when(userRepository.getById(userId)).thenThrow(new NoUserException("User not found"));
 
 		// When, Then
-		assertThatExceptionOfType(OAuthNotFoundException.class)
+		assertThatExceptionOfType(NoUserException.class)
 			.isThrownBy(() -> {
 				ReflectionTestUtils.invokeMethod(oAuthLoginService, "generateTokensForUser", userId,
 					deviceType);
 			})
-			.withMessage("연결된 사용자 계정을 찾을 수 없습니다.");
+			.withMessage("User not found");
 	}
 
 	@Test
