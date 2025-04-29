@@ -1,9 +1,10 @@
 package com.newzet.api.advertise.business;
 
 import java.util.List;
-import java.util.UUID;
+
+import com.newzet.api.advertise.repository.entity.AdvertiseEntity;
 
 public interface AdvertiseRepository {
 
-	List<UUID> getAdvertiseNewsletterIdList();
+	List<AdvertiseEntity> getAdvertiseNewsletterIdList();
 }
