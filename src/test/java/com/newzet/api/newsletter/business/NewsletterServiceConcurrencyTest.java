@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.ComponentScan;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -19,6 +20,9 @@ import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
+import com.newzet.api.newsletter.fixture.NewsletterFixture;
+import com.newzet.api.newsletter.repository.NewsletterEntity;
+import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 
 @SpringBootTest
 @ComponentScan(basePackages = {"com.newzet.api.newsletter", "com.newzet.api.common"})
@@ -28,18 +32,18 @@ import com.newzet.api.config.RedisTestContainerConfig;
 	JwtTestConfig.class})
 public class NewsletterServiceConcurrencyTest {
 
-	@Autowired
-	private NewsletterService newsletterService;
-
-	@Autowired
-	private CacheUtil cacheUtil;
-
-	@MockitoSpyBean
-	private NewsletterRepository newsletterRepository;
-
 	private final String name = "test";
 	private final String domain = "test@example.com";
 	private final String mailingList = "test123";
+	@Autowired
+	private NewsletterService newsletterService;
+	@Autowired
+	private CacheUtil cacheUtil;
+	@MockitoSpyBean
+	private NewsletterRepository newsletterRepository;
+	private NewsletterEntity newsletterEntity = NewsletterFixture.createDefaultEntity();
+	@MockitoBean
+	private NewsletterJpaRepository newsletterJpaRepository;
 
 	@Test
 	public void findOrCreateNewsletter_when100Requests_requestDB1time() throws
@@ -48,7 +52,7 @@ public class NewsletterServiceConcurrencyTest {
 		int numberOfThreads = 100;
 		ExecutorService executorService = Executors.newFixedThreadPool(numberOfThreads);
 		CountDownLatch latch = new CountDownLatch(numberOfThreads);
-
+		when(newsletterJpaRepository.save(any())).thenReturn(newsletterEntity);
 		//When
 		for (int i = 0; i < numberOfThreads; i++) {
 			executorService.submit(() -> {
