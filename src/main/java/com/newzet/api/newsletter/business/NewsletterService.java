@@ -88,7 +88,7 @@ public class NewsletterService {
 		List<Newsletter> advertiseNewsletterList = advertiseRepository.getAdvertiseNewsletterIdList()
 			.stream()
 			.map(advertiseEntityDto -> newsletterRepository.getById(
-				advertiseEntityDto.getNewsletter().getId()))
+				advertiseEntityDto.getNewsletterId()))
 			.map(NewsletterEntityDto::toDomain)
 			.toList();
 

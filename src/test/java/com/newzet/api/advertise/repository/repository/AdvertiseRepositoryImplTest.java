@@ -48,7 +48,7 @@ class AdvertiseRepositoryImplTest {
 	void find_all_newsletter_ids_of_advertise() {
 		// given
 		newsletters.forEach(newsletter -> {
-			advertiseJpaRepository.save(AdvertiseEntity.create(newsletter));
+			advertiseJpaRepository.save(AdvertiseEntity.create(newsletter.getId()));
 		});
 
 		// when
@@ -56,7 +56,7 @@ class AdvertiseRepositoryImplTest {
 
 		// then
 		for (int i = 0; i < 5; i++) {
-			assertThat(advertiseNewsletters.get(i).getNewsletter().getId()).isEqualTo(newsletters.get(i).getId());
+			assertThat(advertiseNewsletters.get(i).getNewsletterId()).isEqualTo(newsletters.get(i).getId());
 		}
 	}
 

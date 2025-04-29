@@ -5,14 +5,10 @@ import java.util.UUID;
 import org.hibernate.annotations.UuidGenerator;
 
 import com.newzet.api.advertise.business.dto.AdvertiseEntityDto;
-import com.newzet.api.newsletter.repository.NewsletterEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.FetchType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -28,19 +24,17 @@ public class AdvertiseEntity {
 	@Column(columnDefinition = "uuid", updatable = false, nullable = false)
 	private UUID id;
 
-	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "newsletter_id")
-	private NewsletterEntity newsletter;
+	private UUID newsletterId;
 
-	public static AdvertiseEntity create(NewsletterEntity newsletter) {
-		return new AdvertiseEntity(null, newsletter);
+	public static AdvertiseEntity create(UUID newsletterId) {
+		return new AdvertiseEntity(null, newsletterId);
 	}
 
-	public static AdvertiseEntity create(UUID id, NewsletterEntity newsletter) {
-		return new AdvertiseEntity(id, newsletter);
+	public static AdvertiseEntity create(UUID id, UUID newsletterId) {
+		return new AdvertiseEntity(id, newsletterId);
 	}
 
 	public AdvertiseEntityDto toEntityDto() {
-		return AdvertiseEntityDto.create(id, newsletter.toEntityDto());
+		return AdvertiseEntityDto.create(id, newsletterId);
 	}
 }

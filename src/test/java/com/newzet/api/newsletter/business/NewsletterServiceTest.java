@@ -296,8 +296,9 @@ class NewsletterServiceTest {
 			.map(NewsletterEntity::getCategory)
 			.toList();
 		List<UserCategoryEntityDto> userCategoryList = createUserCategoryList(categoryList, user);
-		AdvertiseEntity advertise = createAdvertiseEntityDtoFromDifferentNewsletter(
+		NewsletterEntity advertiseNewsletter = createNewsletterWithName("advertise_newsletter",
 			categoryList.get(0));
+		AdvertiseEntity advertise = AdvertiseEntity.create(UUID.randomUUID(), advertiseNewsletter.getId());
 		List<AdvertiseEntity> advertiseList = Collections.singletonList(advertise);
 
 		when(userCategoryRepository.getUserCategoryListByUserId(any(UUID.class)))
@@ -308,7 +309,7 @@ class NewsletterServiceTest {
 		when(advertiseRepository.getAdvertiseNewsletterIdList())
 			.thenReturn(advertiseList);
 		when(newsletterRepository.getById(any(UUID.class)))
-			.thenReturn(advertise.getNewsletter().toEntityDto());
+			.thenReturn(advertiseNewsletter.toEntityDto());
 		// When
 		NewsletterRecommendResponse newsletterRecommendResponse = newsletterService.recommendNewsletterList(
 			user.getId());
@@ -324,13 +325,6 @@ class NewsletterServiceTest {
 		assertThat(newsletterName)
 			.filteredOn(name -> name.equals("usercategory_newsletter"))
 			.hasSize(3);
-	}
-
-	private AdvertiseEntity createAdvertiseEntityDtoFromDifferentNewsletter(
-		CategoryEntity category) {
-		NewsletterEntity advertiseNewsletter = createNewsletterWithName("advertise_newsletter",
-			category);
-		return AdvertiseEntity.create(UUID.randomUUID(), advertiseNewsletter);
 	}
 
 	private List<UserCategoryEntityDto> createUserCategoryList(List<CategoryEntity> categoryList,
