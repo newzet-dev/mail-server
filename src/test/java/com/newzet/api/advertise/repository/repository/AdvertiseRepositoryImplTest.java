@@ -49,7 +49,7 @@ class AdvertiseRepositoryImplTest {
 	void find_all_newsletter_ids_of_advertise() {
 		// given
 		newsletters.forEach(newsletter -> {
-			advertiseJpaRepository.save(AdvertiseEntity.create(newsletter.getId()));
+			advertiseJpaRepository.save(AdvertiseEntity.createForTest(newsletter.getId()));
 		});
 
 		// when
