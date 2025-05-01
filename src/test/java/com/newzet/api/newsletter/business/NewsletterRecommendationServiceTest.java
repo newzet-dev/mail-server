@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.context.annotation.Import;
 
@@ -27,7 +28,6 @@ import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersExceptio
 import com.newzet.api.newsletter.domain.Color;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
-import com.newzet.api.newsletter.util.NewsletterRecommender;
 import com.newzet.api.user.repository.entity.UserEntity;
 import com.newzet.api.user.repository.entity.UserEntityStatus;
 import com.newzet.api.usercategory.business.UserCategoryRepository;
@@ -43,7 +43,8 @@ class NewsletterRecommendationServiceTest {
 	private UserCategoryRepository userCategoryRepository;
 	@Mock
 	private AdvertiseRepository advertiseRepository;
-
+	@Spy
+	private NewsletterRecommender newsletterRecommender;
 	@InjectMocks
 	private NewsletterRecommendationService newsletterRecommendationService;
 

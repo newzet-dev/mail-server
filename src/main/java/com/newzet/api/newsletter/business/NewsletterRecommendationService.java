@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service;
 import com.newzet.api.advertise.business.AdvertiseRepository;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.util.NewsletterRecommender;
 import com.newzet.api.usercategory.business.UserCategoryRepository;
 
 import lombok.RequiredArgsConstructor;
@@ -20,11 +19,12 @@ public class NewsletterRecommendationService {
 	private final NewsletterRepository newsletterRepository;
 	private final UserCategoryRepository userCategoryRepository;
 	private final AdvertiseRepository advertiseRepository;
+	private final NewsletterRecommender newsletterRecommender;
 
 	public List<Newsletter> createRandomNewsletterList(UUID userId) {
 		List<Newsletter> advertiseNewsletterList = prepareAdvertiseNewsletterList();
 		List<Newsletter> userCategoryNewsletterList = prepareUserCategoryNewsletterList(userId);
-		return NewsletterRecommender.recommendNewsletterList(advertiseNewsletterList,
+		return newsletterRecommender.recommendNewsletterList(advertiseNewsletterList,
 			userCategoryNewsletterList);
 	}
 
