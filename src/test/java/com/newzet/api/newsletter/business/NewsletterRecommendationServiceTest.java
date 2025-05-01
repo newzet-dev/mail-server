@@ -19,7 +19,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.advertise.business.AdvertiseRepository;
-import com.newzet.api.advertise.repository.entity.AdvertiseEntity;
+import com.newzet.api.advertise.business.dto.AdvertiseEntityDto;
 import com.newzet.api.category.business.dto.CategoryEntityDto;
 import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
@@ -67,8 +67,8 @@ class NewsletterRecommendationServiceTest {
 		List<NewsletterEntityDto> newsletterList = newsletterEntityList.stream()
 			.map(NewsletterEntity::toEntityDto)
 			.toList();
-		List<AdvertiseEntity> advertiseEntityList = Collections.singletonList(
-			AdvertiseEntity.create(UUID.randomUUID(), UUID.randomUUID())
+		List<AdvertiseEntityDto> advertiseEntityList = Collections.singletonList(
+			AdvertiseEntityDto.create(UUID.randomUUID(), UUID.randomUUID())
 		);
 
 		NewsletterEntityDto advertiseNewsletter = createNewsletterWithName("advertise_newsletter",
@@ -77,7 +77,7 @@ class NewsletterRecommendationServiceTest {
 
 		when(userCategoryRepository.getUserCategoryListByUserId(any(UUID.class)))
 			.thenReturn(userCategoryEntityDtoList);
-		when(advertiseRepository.getAdvertiseNewsletterIdList())
+		when(advertiseRepository.getAllAdvertise())
 			.thenReturn(advertiseEntityList);
 		when(newsletterRepository.getById(any(UUID.class)))
 			.thenReturn(advertiseNewsletter);
@@ -145,16 +145,16 @@ class NewsletterRecommendationServiceTest {
 
 		NewsletterEntity advertiseNewsletter = createNewsletterWithName("advertise_newsletter",
 			newsletterList.get(0).getCategory());
-		AdvertiseEntity advertise = AdvertiseEntity.create(UUID.randomUUID(),
+		AdvertiseEntityDto advertise = AdvertiseEntityDto.create(UUID.randomUUID(),
 			advertiseNewsletter.getId());
-		List<AdvertiseEntity> advertiseList = Collections.singletonList(advertise);
+		List<AdvertiseEntityDto> advertiseList = Collections.singletonList(advertise);
 
 		when(userCategoryRepository.getUserCategoryListByUserId(any(UUID.class)))
 			.thenReturn(userCategoryEntityDtoList);
 		when(newsletterRepository.getNewsLetterListByCategoryIdList(
 			anyList())).thenReturn(
 			newsletterList.stream().map(NewsletterEntity::toEntityDto).toList());
-		when(advertiseRepository.getAdvertiseNewsletterIdList())
+		when(advertiseRepository.getAllAdvertise())
 			.thenReturn(advertiseList);
 		when(newsletterRepository.getById(any(UUID.class)))
 			.thenReturn(advertiseNewsletter.toEntityDto());

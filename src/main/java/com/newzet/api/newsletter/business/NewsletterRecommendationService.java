@@ -55,7 +55,7 @@ public class NewsletterRecommendationService {
 	}
 
 	private NewsletterList prepareAdvertiseNewsletterList() {
-		List<Newsletter> advertiseNewsletterList = advertiseRepository.getAdvertiseNewsletterIdList()
+		List<Newsletter> advertiseNewsletterList = advertiseRepository.getAllAdvertise()
 			.stream()
 			.map(advertiseEntityDto -> newsletterRepository.getById(
 				advertiseEntityDto.getNewsletterId()))

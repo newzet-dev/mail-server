@@ -2,9 +2,9 @@ package com.newzet.api.advertise.business;
 
 import java.util.List;
 
-import com.newzet.api.advertise.repository.entity.AdvertiseEntity;
+import com.newzet.api.advertise.business.dto.AdvertiseEntityDto;
 
 public interface AdvertiseRepository {
 
-	List<AdvertiseEntity> getAdvertiseNewsletterIdList();
+	List<AdvertiseEntityDto> getAllAdvertise();
 }

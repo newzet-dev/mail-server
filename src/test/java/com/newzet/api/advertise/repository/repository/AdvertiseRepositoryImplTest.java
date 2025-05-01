@@ -13,6 +13,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
+import com.newzet.api.advertise.business.dto.AdvertiseEntityDto;
 import com.newzet.api.advertise.repository.entity.AdvertiseEntity;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
@@ -52,7 +53,7 @@ class AdvertiseRepositoryImplTest {
 		});
 
 		// when
-		List<AdvertiseEntity> advertiseNewsletters = advertiseRepository.getAdvertiseNewsletterIdList();
+		List<AdvertiseEntityDto> advertiseNewsletters = advertiseRepository.getAllAdvertise();
 
 		// then
 		for (int i = 0; i < 5; i++) {
