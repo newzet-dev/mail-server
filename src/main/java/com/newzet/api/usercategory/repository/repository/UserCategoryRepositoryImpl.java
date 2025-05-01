@@ -41,12 +41,12 @@ public class UserCategoryRepositoryImpl implements UserCategoryRepository {
 	public void addUserCategory(UUID userId, List<UUID> categoryIds) {
 		UserEntity userEntity = userJpaRepository.findById(userId)
 			.orElseThrow(() -> new NoUserException("존재하지 않는 user 입니다."));
-		categoryIds.forEach(categoryId -> {
+		List<UserCategoryEntity> userCategoryEntityList = categoryIds.stream().map(categoryId -> {
 			CategoryEntity categoryEntity = categoryJpaRepository.findById(categoryId)
 				.orElseThrow(() -> new NoCategoryException("존재하지 않는 category 입니다."));
-			UserCategoryEntity userCategoryEntity = UserCategoryEntity.create(userEntity,
+			return UserCategoryEntity.create(userEntity,
 				categoryEntity);
-			userCategoryJpaRepository.save(userCategoryEntity);
-		});
+		}).toList();
+		userCategoryJpaRepository.saveAll(userCategoryEntityList);
 	}
 }
