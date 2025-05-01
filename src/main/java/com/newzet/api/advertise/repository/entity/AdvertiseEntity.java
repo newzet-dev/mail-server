@@ -28,10 +28,6 @@ public class AdvertiseEntity {
 
 	private UUID newsletterId;
 
-	public static AdvertiseEntity createForTest(UUID newsletterId) {
-		return new AdvertiseEntity(null, newsletterId);
-	}
-
 	public AdvertiseEntityDto toEntityDto() {
 		return AdvertiseEntityDto.create(id, newsletterId);
 	}
