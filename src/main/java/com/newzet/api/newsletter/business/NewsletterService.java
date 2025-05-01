@@ -18,7 +18,6 @@ import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
 import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterList;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
 
 import lombok.RequiredArgsConstructor;
@@ -70,9 +69,9 @@ public class NewsletterService {
 	}
 
 	public NewsletterRecommendResponse recommendNewsletterList(UUID userId) {
-		NewsletterList recommendNewsletterList = newsletterRecommendationService.createRandomNewsletterList(userId);
+		List<Newsletter> recommendNewsletterList = newsletterRecommendationService.createRandomNewsletterList(userId);
 
-		return NewsletterRecommendResponse.create(recommendNewsletterList.getNewsletterList().stream()
+		return NewsletterRecommendResponse.create(recommendNewsletterList.stream()
 			.map(newsletter -> NewsletterResponse.create(newsletter.getId(),
 				newsletter.getName(), newsletter.getImageUrl(), newsletter.getDescription(),
 				newsletter.getPriority()))

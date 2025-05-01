@@ -17,6 +17,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.annotation.Import;
 
 import com.newzet.api.advertise.business.AdvertiseRepository;
 import com.newzet.api.advertise.business.dto.AdvertiseEntityDto;
@@ -25,14 +26,15 @@ import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
 import com.newzet.api.newsletter.domain.Color;
 import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterList;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
+import com.newzet.api.newsletter.util.NewsletterRecommender;
 import com.newzet.api.user.repository.entity.UserEntity;
 import com.newzet.api.user.repository.entity.UserEntityStatus;
 import com.newzet.api.usercategory.business.UserCategoryRepository;
 import com.newzet.api.usercategory.business.dto.UserCategoryEntityDto;
 
 @ExtendWith(MockitoExtension.class)
+@Import(NewsletterRecommender.class)
 class NewsletterRecommendationServiceTest {
 
 	@Mock
@@ -94,12 +96,12 @@ class NewsletterRecommendationServiceTest {
 		when(newsletterRepository.getById(any(UUID.class)))
 			.thenReturn(advertiseNewsletter.toEntityDto());
 		// When
-		NewsletterList recommendNewsletterList = newsletterRecommendationService.createRandomNewsletterList(
+		List<Newsletter> recommendNewsletterList = newsletterRecommendationService.createRandomNewsletterList(
 			user.getId());
 
 		// Then
-		assertThat(recommendNewsletterList.getNewsletterList()).hasSize(4);
-		List<String> newsletterName = recommendNewsletterList.getNewsletterList().stream()
+		assertThat(recommendNewsletterList).hasSize(4);
+		List<String> newsletterName = recommendNewsletterList.stream()
 			.map(Newsletter::getName)
 			.toList();
 		assertThat(newsletterName)
