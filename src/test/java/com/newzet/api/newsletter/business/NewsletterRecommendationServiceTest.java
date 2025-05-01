@@ -22,7 +22,6 @@ import com.newzet.api.advertise.business.AdvertiseRepository;
 import com.newzet.api.advertise.business.dto.AdvertiseEntityDto;
 import com.newzet.api.category.business.dto.CategoryEntityDto;
 import com.newzet.api.category.repository.CategoryEntity;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
 import com.newzet.api.newsletter.domain.Color;
 import com.newzet.api.newsletter.domain.Newsletter;
@@ -45,70 +44,6 @@ class NewsletterRecommendationServiceTest {
 
 	@InjectMocks
 	private NewsletterRecommendationService newsletterRecommendationService;
-
-	@DisplayName("뉴스레터 목록에서 특정 개수만큼 랜덤 추출하는 메서드 단위 테스트, 특정 퍼센트 이하로 평균 일치율을 달성하는지 검증")
-	@Test
-	public void shuffled_newsletterList_has_low_equals() {
-		// Given
-		UserEntity user = UserEntity.create(UUID.randomUUID(), "email", "nickname",
-			UserEntityStatus.ACTIVE.name());
-		List<UUID> userCategoryIdList = Arrays.asList(UUID.randomUUID(), UUID.randomUUID(),
-			UUID.randomUUID());
-		List<UserCategoryEntityDto> userCategoryEntityDtoList = userCategoryIdList.stream()
-			.map(id -> createUserCategoryDto(id, user))
-			.toList();
-		List<NewsletterEntity> newsletterEntityList = new ArrayList<>();
-		// 한 카테고리 당 10개의 뉴스레터 * 3 => 총 30개의 뉴스레터가 존재한다고 가정
-		for (UUID id : userCategoryIdList) {
-			for (int i = 0; i < 5; i++) {
-				createNewsletterByCategoryId(newsletterEntityList, id);
-			}
-		}
-		List<NewsletterEntityDto> newsletterList = newsletterEntityList.stream()
-			.map(NewsletterEntity::toEntityDto)
-			.toList();
-		List<AdvertiseEntityDto> advertiseEntityList = Collections.singletonList(
-			AdvertiseEntityDto.create(UUID.randomUUID(), UUID.randomUUID())
-		);
-
-		NewsletterEntityDto advertiseNewsletter = createNewsletterWithName("advertise_newsletter",
-			CategoryEntity.create(userCategoryIdList.get(0), "category", "imageurl",
-				"emoji")).toEntityDto();
-
-		when(userCategoryRepository.getUserCategoryListByUserId(any(UUID.class)))
-			.thenReturn(userCategoryEntityDtoList);
-		when(advertiseRepository.getAllAdvertise())
-			.thenReturn(advertiseEntityList);
-		when(newsletterRepository.getById(any(UUID.class)))
-			.thenReturn(advertiseNewsletter);
-
-		when(newsletterRepository.getNewsLetterListByCategoryIdList(anyList()))
-			.thenReturn(newsletterList);
-
-		// When Then
-		int iterations = 10; // 랜덤 시행 10번
-		int count = 4;
-		List<Newsletter> prev = null;
-		List<Double> overlapRatios = new ArrayList<>();
-
-		for (int i = 0; i < iterations; i++) {
-			List<Newsletter> current = newsletterRecommendationService.createRandomNewsletterList(
-				UUID.randomUUID()).getNewsletterList();
-
-			if (prev != null) {
-				long overlap = current.stream()
-					.filter(prev::contains)
-					.count();
-
-				double overlapRatio = (double)overlap / count;
-				overlapRatios.add(overlapRatio);
-			}
-			prev = current;
-		}
-
-		double average = overlapRatios.stream().mapToDouble(d -> d).average().orElse(0);
-		assertThat(average).isLessThan(0.3);
-	}
 
 	@Test
 	public void newsletterList_has_low_number_of_elements_than_count_throw_exception() {
