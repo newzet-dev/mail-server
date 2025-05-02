@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.business;
+package com.newzet.api.newsletter.recommend;
 
 import java.util.List;
 import java.util.UUID;
@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.newzet.api.advertise.business.AdvertiseRepository;
+import com.newzet.api.newsletter.business.NewsletterRepository;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.usercategory.business.UserCategoryRepository;

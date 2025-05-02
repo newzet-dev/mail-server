@@ -19,6 +19,7 @@ import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.newsletter.recommend.NewsletterRecommendationService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
