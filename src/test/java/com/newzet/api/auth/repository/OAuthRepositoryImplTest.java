@@ -39,8 +39,7 @@ class OAuthRepositoryImplTest {
 		// Given
 		UUID id = UUID.randomUUID();
 		UUID userId = UUID.randomUUID();
-		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L, "bearer",
-			"profile");
+		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L);
 
 		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
 			id,
@@ -78,8 +77,7 @@ class OAuthRepositoryImplTest {
 		String socialUserId = "social-123";
 		OAuthProvider provider = OAuthProvider.KAKAO;
 
-		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L, "bearer",
-			"profile");
+		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L);
 		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
 			id,
 			socialUserId,
@@ -132,8 +130,7 @@ class OAuthRepositoryImplTest {
 		UUID userId = UUID.randomUUID();
 		OAuthProvider provider = OAuthProvider.KAKAO;
 
-		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L, "bearer",
-			"profile");
+		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L);
 		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
 			id,
 			"social-123",
@@ -184,8 +181,7 @@ class OAuthRepositoryImplTest {
 		// Given
 		UUID id = UUID.randomUUID();
 		UUID userId = UUID.randomUUID();
-		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L, "bearer",
-			"profile");
+		OAuthToken token = OAuthToken.ofKakao("access-token", "refresh-token", 3600L);
 
 		OAuthMappingEntityDto entityDto = OAuthMappingEntityDto.create(
 			id,
@@ -217,7 +213,7 @@ class OAuthRepositoryImplTest {
 
 		// When & Then
 		assertThatThrownBy(() ->
-			OAuthToken.ofKakao(accessToken, refreshToken, expiresIn, tokenType, scope)
+			OAuthToken.ofKakao(accessToken, refreshToken, expiresIn)
 		).isInstanceOf(OAuthErrorException.class)
 			.hasMessage("응답이 올바르지 않아 accessToken이 전달되지 않았습니다.");
 	}

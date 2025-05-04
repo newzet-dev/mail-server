@@ -14,12 +14,9 @@ class OAuthTokenTest {
 		String accessToken = "valid-access-token";
 		String refreshToken = "valid-refresh-token";
 		Long expiresIn = 3600L;
-		String tokenType = "bearer";
-		String scope = "profile";
 
 		// When
-		OAuthToken token = OAuthToken.ofKakao(accessToken, refreshToken, expiresIn, tokenType,
-			scope);
+		OAuthToken token = OAuthToken.ofKakao(accessToken, refreshToken, expiresIn);
 
 		// Then
 		assertThat(token).isNotNull();
@@ -27,8 +24,6 @@ class OAuthTokenTest {
 		assertThat(token.getAccessToken()).isEqualTo(accessToken);
 		assertThat(token.getRefreshToken()).isEqualTo(refreshToken);
 		assertThat(token.getExpiresIn()).isEqualTo(expiresIn);
-		assertThat(token.getTokenPrefix()).isEqualTo(tokenType);
-		assertThat(token.getScope()).isEqualTo(scope);
 		assertThat(token.getIssuedAt()).isNotNull();
 	}
 
@@ -38,12 +33,10 @@ class OAuthTokenTest {
 		String accessToken = null;
 		String refreshToken = "valid-refresh-token";
 		Long expiresIn = 3600L;
-		String tokenType = "bearer";
-		String scope = "profile";
 
 		// When, Then
 		assertThatThrownBy(
-			() -> OAuthToken.ofKakao(accessToken, refreshToken, expiresIn, tokenType, scope))
+			() -> OAuthToken.ofKakao(accessToken, refreshToken, expiresIn))
 			.isInstanceOf(OAuthErrorException.class)
 			.hasMessage("응답이 올바르지 않아 accessToken이 전달되지 않았습니다.");
 	}
@@ -55,12 +48,9 @@ class OAuthTokenTest {
 		String accessToken = "valid-access-token";
 		String refreshToken = "valid-refresh-token";
 		Long expiresIn = 3600L;
-		String tokenType = "bearer";
-		String scope = "profile";
 
 		// When
-		OAuthToken token = OAuthToken.create(provider, accessToken, refreshToken, expiresIn,
-			tokenType, scope);
+		OAuthToken token = OAuthToken.create(provider, accessToken, refreshToken, expiresIn);
 
 		// Then
 		assertThat(token).isNotNull();
@@ -68,8 +58,6 @@ class OAuthTokenTest {
 		assertThat(token.getAccessToken()).isEqualTo(accessToken);
 		assertThat(token.getRefreshToken()).isEqualTo(refreshToken);
 		assertThat(token.getExpiresIn()).isEqualTo(expiresIn);
-		assertThat(token.getTokenPrefix()).isEqualTo(tokenType);
-		assertThat(token.getScope()).isEqualTo(scope);
 		assertThat(token.getIssuedAt()).isNotNull();
 	}
 
@@ -80,12 +68,9 @@ class OAuthTokenTest {
 		String accessToken = null;
 		String refreshToken = "valid-refresh-token";
 		Long expiresIn = 3600L;
-		String tokenType = "bearer";
-		String scope = "profile";
 
 		// When
-		OAuthToken token = OAuthToken.create(provider, accessToken, refreshToken, expiresIn,
-			tokenType, scope);
+		OAuthToken token = OAuthToken.create(provider, accessToken, refreshToken, expiresIn);
 
 		// Then
 		assertThat(token).isNull();

@@ -12,7 +12,6 @@ public record KakaoTokenResponse(
 	String scope
 ) {
 	public OAuthToken toDomain() {
-		return OAuthToken.ofKakao(this.accessToken, this.refreshToken, this.expiresIn,
-			this.tokenType, this.scope);
+		return OAuthToken.ofKakao(this.accessToken, this.refreshToken, this.expiresIn);
 	}
 }

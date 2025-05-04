@@ -51,11 +51,7 @@ public class OAuthMappingEntity {
 
 	private String refreshToken;
 
-	private String tokenPrefix;
-
 	private Long expiresIn;
-
-	private String scope;
 
 	private LocalDateTime tokenIssuedAt;
 
@@ -77,9 +73,7 @@ public class OAuthMappingEntity {
 		if (oauthToken != null) {
 			entity.accessToken = oauthToken.getAccessToken();
 			entity.refreshToken = oauthToken.getRefreshToken();
-			entity.tokenPrefix = oauthToken.getTokenPrefix();
 			entity.expiresIn = oauthToken.getExpiresIn();
-			entity.scope = oauthToken.getScope();
 			entity.tokenIssuedAt = oauthToken.getIssuedAt();
 		}
 
@@ -88,7 +82,7 @@ public class OAuthMappingEntity {
 
 	public OAuthMappingEntityDto toEntityDto() {
 		OAuthToken oauthToken = OAuthToken.create(
-			provider, accessToken, refreshToken, expiresIn, tokenPrefix, scope
+			provider, accessToken, refreshToken, expiresIn
 		);
 
 		return OAuthMappingEntityDto.create(
@@ -112,9 +106,7 @@ public class OAuthMappingEntity {
 			OAuthToken token = dto.getOauthToken();
 			this.accessToken = token.getAccessToken();
 			this.refreshToken = token.getRefreshToken();
-			this.tokenPrefix = token.getTokenPrefix();
 			this.expiresIn = token.getExpiresIn();
-			this.scope = token.getScope();
 			this.tokenIssuedAt = token.getIssuedAt();
 		}
 
@@ -131,6 +123,5 @@ public class OAuthMappingEntity {
 		this.accessToken = dto.accessToken();
 		this.refreshToken = dto.refreshToken();
 		this.expiresIn = dto.expiresIn();
-		this.tokenPrefix = dto.tokenType();
 	}
 }

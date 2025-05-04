@@ -16,14 +16,10 @@ public class OAuthToken {
 	private final OAuthProvider provider;
 	private final String accessToken;
 	private final String refreshToken;
-	private final String tokenPrefix;
 	private final Long expiresIn;
-	private final String scope;
 	private final LocalDateTime issuedAt;
 
-	public static OAuthToken ofKakao(String accessToken, String refreshToken, Long expiresIn,
-		String tokenType, String scope) {
-
+	public static OAuthToken ofKakao(String accessToken, String refreshToken, Long expiresIn) {
 		if (accessToken == null) {
 			throw new OAuthErrorException("응답이 올바르지 않아 accessToken이 전달되지 않았습니다.");
 		}
@@ -33,14 +29,12 @@ public class OAuthToken {
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)
 			.expiresIn(expiresIn)
-			.tokenPrefix(tokenType)
-			.scope(scope)
 			.issuedAt(LocalDateTime.now())
 			.build();
 	}
 
 	public static OAuthToken create(OAuthProvider provider, String accessToken, String refreshToken,
-		Long expiresIn, String tokenType, String scope) {
+		Long expiresIn) {
 
 		if (accessToken == null) {
 			return null;
@@ -51,8 +45,6 @@ public class OAuthToken {
 			.accessToken(accessToken)
 			.refreshToken(refreshToken)
 			.expiresIn(expiresIn)
-			.tokenPrefix(tokenType)
-			.scope(scope)
 			.issuedAt(LocalDateTime.now())
 			.build();
 	}

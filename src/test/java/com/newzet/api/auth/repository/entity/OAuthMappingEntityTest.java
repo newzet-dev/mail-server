@@ -20,8 +20,7 @@ class OAuthMappingEntityTest {
 		UUID userId = UUID.randomUUID();
 
 		OAuthToken token = OAuthToken.create(
-			OAuthProvider.KAKAO, "access-token", "refresh-token", 3600L, "bearer", "profile"
-		);
+			OAuthProvider.KAKAO, "access-token", "refresh-token", 3600L);
 
 		OAuthMappingEntityDto dto = OAuthMappingEntityDto.create(
 			id,
@@ -47,9 +46,7 @@ class OAuthMappingEntityTest {
 		assertThat(entity.getUserId()).isEqualTo(userId);
 		assertThat(entity.getAccessToken()).isEqualTo("access-token");
 		assertThat(entity.getRefreshToken()).isEqualTo("refresh-token");
-		assertThat(entity.getTokenPrefix()).isEqualTo("bearer");
 		assertThat(entity.getExpiresIn()).isEqualTo(3600L);
-		assertThat(entity.getScope()).isEqualTo("profile");
 		assertThat(entity.getTokenIssuedAt()).isNotNull();
 		assertThat(entity.isTemporary()).isFalse();
 	}
@@ -84,9 +81,7 @@ class OAuthMappingEntityTest {
 		assertThat(entity.getUserId()).isEqualTo(userId);
 		assertThat(entity.getAccessToken()).isNull();
 		assertThat(entity.getRefreshToken()).isNull();
-		assertThat(entity.getTokenPrefix()).isNull();
 		assertThat(entity.getExpiresIn()).isNull();
-		assertThat(entity.getScope()).isNull();
 		assertThat(entity.getTokenIssuedAt()).isNull();
 		assertThat(entity.isTemporary()).isTrue();
 	}
@@ -114,9 +109,7 @@ class OAuthMappingEntityTest {
 		assertThat(dto.getOauthToken()).isNotNull();
 		assertThat(dto.getOauthToken().getAccessToken()).isEqualTo("access-token");
 		assertThat(dto.getOauthToken().getRefreshToken()).isEqualTo("refresh-token");
-		assertThat(dto.getOauthToken().getTokenPrefix()).isEqualTo("bearer");
 		assertThat(dto.getOauthToken().getExpiresIn()).isEqualTo(3600L);
-		assertThat(dto.getOauthToken().getScope()).isEqualTo("profile");
 		assertThat(dto.isTemporary()).isFalse();
 	}
 
@@ -173,9 +166,7 @@ class OAuthMappingEntityTest {
 			.userId(userId)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.tokenIssuedAt(null)
 			.temporary(false)
 			.build();
@@ -201,9 +192,7 @@ class OAuthMappingEntityTest {
 		OAuthMappingEntity entity = createEntityWithToken(id, oldUserId, oldIssuedAt, true);
 
 		OAuthToken newToken = OAuthToken.create(
-			OAuthProvider.KAKAO, "new-access-token", "new-refresh-token", 7200L, "new-bearer",
-			"new-profile"
-		);
+			OAuthProvider.KAKAO, "new-access-token", "new-refresh-token", 7200L);
 
 		OAuthMappingEntityDto updateDto = OAuthMappingEntityDto.create(
 			id,
@@ -225,9 +214,7 @@ class OAuthMappingEntityTest {
 		assertThat(entity.getSocialUserName()).isEqualTo("Updated Name");
 		assertThat(entity.getAccessToken()).isEqualTo("new-access-token");
 		assertThat(entity.getRefreshToken()).isEqualTo("new-refresh-token");
-		assertThat(entity.getTokenPrefix()).isEqualTo("new-bearer");
 		assertThat(entity.getExpiresIn()).isEqualTo(7200L);
-		assertThat(entity.getScope()).isEqualTo("new-profile");
 		assertThat(entity.isTemporary()).isFalse();
 	}
 
@@ -272,9 +259,7 @@ class OAuthMappingEntityTest {
 		OAuthMappingEntity entity = createEntityWithToken(id, userId, issuedAt, true);
 		String originalAccessToken = entity.getAccessToken();
 		String originalRefreshToken = entity.getRefreshToken();
-		String originalTokenPrefix = entity.getTokenPrefix();
 		Long originalExpiresIn = entity.getExpiresIn();
-		String originalScope = entity.getScope();
 		LocalDateTime originalIssuedAt = entity.getTokenIssuedAt();
 
 		OAuthMappingEntityDto updateDto = OAuthMappingEntityDto.create(
@@ -297,9 +282,7 @@ class OAuthMappingEntityTest {
 		assertThat(entity.getSocialUserName()).isEqualTo("Updated Name");
 		assertThat(entity.getAccessToken()).isEqualTo(originalAccessToken);
 		assertThat(entity.getRefreshToken()).isEqualTo(originalRefreshToken);
-		assertThat(entity.getTokenPrefix()).isEqualTo(originalTokenPrefix);
 		assertThat(entity.getExpiresIn()).isEqualTo(originalExpiresIn);
-		assertThat(entity.getScope()).isEqualTo(originalScope);
 		assertThat(entity.getTokenIssuedAt()).isEqualTo(originalIssuedAt);
 		assertThat(entity.isTemporary()).isFalse();
 	}
@@ -375,9 +358,7 @@ class OAuthMappingEntityTest {
 			.userId(userId)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.tokenIssuedAt(issuedAt)
 			.temporary(temporary)
 			.build();

@@ -21,9 +21,7 @@ class OAuthMappingTest {
 			.provider(OAuthProvider.KAKAO)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.issuedAt(LocalDateTime.now())
 			.build();
 
@@ -66,9 +64,7 @@ class OAuthMappingTest {
 			.provider(provider)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.issuedAt(LocalDateTime.now())
 			.build();
 
@@ -99,9 +95,7 @@ class OAuthMappingTest {
 			.provider(OAuthProvider.KAKAO)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.issuedAt(LocalDateTime.now())
 			.build();
 
@@ -140,9 +134,7 @@ class OAuthMappingTest {
 			.provider(OAuthProvider.KAKAO)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.issuedAt(issuedAt)
 			.build();
 

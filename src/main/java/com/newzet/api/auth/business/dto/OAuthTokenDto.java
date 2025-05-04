@@ -9,15 +9,13 @@ import lombok.Builder;
 public record OAuthTokenDto(
 	String accessToken,
 	String refreshToken,
-	long expiresIn,
-	String tokenType) {
+	long expiresIn) {
 
 	public static OAuthTokenDto from(OAuthToken oAuthToken) {
 		return OAuthTokenDto.builder()
 			.accessToken(oAuthToken.getAccessToken())
 			.refreshToken(oAuthToken.getRefreshToken())
 			.expiresIn(oAuthToken.getExpiresIn())
-			.tokenType(oAuthToken.getTokenPrefix())
 			.build();
 	}
 }

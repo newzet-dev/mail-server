@@ -526,7 +526,7 @@ class OAuthLoginServiceTest {
 
 	private OAuthUserInfo mockOAuthUserInfo() {
 		OAuthToken oauthToken = OAuthToken.ofKakao(
-			"fake-token", "fake-token", 10000L, "Bearer", "test");
+			"fake-token", "fake-token", 10000L);
 
 		return OAuthUserInfo.create("social-user-123", "test@example.com", "Test User",
 			OAuthProvider.KAKAO, oauthToken);
@@ -534,7 +534,7 @@ class OAuthLoginServiceTest {
 
 	private OAuthMappingEntityDto mockExistingMapping() {
 		OAuthToken oauthToken = OAuthToken.ofKakao(
-			"fake-token", "fake-token", 10000L, "Bearer", "test");
+			"fake-token", "fake-token", 10000L);
 
 		return OAuthMappingEntityDto.create(
 			oAuthMappingEntityId,
@@ -550,7 +550,7 @@ class OAuthLoginServiceTest {
 
 	private OAuthMappingEntityDto mockTemporaryMapping() {
 		OAuthToken oauthToken = OAuthToken.ofKakao(
-			"fake-token", "fake-token", 10000L, "Bearer", "test");
+			"fake-token", "fake-token", 10000L);
 
 		OAuthMapping oAuthMapping = OAuthMapping.createTemporary("social-user-123",
 			"test@example.com",

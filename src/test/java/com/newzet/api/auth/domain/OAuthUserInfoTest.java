@@ -21,9 +21,7 @@ class OAuthUserInfoTest {
 			.provider(provider)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.issuedAt(LocalDateTime.now())
 			.build();
 
@@ -51,9 +49,7 @@ class OAuthUserInfoTest {
 			.provider(provider)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.issuedAt(LocalDateTime.now())
 			.build();
 
@@ -75,9 +71,7 @@ class OAuthUserInfoTest {
 			.provider(provider)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.issuedAt(LocalDateTime.now())
 			.build();
 
@@ -105,9 +99,7 @@ class OAuthUserInfoTest {
 			.provider(provider)
 			.accessToken("access-token")
 			.refreshToken("refresh-token")
-			.tokenPrefix("bearer")
 			.expiresIn(3600L)
-			.scope("profile")
 			.issuedAt(LocalDateTime.now())
 			.build();
 
