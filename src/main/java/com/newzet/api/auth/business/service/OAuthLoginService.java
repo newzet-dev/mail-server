@@ -97,11 +97,10 @@ public class OAuthLoginService {
 	}
 
 	private String extractDeviceTypeFromState(String state) {
-		String deviceType = "web";
-		if (state != null && !state.isEmpty()) {
-			deviceType = state;
+		if (state == null || state.isEmpty()) {
+			throw new OAuthBadRequestException("state값이 없습니다.");
 		}
-		return deviceType;
+		return state;
 	}
 
 	@Transactional

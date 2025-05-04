@@ -32,7 +32,7 @@ public class OAuthController {
 		description = "provider별 로그인 페이지로 이동한다. state는 deviceType")
 	public RedirectView redirectToOAuthLoginPage(
 		@PathVariable("provider") String provider,
-		@RequestParam(value = "state", required = false) String state) {
+		@RequestParam(value = "state") String state) {
 
 		OAuthProvider oAuthProvider = OAuthProvider.valueOf(provider.toUpperCase());
 		String redirectUrl = oAuthLoginService.getOAuthLoginUrl(oAuthProvider, state);
@@ -45,7 +45,7 @@ public class OAuthController {
 	public ResponseEntity<Void> handleOAuthCallback(
 		@PathVariable("provider") String provider,
 		@RequestParam("code") String code,
-		@RequestParam(value = "state", required = false) String state) {
+		@RequestParam(value = "state") String state) {
 
 		OAuthProvider oAuthProvider = OAuthProvider.valueOf(provider.toUpperCase());
 		URI redirectInfo = oAuthLoginService.handleOAuthCallback(oAuthProvider, code,
