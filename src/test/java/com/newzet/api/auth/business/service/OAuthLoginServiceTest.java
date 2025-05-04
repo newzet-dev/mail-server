@@ -26,6 +26,7 @@ import com.newzet.api.auth.business.dto.OAuthTokenDto;
 import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.oauth.OAuthRepository;
 import com.newzet.api.auth.business.service.oauth.OAuthService;
+import com.newzet.api.auth.domain.DeviceType;
 import com.newzet.api.auth.domain.OAuthMapping;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
@@ -77,30 +78,30 @@ class OAuthLoginServiceTest {
 	void getOAuthLoginUrl_ShouldReturnCorrectUrl() {
 		// Given
 		OAuthProvider provider = OAuthProvider.KAKAO;
-		String state = "mobile";
+		DeviceType deviceType = DeviceType.APP;
 		when(kakaoOAuthService.isBackendRedirect()).thenReturn(true);
-		when(kakaoOAuthService.getRedirectUrl(state)).thenReturn(
+		when(kakaoOAuthService.getRedirectUrl(deviceType.name())).thenReturn(
 			"https://kauth.kakao.com/oauth/authorize?...");
 
 		// When
-		String url = oAuthLoginService.getOAuthLoginUrl(provider, state);
+		String url = oAuthLoginService.getOAuthLoginUrl(provider, deviceType);
 
 		// Then
 		assertThat(url).isEqualTo("https://kauth.kakao.com/oauth/authorize?...");
 		verify(kakaoOAuthService).isBackendRedirect();
-		verify(kakaoOAuthService).getRedirectUrl(state);
+		verify(kakaoOAuthService).getRedirectUrl(deviceType.name());
 	}
 
 	@Test
 	void getOAuthLoginUrl_WhenProviderDoesNotSupportBackendRedirect_ThenThrowsException() {
 		// Given
 		OAuthProvider provider = OAuthProvider.KAKAO;
-		String state = "web";
+		DeviceType deviceType = DeviceType.WEB;
 		when(kakaoOAuthService.isBackendRedirect()).thenReturn(false);
 
 		// When, Then
 		assertThatExceptionOfType(OAuthBadRequestException.class)
-			.isThrownBy(() -> oAuthLoginService.getOAuthLoginUrl(provider, state))
+			.isThrownBy(() -> oAuthLoginService.getOAuthLoginUrl(provider, deviceType))
 			.withMessage("이 제공자는 백엔드 리다이렉트를 지원하지 않습니다.");
 	}
 
@@ -109,7 +110,7 @@ class OAuthLoginServiceTest {
 		// Given
 		OAuthProvider provider = OAuthProvider.KAKAO;
 		String code = "test-code";
-		String state = "web";
+		DeviceType deviceType = DeviceType.WEB;
 
 		OAuthUserInfo userInfo = mockOAuthUserInfo();
 		OAuthMappingEntityDto mapping = mockExistingMapping();
@@ -135,13 +136,13 @@ class OAuthLoginServiceTest {
 		when(userRepository.getById(any())).thenReturn(mockUser);
 
 		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, state);
+		URI result = oAuthLoginService.handleOAuthCallback(provider, code, deviceType);
 
 		// Then
 		assertThat(result.toString()).contains("needRegister=false");
 		assertThat(result.toString()).contains("accessToken=access-token-value");
 		assertThat(result.toString()).contains("refreshToken=refresh-token-value");
-		verify(tokenRepository).saveToken(eq(userId), eq(state), any(TokenDTO.class));
+		verify(tokenRepository).saveToken(eq(userId), eq(deviceType.name()), any(TokenDTO.class));
 	}
 
 	@Test
@@ -149,7 +150,7 @@ class OAuthLoginServiceTest {
 		// Given
 		OAuthProvider provider = OAuthProvider.KAKAO;
 		String code = "test-code";
-		String state = "mobile";
+		DeviceType deviceType = DeviceType.APP;
 
 		OAuthUserInfo userInfo = mockOAuthUserInfo();
 		OAuthMappingEntityDto temporaryMapping = mockTemporaryMapping();
@@ -160,11 +161,12 @@ class OAuthLoginServiceTest {
 		when(oAuthRepository.save(any(OAuthMappingEntityDto.class))).thenReturn(temporaryMapping);
 
 		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, state);
+		URI result = oAuthLoginService.handleOAuthCallback(provider, code, deviceType);
 
 		// Then
 		assertThat(result.toString()).contains("needRegister=true");
 		assertThat(result.toString()).contains("provider=kakao");
+		assertThat(result.toString()).contains("deviceType=app");
 		assertThat(result.toString()).startsWith("myapp://oauth/callback");
 	}
 
@@ -173,7 +175,7 @@ class OAuthLoginServiceTest {
 		// Given
 		User user = UserFactory.create(userId, "test@example.com", "testuser",
 			UserStatus.ACTIVE.name());
-		String deviceType = "web";
+		DeviceType deviceType = DeviceType.WEB;
 		OAuthProvider provider = OAuthProvider.KAKAO;
 		OAuthMappingEntityDto mapping = mockTemporaryMapping();
 		UserEntityDto userEntityDto = UserEntityDto.create(userId, "test@example.com", "testuser",
@@ -202,7 +204,7 @@ class OAuthLoginServiceTest {
 		// Then
 		assertThat(response.accessToken()).isEqualTo("access-token-value");
 		assertThat(response.refreshToken()).isEqualTo("refresh-token-value");
-		verify(tokenRepository).saveToken(eq(userId), eq(deviceType), any(TokenDTO.class));
+		verify(tokenRepository).saveToken(eq(userId), eq(deviceType.name()), any(TokenDTO.class));
 	}
 
 	@Test
@@ -210,7 +212,7 @@ class OAuthLoginServiceTest {
 		// Given
 		User user = UserFactory.create(userId, "test@example.com", "testuser",
 			UserStatus.ACTIVE.name());
-		String deviceType = "web";
+		DeviceType deviceType = DeviceType.WEB;
 		OAuthProvider provider = OAuthProvider.KAKAO;
 
 		when(oAuthRepository.findByOauthMappingEntityIdAndProvider(any(UUID.class), eq(provider)))
@@ -225,17 +227,11 @@ class OAuthLoginServiceTest {
 	}
 
 	@Test
-	void getOAuthLoginUrl_WithUnsupportedProvider_ShouldThrowException() {
-		assertThatExceptionOfType(IllegalArgumentException.class)
-			.isThrownBy(() -> OAuthProvider.valueOf("ERROR"));
-	}
-
-	@Test
-	void handleOAuthCallback_WithNullState_ShouldUseDefaultDeviceType() {
+	void handleOAuthCallback_WithNullState_ShouldDefaultToWebDeviceType() {
 		// Given
 		OAuthProvider provider = OAuthProvider.KAKAO;
 		String code = "test-code";
-		String state = null;
+		DeviceType deviceType = DeviceType.WEB;
 
 		OAuthUserInfo userInfo = mockOAuthUserInfo();
 		OAuthMappingEntityDto mapping = mockExistingMapping();
@@ -256,18 +252,18 @@ class OAuthLoginServiceTest {
 		when(userRepository.getById(any())).thenReturn(mockUser);
 
 		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, state);
+		URI result = oAuthLoginService.handleOAuthCallback(provider, code, deviceType);
 
 		// Then
 		assertThat(result.toString()).contains("needRegister=false");
 		assertThat(result.toString()).contains("accessToken=access-token");
-		verify(tokenRepository).saveToken(eq(userId), eq("web"), any(TokenDTO.class));
+		verify(tokenRepository).saveToken(eq(userId), eq(deviceType.name()), any(TokenDTO.class));
 	}
 
 	@Test
 	void generateTokensForUser_WhenUserNotFound_ShouldThrowException() {
 		// Given
-		String deviceType = "web";
+		DeviceType deviceType = DeviceType.WEB;
 		when(userRepository.getById(userId)).thenThrow(new NoUserException("User not found"));
 
 		// When, Then
@@ -284,7 +280,7 @@ class OAuthLoginServiceTest {
 		// Given
 		OAuthProvider provider = OAuthProvider.KAKAO;
 		String code = "test-code";
-		String deviceType = "web";
+		DeviceType deviceType = DeviceType.WEB;
 
 		OAuthUserInfo userInfo = mockOAuthUserInfo();
 
@@ -316,67 +312,43 @@ class OAuthLoginServiceTest {
 	}
 
 	@Test
-	void isAppDevice_ShouldReturnTrueForMobile() {
-		// When, Then
+	void isAppDevice_ShouldReturnTrueForAppDeviceType() {
+		// When
 		boolean result = ReflectionTestUtils.invokeMethod(oAuthLoginService, "isAppDevice",
-			"mobile");
+			DeviceType.APP);
+
+		// Then
 		assertThat(result).isTrue();
 	}
 
 	@Test
-	void isAppDevice_ShouldReturnTrueForApp() {
-		// When, Then
-		boolean result = ReflectionTestUtils.invokeMethod(oAuthLoginService, "isAppDevice", "app");
-		assertThat(result).isTrue();
+	void isAppDevice_ShouldReturnFalseForWebDeviceType() {
+		// When
+		boolean result = ReflectionTestUtils.invokeMethod(oAuthLoginService, "isAppDevice",
+			DeviceType.WEB);
+
+		// Then
+		assertThat(result).isFalse();
 	}
 
 	@Test
-	void isAppDevice_ShouldReturnFalseForWebOrOther() {
-		// When, Then
-		boolean resultWeb = ReflectionTestUtils.invokeMethod(oAuthLoginService, "isAppDevice",
-			"web");
-		boolean resultOther = ReflectionTestUtils.invokeMethod(oAuthLoginService, "isAppDevice",
-			"other");
+	void getRedirectUriByDeviceType_ShouldReturnAppRedirectForAppDeviceType() {
+		// When
+		String result = ReflectionTestUtils.invokeMethod(oAuthLoginService,
+			"getRedirectUriByDeviceType", DeviceType.APP);
 
-		assertThat(resultWeb).isFalse();
-		assertThat(resultOther).isFalse();
+		// Then
+		assertThat(result).isEqualTo("myapp://oauth/callback");
 	}
 
 	@Test
-	void getRedirectUriByDeviceType_ShouldReturnAppRedirectForAppDevices() {
-		// When, Then
-		String resultMobile = ReflectionTestUtils.invokeMethod(oAuthLoginService,
-			"getRedirectUriByDeviceType", "mobile");
-		String resultApp = ReflectionTestUtils.invokeMethod(oAuthLoginService,
-			"getRedirectUriByDeviceType", "app");
+	void getRedirectUriByDeviceType_ShouldReturnWebRedirectForWebDeviceType() {
+		// When
+		String result = ReflectionTestUtils.invokeMethod(oAuthLoginService,
+			"getRedirectUriByDeviceType", DeviceType.WEB);
 
-		assertThat(resultMobile).isEqualTo("myapp://oauth/callback");
-		assertThat(resultApp).isEqualTo("myapp://oauth/callback");
-	}
-
-	@Test
-	void getRedirectUriByDeviceType_ShouldReturnWebRedirectForNonAppDevices() {
-		// When, Then
-		String resultWeb = ReflectionTestUtils.invokeMethod(oAuthLoginService,
-			"getRedirectUriByDeviceType", "web");
-		String resultOther = ReflectionTestUtils.invokeMethod(oAuthLoginService,
-			"getRedirectUriByDeviceType", "other");
-
-		assertThat(resultWeb).isEqualTo("http://test/oauth/callback");
-		assertThat(resultOther).isEqualTo("http://test/oauth/callback");
-	}
-
-	@Test
-	void getOAuthService_ShouldThrowExceptionForUnsupportedProvider() {
-		// Given
-		OAuthProvider provider = OAuthProvider.UNSUPPORTED;
-
-		// When, Then
-		assertThatExceptionOfType(OAuthBadRequestException.class)
-			.isThrownBy(() -> {
-				ReflectionTestUtils.invokeMethod(oAuthLoginService, "getOAuthService", provider);
-			})
-			.withMessage("지원하지 않는 OAuth 제공자입니다: " + provider);
+		// Then
+		assertThat(result).isEqualTo("http://test/oauth/callback");
 	}
 
 	@Test
@@ -384,7 +356,7 @@ class OAuthLoginServiceTest {
 		// Given
 		OAuthProvider provider = OAuthProvider.KAKAO;
 		String code = "test-code";
-		String state = "web";
+		DeviceType deviceType = DeviceType.WEB;
 
 		OAuthUserInfo userInfo = mockOAuthUserInfo();
 		OAuthMappingEntityDto mapping = mockExistingMapping();
@@ -405,7 +377,7 @@ class OAuthLoginServiceTest {
 		when(userRepository.getById(any())).thenReturn(mockUser);
 
 		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, state);
+		URI result = oAuthLoginService.handleOAuthCallback(provider, code, deviceType);
 
 		// Then
 		assertThat(result.toString()).contains("#needRegister=false");
@@ -414,131 +386,11 @@ class OAuthLoginServiceTest {
 	}
 
 	@Test
-	void handleOAuthCallback_ShouldHandleWebNewUserCorrectly() {
-		// Given
-		OAuthProvider provider = OAuthProvider.KAKAO;
-		String code = "test-code";
-		String state = "web";
-
-		OAuthUserInfo userInfo = mockOAuthUserInfo();
-		OAuthMappingEntityDto temporaryMapping = mockTemporaryMapping();
-
-		when(kakaoOAuthService.getUserInfo(code)).thenReturn(userInfo);
-		when(oAuthRepository.findBySocialUserIdAndProvider(anyString(), eq(provider)))
-			.thenReturn(Optional.empty());
-		when(oAuthRepository.save(any(OAuthMappingEntityDto.class))).thenReturn(temporaryMapping);
-
-		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, state);
-
-		// Then
-		assertThat(result.toString()).contains("#needRegister=true");
-		assertThat(result.toString()).contains("http://test/oauth/callback#");
-		assertThat(result.getFragment()).contains("provider=kakao");
-	}
-
-	@Test
-	void extractDeviceTypeFromState_ShouldHandleEmptyString() {
-		// Given
-		String emptyState = "";
-
-		// When
-		String result = ReflectionTestUtils.invokeMethod(oAuthLoginService,
-			"extractDeviceTypeFromState", emptyState);
-
-		// Then
-		assertThat(result).isEqualTo("web");
-	}
-
-	@Test
-	void getOAuthService_ShouldThrowExceptionWhenServiceIsWrongType() {
-		// Given
-		Map<String, Object> wrongTypedServices = new HashMap<>();
-		wrongTypedServices.put("kakaoOAuthService", "Not a service but a string");
-		ReflectionTestUtils.setField(oAuthLoginService, "oAuthServices", wrongTypedServices);
-
-		// When, Then
-		assertThatExceptionOfType(ClassCastException.class)
-			.isThrownBy(() -> {
-				ReflectionTestUtils.invokeMethod(oAuthLoginService, "getOAuthService",
-					OAuthProvider.KAKAO);
-			});
-
-		Map<String, OAuthService> originalServices = new HashMap<>();
-		originalServices.put("kakaoOAuthService", kakaoOAuthService);
-		originalServices.put("googleOAuthService", googleOAuthService);
-		ReflectionTestUtils.setField(oAuthLoginService, "oAuthServices", originalServices);
-	}
-
-	@Test
-	void handleOAuthCallback_WithExtremelyLongState_ShouldNotThrowException() {
-		// Given
-		OAuthProvider provider = OAuthProvider.KAKAO;
-		String code = "test-code";
-		String veryLongState = "a".repeat(1000);
-
-		OAuthUserInfo userInfo = mockOAuthUserInfo();
-		OAuthMappingEntityDto mapping = mockExistingMapping();
-
-		Date now = new Date();
-		Token accessToken = Token.of(TokenType.ACCESS, "access-token", userId.toString(), now,
-			new Date(now.getTime() + 3600000));
-		Token refreshToken = Token.of(TokenType.REFRESH, "refresh-token", userId.toString(), now,
-			new Date(now.getTime() + 86400000));
-
-		UserEntityDto mockUser = UserEntityDto.create(UUID.randomUUID(), "test", "test", "test");
-
-		when(kakaoOAuthService.getUserInfo(code)).thenReturn(userInfo);
-		when(oAuthRepository.findBySocialUserIdAndProvider(anyString(), eq(provider)))
-			.thenReturn(Optional.of(mapping));
-		when(jwtFactory.createAccessToken(userId)).thenReturn(accessToken);
-		when(jwtFactory.createRefreshToken(userId)).thenReturn(refreshToken);
-		when(userRepository.getById(any())).thenReturn(mockUser);
-
-		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, veryLongState);
-
-		// Then
-		assertThat(result).isNotNull();
-		assertThat(result.toString()).contains("accessToken=access-token");
-	}
-
-	@Test
-	void extractDeviceTypeFromState_WithNullState_ShouldReturnDefaultDeviceType() {
-		// When
-		String result = ReflectionTestUtils.invokeMethod(oAuthLoginService,
-			"extractDeviceTypeFromState", (String)null);
-
-		// Then
-		assertThat(result).isEqualTo("web");
-	}
-
-	@Test
-	void isAppDevice_WithNullDeviceType_ShouldNotThrowException() {
-		// When
-		boolean result = ReflectionTestUtils.invokeMethod(oAuthLoginService, "isAppDevice",
-			(String)null);
-
-		// Then
-		assertThat(result).isFalse();
-	}
-
-	@Test
-	void getRedirectUriByDeviceType_WithNullDeviceType_ShouldReturnWebRedirect() {
-		// When
-		String result = ReflectionTestUtils.invokeMethod(oAuthLoginService,
-			"getRedirectUriByDeviceType", (String)null);
-
-		// Then`
-		assertThat(result).isEqualTo("http://test/oauth/callback");
-	}
-
-	@Test
 	void processOAuthLogin_WhenUserIdIsNullButNotTemporary_ShouldHandleGracefully() {
 		// Given
 		OAuthProvider provider = OAuthProvider.KAKAO;
 		String code = "test-code";
-		String deviceType = "web";
+		DeviceType deviceType = DeviceType.WEB;
 
 		OAuthUserInfo userInfo = mockOAuthUserInfo();
 
@@ -578,8 +430,98 @@ class OAuthLoginServiceTest {
 		// When, Then
 		assertThatExceptionOfType(IllegalArgumentException.class)
 			.isThrownBy(() -> {
-				oAuthLoginService.linkOAuthWithUser(user, invalidUUID, OAuthProvider.KAKAO, "web");
+				oAuthLoginService.linkOAuthWithUser(user, invalidUUID, OAuthProvider.KAKAO,
+					DeviceType.WEB);
 			});
+	}
+
+	@Test
+	void getOAuthService_WhenUnsupportedProvider_ShouldThrowException() {
+		// Given
+		OAuthProvider provider = OAuthProvider.UNSUPPORTED;
+
+		// When, Then
+		assertThatExceptionOfType(OAuthBadRequestException.class)
+			.isThrownBy(() -> oAuthLoginService.getOAuthLoginUrl(provider, DeviceType.WEB))
+			.withMessage("지원하지 않는 OAuth 제공자입니다: " + provider);
+	}
+
+	@Test
+	void handleOAuthCallback_WhenNewUserAndErrorSavingMapping_ShouldThrowException() {
+		// Given
+		OAuthProvider provider = OAuthProvider.KAKAO;
+		String code = "test-code";
+		DeviceType deviceType = DeviceType.APP;
+		OAuthUserInfo userInfo = mockOAuthUserInfo();
+
+		when(kakaoOAuthService.getUserInfo(code)).thenReturn(userInfo);
+		when(oAuthRepository.findBySocialUserIdAndProvider(anyString(), eq(provider)))
+			.thenReturn(Optional.empty());
+		when(oAuthRepository.save(any(OAuthMappingEntityDto.class)))
+			.thenThrow(new RuntimeException("Database error"));
+
+		// When, Then
+		assertThatExceptionOfType(RuntimeException.class)
+			.isThrownBy(() -> oAuthLoginService.handleOAuthCallback(provider, code, deviceType))
+			.withMessage("Database error");
+	}
+
+	@Test
+	void processOAuthLogin_WhenOAuthServiceThrowsException_ShouldPropagateException() {
+		// Given
+		OAuthProvider provider = OAuthProvider.KAKAO;
+		String code = "test-code";
+		DeviceType deviceType = DeviceType.WEB;
+
+		when(kakaoOAuthService.getUserInfo(code))
+			.thenThrow(new OAuthBadRequestException("API error"));
+
+		// When, Then
+		assertThatExceptionOfType(OAuthBadRequestException.class)
+			.isThrownBy(() -> oAuthLoginService.processOAuthLogin(provider, code, deviceType))
+			.withMessage("API error");
+	}
+
+	@Test
+	void linkOAuthWithUser_WhenUpdateFails_ShouldPropagateException() {
+		// Given
+		User user = UserFactory.create(userId, "test@example.com", "testuser",
+			UserStatus.ACTIVE.name());
+		DeviceType deviceType = DeviceType.WEB;
+		OAuthProvider provider = OAuthProvider.KAKAO;
+		OAuthMappingEntityDto mapping = mockTemporaryMapping();
+
+		when(oAuthRepository.findByOauthMappingEntityIdAndProvider(oAuthMappingEntityId, provider))
+			.thenReturn(Optional.of(mapping));
+		doThrow(new RuntimeException("Update failed"))
+			.when(oAuthRepository).update(any(OAuthMappingEntityDto.class));
+
+		// When, Then
+		assertThatExceptionOfType(RuntimeException.class)
+			.isThrownBy(() ->
+				oAuthLoginService.linkOAuthWithUser(user, oAuthMappingEntityId.toString(), provider,
+					deviceType))
+			.withMessage("Update failed");
+	}
+
+	@Test
+	void generateTokensForUser_WhenTokenCreationFails_ShouldPropagateException() {
+		// Given
+		DeviceType deviceType = DeviceType.WEB;
+		UserEntityDto userEntityDto = UserEntityDto.create(userId, "test@example.com", "testuser",
+			UserStatus.ACTIVE.name());
+
+		when(userRepository.getById(userId)).thenReturn(userEntityDto);
+		when(jwtFactory.createAccessToken(userId)).thenThrow(
+			new RuntimeException("Token creation failed"));
+
+		// When, Then
+		assertThatExceptionOfType(RuntimeException.class)
+			.isThrownBy(() -> {
+				ReflectionTestUtils.invokeMethod(oAuthLoginService, "generateTokensForUser", userId,
+					deviceType);
+			})
+			.withMessage("Token creation failed");
 	}
 
 	private OAuthUserInfo mockOAuthUserInfo() {

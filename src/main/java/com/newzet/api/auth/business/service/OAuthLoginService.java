@@ -16,6 +16,7 @@ import com.newzet.api.auth.business.dto.OAuthTokenDto;
 import com.newzet.api.auth.business.dto.TokenDTO;
 import com.newzet.api.auth.business.service.oauth.OAuthRepository;
 import com.newzet.api.auth.business.service.oauth.OAuthService;
+import com.newzet.api.auth.domain.DeviceType;
 import com.newzet.api.auth.domain.OAuthMapping;
 import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.auth.domain.OAuthToken;
@@ -46,20 +47,18 @@ public class OAuthLoginService {
 	@Value("${oauth.app-redirect-uri}")
 	private String appRedirectUri;
 
-	public String getOAuthLoginUrl(OAuthProvider provider, String state) {
+	public String getOAuthLoginUrl(OAuthProvider provider, DeviceType deviceType) {
 		OAuthService oAuthService = getOAuthService(provider);
 
 		if (!oAuthService.isBackendRedirect()) {
 			throw new OAuthBadRequestException("이 제공자는 백엔드 리다이렉트를 지원하지 않습니다.");
 		}
 
-		return oAuthService.getRedirectUrl(state);
+		return oAuthService.getRedirectUrl(deviceType.name());
 	}
 
 	@Transactional
-	public URI handleOAuthCallback(OAuthProvider provider, String code, String state) {
-		String deviceType = extractDeviceTypeFromState(state);
-
+	public URI handleOAuthCallback(OAuthProvider provider, String code, DeviceType deviceType) {
 		OAuthLoginResponse loginResponse = processOAuthLogin(provider, code, deviceType);
 
 		String baseRedirectUrl = getRedirectUriByDeviceType(deviceType);
@@ -73,7 +72,7 @@ public class OAuthLoginService {
 
 		if (loginResponse.needRegister()) {
 			redirectBuilder.append("&provider=").append(provider.name().toLowerCase())
-				.append("&deviceType=").append(deviceType)
+				.append("&deviceType=").append(deviceType.name().toLowerCase())
 				.append("&oAuthMappingEntityId=")
 				.append(loginResponse.OAuthMappingEntityId());
 		} else {
@@ -84,28 +83,20 @@ public class OAuthLoginService {
 		return URI.create(redirectBuilder.toString());
 	}
 
-	private String getRedirectUriByDeviceType(String deviceType) {
+	private String getRedirectUriByDeviceType(DeviceType deviceType) {
 		if (isAppDevice(deviceType)) {
 			return appRedirectUri;
 		}
 		return webRedirectUri;
 	}
 
-	private boolean isAppDevice(String deviceType) {
-		return "mobile".equalsIgnoreCase(deviceType) ||
-			"app".equalsIgnoreCase(deviceType);
-	}
-
-	private String extractDeviceTypeFromState(String state) {
-		if (state == null || state.isEmpty()) {
-			throw new OAuthBadRequestException("state값이 없습니다.");
-		}
-		return state;
+	private boolean isAppDevice(DeviceType deviceType) {
+		return deviceType.equals(DeviceType.APP);
 	}
 
 	@Transactional
 	public OAuthLoginResponse processOAuthLogin(OAuthProvider provider, String code,
-		String deviceType) {
+		DeviceType deviceType) {
 		OAuthService oAuthService = getOAuthService(provider);
 
 		OAuthUserInfo userInfo = oAuthService.getUserInfo(code);
@@ -147,7 +138,7 @@ public class OAuthLoginService {
 
 	@Transactional
 	public JwtResponse linkOAuthWithUser(User user, String oauthMappingEntityId,
-		OAuthProvider provider, String deviceType) {
+		OAuthProvider provider, DeviceType deviceType) {
 		Optional<OAuthMappingEntityDto> oAuthMappingEntityDtoOpt =
 			oAuthRepository.findByOauthMappingEntityIdAndProvider(
 				UUID.fromString(oauthMappingEntityId), provider);
@@ -168,7 +159,7 @@ public class OAuthLoginService {
 		return generateTokensForUser(user.getId(), deviceType);
 	}
 
-	private JwtResponse generateTokensForUser(UUID userId, String deviceType) {
+	private JwtResponse generateTokensForUser(UUID userId, DeviceType deviceType) {
 		UserEntityDto userEntityDto = userRepository.getById(userId);
 		UserFactory.create(userEntityDto.getId(), userEntityDto.getEmail(),
 			userEntityDto.getNickname(), userEntityDto.getStatus());
@@ -178,7 +169,7 @@ public class OAuthLoginService {
 
 		TokenDTO refreshTokenDTO = refreshToken.toTokenDTO();
 
-		tokenRepository.saveToken(userId, deviceType, refreshTokenDTO);
+		tokenRepository.saveToken(userId, deviceType.name(), refreshTokenDTO);
 
 		return new JwtResponse(accessToken.getValue(), refreshToken.getValue());
 	}

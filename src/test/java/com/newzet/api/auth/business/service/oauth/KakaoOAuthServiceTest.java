@@ -20,6 +20,7 @@ import org.springframework.web.client.RestTemplate;
 import com.newzet.api.auth.business.service.oauth.kakao.KakaoOAuthService;
 import com.newzet.api.auth.business.service.oauth.kakao.KakaoTokenResponse;
 import com.newzet.api.auth.business.service.oauth.kakao.KakaoUserInfoResponse;
+import com.newzet.api.auth.domain.DeviceType;
 import com.newzet.api.auth.domain.OAuthUserInfo;
 import com.newzet.api.auth.exception.OAuthErrorException;
 
@@ -47,7 +48,7 @@ class KakaoOAuthServiceTest {
 	@Test
 	void getRedirectUrl_ShouldReturnCorrectUrl() {
 		// Given
-		String state = "test-state";
+		String state = DeviceType.WEB.name();
 
 		// When
 		String redirectUrl = kakaoOAuthService.getRedirectUrl(state);
@@ -57,16 +58,6 @@ class KakaoOAuthServiceTest {
 		assertThat(redirectUrl).contains("client_id=" + FAKE_CLIENT_ID);
 		assertThat(redirectUrl).contains("redirect_uri=" + FAKE_REDIRECT_URI);
 		assertThat(redirectUrl).contains("state=" + state);
-	}
-
-	@Test
-	void getRedirectUrl_WithNullState_ShouldReturnValidUrl() {
-		// When
-		String redirectUrl = kakaoOAuthService.getRedirectUrl(null);
-
-		// Then
-		assertThat(redirectUrl).contains("kauth.kakao.com/oauth/authorize");
-		assertThat(redirectUrl).doesNotContain("state=");
 	}
 
 	@Test

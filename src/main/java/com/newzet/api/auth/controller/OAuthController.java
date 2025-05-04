@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.newzet.api.auth.business.service.OAuthLoginService;
+import com.newzet.api.auth.domain.DeviceType;
 import com.newzet.api.auth.domain.OAuthProvider;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,13 +30,14 @@ public class OAuthController {
 
 	@GetMapping("/{provider}/login")
 	@Operation(summary = "OAuth 로그인 페이지 이동",
-		description = "provider별 로그인 페이지로 이동한다. state는 deviceType")
+		description = "provider별 로그인 페이지로 이동한다. state는 deviceType(WEB/APP)")
 	public RedirectView redirectToOAuthLoginPage(
 		@PathVariable("provider") String provider,
-		@RequestParam(value = "state") String state) {
+		@RequestParam(value = "state", required = false) String state) {
 
 		OAuthProvider oAuthProvider = OAuthProvider.valueOf(provider.toUpperCase());
-		String redirectUrl = oAuthLoginService.getOAuthLoginUrl(oAuthProvider, state);
+		DeviceType deviceType = DeviceType.fromString(state);
+		String redirectUrl = oAuthLoginService.getOAuthLoginUrl(oAuthProvider, deviceType);
 		return new RedirectView(redirectUrl);
 	}
 
@@ -48,8 +50,8 @@ public class OAuthController {
 		@RequestParam(value = "state") String state) {
 
 		OAuthProvider oAuthProvider = OAuthProvider.valueOf(provider.toUpperCase());
-		URI redirectInfo = oAuthLoginService.handleOAuthCallback(oAuthProvider, code,
-			state);
+		DeviceType deviceType = DeviceType.fromString(state);
+		URI redirectInfo = oAuthLoginService.handleOAuthCallback(oAuthProvider, code, deviceType);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(redirectInfo);
