@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.recommend;
+package com.newzet.api.newsletter.domain.service;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -6,15 +6,16 @@ import java.util.List;
 import org.springframework.stereotype.Component;
 
 import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
-import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.RecommendationPolicy;
+import com.newzet.api.newsletter.domain.model.Newsletter;
+import com.newzet.api.newsletter.domain.model.RecommendationPolicy;
+import com.newzet.api.newsletter.domain.strategy.RecommendationStrategy;
 
 import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
 public class NewsletterRecommender {
-	private final RecommendationFactory recommendationFactory;
+	private final RecommendationStrategy recommendationStrategy;
 
 	public List<Newsletter> recommendNewsletterList(List<Newsletter> advertiseNewsletterList,
 		List<Newsletter> userCategoryNewsletterList) {
@@ -27,7 +28,7 @@ public class NewsletterRecommender {
 		int resQuarter = getRemainingQuarter(advertiseNewsletterList.size(),
 			userCategoryNewsletterList.size());
 
-		List<Newsletter> userCategoryRecommendationNewsletterList = recommendationFactory.createRecommendationList(
+		List<Newsletter> userCategoryRecommendationNewsletterList = recommendationStrategy.createRecommendationList(
 			userCategoryNewsletterList, resQuarter);
 		recommendedNewsletterList.addAll(userCategoryRecommendationNewsletterList);
 

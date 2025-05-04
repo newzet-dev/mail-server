@@ -12,11 +12,11 @@ import com.newzet.api.auth.infrastructure.annotation.Login;
 import com.newzet.api.auth.infrastructure.annotation.RequireAuth;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
-import com.newzet.api.newsletter.business.NewsletterService;
+import com.newzet.api.newsletter.business.service.NewsletterRecommendationService;
+import com.newzet.api.newsletter.business.service.NewsletterService;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
-import com.newzet.api.newsletter.recommend.NewsletterRecommendationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

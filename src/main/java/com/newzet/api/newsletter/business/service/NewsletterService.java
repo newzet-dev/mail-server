@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.business;
+package com.newzet.api.newsletter.business.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,14 +11,14 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.util.UuidConverter;
+import com.newzet.api.newsletter.business.NewsletterRepository;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
-import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterStatus;
-import com.newzet.api.newsletter.recommend.NewsletterRecommendationService;
+import com.newzet.api.newsletter.domain.model.Newsletter;
+import com.newzet.api.newsletter.domain.model.NewsletterStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

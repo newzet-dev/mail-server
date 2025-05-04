@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.recommend;
+package com.newzet.api.newsletter.business.service;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,7 +10,8 @@ import com.newzet.api.newsletter.business.NewsletterRepository;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
-import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.model.Newsletter;
+import com.newzet.api.newsletter.domain.service.NewsletterRecommender;
 import com.newzet.api.usercategory.business.UserCategoryRepository;
 
 import lombok.RequiredArgsConstructor;

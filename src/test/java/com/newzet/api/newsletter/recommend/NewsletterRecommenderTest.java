@@ -14,12 +14,16 @@ import org.junit.jupiter.api.Test;
 
 import com.newzet.api.category.domain.Category;
 import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
-import com.newzet.api.newsletter.domain.Color;
-import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.model.Color;
+import com.newzet.api.newsletter.domain.model.Newsletter;
+import com.newzet.api.newsletter.domain.service.NewsletterRecommender;
+import com.newzet.api.newsletter.domain.strategy.RandomRecommendationStrategy;
+import com.newzet.api.newsletter.domain.strategy.RecommendationStrategy;
 
 class NewsletterRecommenderTest {
-	private final RecommendationFactory recommendationFactory = new RandomRecommendationFactory();
-	private final NewsletterRecommender newsletterRecommender = new NewsletterRecommender(recommendationFactory);
+	private final RecommendationStrategy recommendationStrategy = new RandomRecommendationStrategy();
+	private final NewsletterRecommender newsletterRecommender = new NewsletterRecommender(
+		recommendationStrategy);
 
 	@Test
 	public void newsletterList_has_low_number_of_elements_than_count_throw_exception() {

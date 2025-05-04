@@ -23,9 +23,10 @@ import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.common.util.exception.UuidConvertFailException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.service.NewsletterService;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
-import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.model.Newsletter;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
 
 @ExtendWith(MockitoExtension.class)

@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.domain;
+package com.newzet.api.newsletter.domain.model;
 
 import java.util.UUID;
 

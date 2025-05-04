@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.domain;
+package com.newzet.api.newsletter.domain.model;
 
 public class RecommendationPolicy {
 	public static final int RECOMMENDATION_QUARTER_SIZE = 4;
