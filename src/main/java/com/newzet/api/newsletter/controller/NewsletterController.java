@@ -16,6 +16,7 @@ import com.newzet.api.newsletter.business.NewsletterService;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
+import com.newzet.api.newsletter.recommend.NewsletterRecommendationService;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -28,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class NewsletterController {
 
 	private final NewsletterService newsletterService;
+	private final NewsletterRecommendationService newsletterRecommendationService;
 
 	@GetMapping("/search")
 	@Operation(summary = "뉴스레터 리스트 조회",
@@ -62,7 +64,7 @@ public class NewsletterController {
 		description = "유저 id로 뉴스레터 추천 리스트를 조회한다.")
 	public ResponseEntity<SuccessResponse<NewsletterRecommendResponse>> recommendNewsletterList(
 		@Login AuthUser authUser) {
-		NewsletterRecommendResponse newsletterRecommendResponse = newsletterService.recommendNewsletterList(
+		NewsletterRecommendResponse newsletterRecommendResponse = newsletterRecommendationService.recommendNewsletterList(
 			authUser.getId());
 		SuccessResponse<NewsletterRecommendResponse> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "뉴스레터 추천 성공", newsletterRecommendResponse);

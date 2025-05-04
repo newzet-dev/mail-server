@@ -15,7 +15,6 @@ import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
-import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.domain.NewsletterStatus;
@@ -69,15 +68,6 @@ public class NewsletterService {
 			newsletter.getCategory().getName());
 	}
 
-	public NewsletterRecommendResponse recommendNewsletterList(UUID userId) {
-		List<Newsletter> recommendNewsletterList = newsletterRecommendationService.createRandomNewsletterList(userId);
-
-		return NewsletterRecommendResponse.create(recommendNewsletterList.stream()
-			.map(newsletter -> NewsletterResponse.create(newsletter.getId(),
-				newsletter.getName(), newsletter.getImageUrl(), newsletter.getDescription(),
-				newsletter.getPriority()))
-			.toList());
-	}
 
 	private Optional<Newsletter> findByDomainOnCache(String domain) {
 		return cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)

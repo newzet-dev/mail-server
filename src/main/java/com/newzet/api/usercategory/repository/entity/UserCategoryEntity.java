@@ -43,10 +43,6 @@ public class UserCategoryEntity {
 		return new UserCategoryEntity(null, user, category);
 	}
 
-	public static UserCategoryEntity create(UUID id, UserEntity user, CategoryEntity category) {
-		return new UserCategoryEntity(id, user, category);
-	}
-
 	public UserCategoryEntityDto toEntityDto() {
 		return UserCategoryEntityDto.create(id, user.toEntityDto(), category.toEntityDto());
 	}
