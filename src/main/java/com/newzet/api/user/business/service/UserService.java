@@ -6,6 +6,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.auth.business.dto.JwtResponse;
+import com.newzet.api.auth.business.service.OAuthLoginService;
+import com.newzet.api.auth.domain.DeviceType;
+import com.newzet.api.auth.exception.OAuthBadRequestException;
 import com.newzet.api.user.business.dto.SignupRequest;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.user.business.dto.UserEntityDto;
@@ -21,6 +24,7 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
+	private final OAuthLoginService oAuthLoginService;
 
 	public User getUserByEmail(String email) {
 		UserEntityDto userEntityDto = userRepository.getByEmail(email);
@@ -57,8 +61,16 @@ public class UserService {
 			UserStatus.ACTIVE.name());
 		User user = userEntityDto.toDomain();
 
-		//TODO: Oauth 비즈니스 로직 도입
-
-		return null;
+		try {
+			return oAuthLoginService.linkOAuthWithUser(
+				user,
+				request.oAuthMappingEntityId(),
+				request.provider(),
+				DeviceType.fromString(request.deviceType())
+			);
+		} catch (OAuthBadRequestException e) {
+			userRepository.delete(user.getId());
+			throw e;
+		}
 	}
 }

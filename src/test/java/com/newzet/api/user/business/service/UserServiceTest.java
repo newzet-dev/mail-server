@@ -1,7 +1,6 @@
 package com.newzet.api.user.business.service;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Optional;
@@ -13,6 +12,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.newzet.api.auth.business.dto.JwtResponse;
+import com.newzet.api.auth.business.service.OAuthLoginService;
+import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.user.business.dto.SignupRequest;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.user.business.dto.UserEntityDto;
@@ -24,6 +26,9 @@ class UserServiceTest {
 
 	@Mock
 	private UserRepository userRepository;
+
+	@Mock
+	private OAuthLoginService oAuthLoginService;
 
 	@InjectMocks
 	private UserService userService;
@@ -116,13 +121,16 @@ class UserServiceTest {
 	@Test
 	void signUp_WhenEmailUnique_ThenCreateUser() {
 		//Given
-		SignupRequest request = new SignupRequest("test@example.com", "testUser", "web");
+		SignupRequest request = new SignupRequest("test@example.com", "testUser", "id",
+			OAuthProvider.KAKAO, "web");
 		UUID userId = UUID.randomUUID();
 
 		when(userRepository.findOptionalByEmail(request.email())).thenReturn(Optional.empty());
 		when(userRepository.save(request.email(), request.nickname(), "ACTIVE"))
 			.thenReturn(
 				UserEntityDto.create(userId, request.email(), request.nickname(), "ACTIVE"));
+		when(oAuthLoginService.linkOAuthWithUser(any(), any(), any(), any())).thenReturn(
+			any(JwtResponse.class));
 
 		//When
 		userService.signUp(request);
@@ -134,7 +142,8 @@ class UserServiceTest {
 	@Test
 	void signUp_WhenEmailDuplicate_ThenThrowException() {
 		//Given
-		SignupRequest request = new SignupRequest("test@example.com", "testUser", "web");
+		SignupRequest request = new SignupRequest("test@example.com", "testUser", "id",
+			OAuthProvider.KAKAO, "web");
 		UserEntityDto existingUser = UserEntityDto.create(
 			UUID.randomUUID(), request.email(), "existingUser", "ACTIVE"
 		);

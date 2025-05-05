@@ -2,7 +2,7 @@ spring:
   lifecycle:
     timeout-per-shutdown: 60s
   datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}
+    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?prepareThreshold=0
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
     driver-class-name: org.postgresql.Driver
@@ -26,6 +26,13 @@ spring:
       host: ${SPRING_REDIS_HOST}
       port: ${SPRING_REDIS_PORT}
       password: ${SPRING_REDIS_PASSWORD}
+
+oauth:
+  web-redirect-uri: ${OAUTH_WEB-REDIRECT-URI}
+  app-redirect-uri: ${OAUTH_APP-REDIRECT-URI}
+  kakao:
+    backend-redirect-uri: ${OAUTH_KAKAO_BACKEND-REDIRECT-URI}
+    client-id: ${OAUTH_KAKAO_CLIENT-ID}
 
 jwt:
   secret: ${JWT_SECRET}
