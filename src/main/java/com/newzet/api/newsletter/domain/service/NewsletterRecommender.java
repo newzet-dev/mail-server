@@ -3,7 +3,7 @@ package com.newzet.api.newsletter.domain.service;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
 import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
 import com.newzet.api.newsletter.domain.model.Newsletter;
@@ -11,7 +11,7 @@ import com.newzet.api.newsletter.domain.strategy.RecommendationStrategy;
 
 import lombok.RequiredArgsConstructor;
 
-@Component
+@Service
 @RequiredArgsConstructor
 public class NewsletterRecommender {
 	public static final int RECOMMENDATION_QUARTER_SIZE = 4;
