@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.auth.business.dto.JwtResponse;
+import com.newzet.api.auth.business.dto.OAuthContext;
 import com.newzet.api.auth.business.dto.OAuthLoginResponse;
 import com.newzet.api.auth.business.dto.OAuthMappingEntityDto;
 import com.newzet.api.auth.business.dto.OAuthTokenDto;
@@ -47,22 +48,26 @@ public class OAuthLoginService {
 	@Value("${oauth.app-redirect-uri}")
 	private String appRedirectUri;
 
-	public String getOAuthLoginUrl(OAuthProvider provider, DeviceType deviceType) {
-		OAuthService oAuthService = getOAuthService(provider);
+	public String getOAuthLoginUrl(String provider, String state) {
+		OAuthContext context = parseOAuthContext(provider, state);
+
+		OAuthService oAuthService = getOAuthService(context.oAuthProvider());
 
 		if (!oAuthService.isBackendRedirect()) {
 			throw new OAuthBadRequestException("이 제공자는 백엔드 리다이렉트를 지원하지 않습니다.");
 		}
 
-		return oAuthService.getRedirectUrl(deviceType.name());
+		return oAuthService.getRedirectUrl(context.deviceType().name());
 	}
 
 	@Transactional
-	public URI handleOAuthCallback(OAuthProvider provider, String code, DeviceType deviceType) {
-		OAuthLoginResponse loginResponse = processOAuthLogin(provider, code, deviceType);
+	public URI handleOAuthCallback(String provider, String code, String state) {
+		OAuthContext context = parseOAuthContext(provider, state);
 
-		String baseRedirectUrl = getRedirectUriByDeviceType(deviceType);
+		OAuthLoginResponse loginResponse = processOAuthLogin(context.oAuthProvider(), code,
+			context.deviceType());
 
+		String baseRedirectUrl = getRedirectUriByDeviceType(context.deviceType());
 		StringBuilder redirectBuilder = new StringBuilder(baseRedirectUrl);
 
 		String urlFragmentDelimiter = "#";
@@ -71,8 +76,10 @@ public class OAuthLoginService {
 			.append("needRegister=").append(loginResponse.needRegister());
 
 		if (loginResponse.needRegister()) {
-			redirectBuilder.append("&provider=").append(provider.name().toLowerCase())
-				.append("&deviceType=").append(deviceType.name().toLowerCase())
+			redirectBuilder.append("&provider=")
+				.append(context.oAuthProvider().name().toLowerCase())
+				.append("&deviceType=")
+				.append(context.deviceType().name().toLowerCase())
 				.append("&oAuthMappingEntityId=")
 				.append(loginResponse.OAuthMappingEntityId());
 		} else {
@@ -81,6 +88,12 @@ public class OAuthLoginService {
 		}
 
 		return URI.create(redirectBuilder.toString());
+	}
+
+	private OAuthContext parseOAuthContext(String provider, String state) {
+		OAuthProvider oAuthProvider = OAuthProvider.fromString(provider);
+		DeviceType deviceType = DeviceType.fromString(state);
+		return OAuthContext.of(oAuthProvider, deviceType);
 	}
 
 	private String getRedirectUriByDeviceType(DeviceType deviceType) {

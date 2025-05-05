@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.servlet.view.RedirectView;
 
 import com.newzet.api.auth.business.service.OAuthLoginService;
-import com.newzet.api.auth.domain.DeviceType;
-import com.newzet.api.auth.domain.OAuthProvider;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -35,9 +33,8 @@ public class OAuthController {
 		@PathVariable("provider") String provider,
 		@RequestParam(value = "state", required = false) String state) {
 
-		OAuthProvider oAuthProvider = OAuthProvider.valueOf(provider.toUpperCase());
-		DeviceType deviceType = DeviceType.fromString(state);
-		String redirectUrl = oAuthLoginService.getOAuthLoginUrl(oAuthProvider, deviceType);
+		String redirectUrl = oAuthLoginService.getOAuthLoginUrl(provider, state);
+
 		return new RedirectView(redirectUrl);
 	}
 
@@ -49,9 +46,7 @@ public class OAuthController {
 		@RequestParam("code") String code,
 		@RequestParam(value = "state") String state) {
 
-		OAuthProvider oAuthProvider = OAuthProvider.valueOf(provider.toUpperCase());
-		DeviceType deviceType = DeviceType.fromString(state);
-		URI redirectInfo = oAuthLoginService.handleOAuthCallback(oAuthProvider, code, deviceType);
+		URI redirectInfo = oAuthLoginService.handleOAuthCallback(provider, code, state);
 
 		HttpHeaders headers = new HttpHeaders();
 		headers.setLocation(redirectInfo);

@@ -84,7 +84,7 @@ class OAuthLoginServiceTest {
 			"https://kauth.kakao.com/oauth/authorize?...");
 
 		// When
-		String url = oAuthLoginService.getOAuthLoginUrl(provider, deviceType);
+		String url = oAuthLoginService.getOAuthLoginUrl(provider.name(), deviceType.name());
 
 		// Then
 		assertThat(url).isEqualTo("https://kauth.kakao.com/oauth/authorize?...");
@@ -101,7 +101,7 @@ class OAuthLoginServiceTest {
 
 		// When, Then
 		assertThatExceptionOfType(OAuthBadRequestException.class)
-			.isThrownBy(() -> oAuthLoginService.getOAuthLoginUrl(provider, deviceType))
+			.isThrownBy(() -> oAuthLoginService.getOAuthLoginUrl(provider.name(), deviceType.name()))
 			.withMessage("이 제공자는 백엔드 리다이렉트를 지원하지 않습니다.");
 	}
 
@@ -136,7 +136,7 @@ class OAuthLoginServiceTest {
 		when(userRepository.getById(any())).thenReturn(mockUser);
 
 		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, deviceType);
+		URI result = oAuthLoginService.handleOAuthCallback(provider.name(), code, deviceType.name());
 
 		// Then
 		assertThat(result.toString()).contains("needRegister=false");
@@ -161,7 +161,7 @@ class OAuthLoginServiceTest {
 		when(oAuthRepository.save(any(OAuthMappingEntityDto.class))).thenReturn(temporaryMapping);
 
 		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, deviceType);
+		URI result = oAuthLoginService.handleOAuthCallback(provider.name(), code, deviceType.name());
 
 		// Then
 		assertThat(result.toString()).contains("needRegister=true");
@@ -252,7 +252,7 @@ class OAuthLoginServiceTest {
 		when(userRepository.getById(any())).thenReturn(mockUser);
 
 		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, deviceType);
+		URI result = oAuthLoginService.handleOAuthCallback(provider.name(), code, deviceType.name());
 
 		// Then
 		assertThat(result.toString()).contains("needRegister=false");
@@ -377,7 +377,7 @@ class OAuthLoginServiceTest {
 		when(userRepository.getById(any())).thenReturn(mockUser);
 
 		// When
-		URI result = oAuthLoginService.handleOAuthCallback(provider, code, deviceType);
+		URI result = oAuthLoginService.handleOAuthCallback(provider.name(), code, deviceType.name());
 
 		// Then
 		assertThat(result.toString()).contains("#needRegister=false");
@@ -442,7 +442,7 @@ class OAuthLoginServiceTest {
 
 		// When, Then
 		assertThatExceptionOfType(OAuthBadRequestException.class)
-			.isThrownBy(() -> oAuthLoginService.getOAuthLoginUrl(provider, DeviceType.WEB))
+			.isThrownBy(() -> oAuthLoginService.getOAuthLoginUrl(provider.name(), DeviceType.WEB.name()))
 			.withMessage("지원하지 않는 OAuth 제공자입니다: " + provider);
 	}
 
@@ -462,7 +462,7 @@ class OAuthLoginServiceTest {
 
 		// When, Then
 		assertThatExceptionOfType(RuntimeException.class)
-			.isThrownBy(() -> oAuthLoginService.handleOAuthCallback(provider, code, deviceType))
+			.isThrownBy(() -> oAuthLoginService.handleOAuthCallback(provider.name(), code, deviceType.name()))
 			.withMessage("Database error");
 	}
 
