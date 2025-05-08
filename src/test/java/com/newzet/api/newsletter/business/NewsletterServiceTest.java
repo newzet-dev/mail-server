@@ -23,9 +23,10 @@ import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.common.util.exception.UuidConvertFailException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.service.NewsletterService;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
-import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.model.Newsletter;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
 
 @ExtendWith(MockitoExtension.class)
@@ -36,8 +37,10 @@ class NewsletterServiceTest {
 	private final String domain = "test@example.com";
 	private final String mailingList = "test123";
 	private final String status = "UNREGISTERED";
-	private final CategoryEntity categoryEntity = CategoryEntity.create(UUID.randomUUID(), "test", "test", "test");
-	private final NewsletterEntityDto entityDto = NewsletterFixture.createDefaultEntity().toEntityDto();
+	private final CategoryEntity categoryEntity = CategoryEntity.create(UUID.randomUUID(), "test",
+		"test", "test");
+	private final NewsletterEntityDto entityDto = NewsletterFixture.createDefaultEntity()
+		.toEntityDto();
 	@Mock
 	private NewsletterRepository newsletterRepository;
 	@Mock
@@ -116,7 +119,8 @@ class NewsletterServiceTest {
 		//Given
 		when(cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)).thenReturn(
 			Optional.empty());
-		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenThrow(new LocalLockAcquisitionException("Local Lock 획득에 실패하였습니다."));
+		when(lockFactory.tryLock(any(), anyLong(), anyLong())).thenThrow(
+			new LocalLockAcquisitionException("Local Lock 획득에 실패하였습니다."));
 
 		// When
 		assertThrows(InternalErrorException.class,
@@ -135,7 +139,8 @@ class NewsletterServiceTest {
 		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
 		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
 		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class)))
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class),
+			any(UUID.class)))
 			.thenReturn(newsletterList);
 
 		// When
@@ -143,7 +148,8 @@ class NewsletterServiceTest {
 			newsletter.getName(), String.valueOf(categoryEntity.getId()));
 
 		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), any(UUID.class));
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(
+			any(String.class), any(UUID.class));
 		assertEquals(1, searchList.newsletterList().size());
 	}
 
@@ -153,7 +159,8 @@ class NewsletterServiceTest {
 		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
 		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
 		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class)))
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class),
+			nullable(UUID.class)))
 			.thenReturn(newsletterList);
 
 		// When
@@ -161,7 +168,8 @@ class NewsletterServiceTest {
 			newsletter.getName(), null);
 
 		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class));
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(
+			any(String.class), nullable(UUID.class));
 		assertEquals(1, searchList.newsletterList().size());
 	}
 
@@ -171,7 +179,8 @@ class NewsletterServiceTest {
 		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
 		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
 		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class)))
+		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class),
+			nullable(UUID.class)))
 			.thenReturn(newsletterList);
 
 		// When
@@ -179,15 +188,17 @@ class NewsletterServiceTest {
 			newsletter.getName(), "");
 
 		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(any(String.class), nullable(UUID.class));
+		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(
+			any(String.class), nullable(UUID.class));
 		assertEquals(1, searchList.newsletterList().size());
 	}
 
 	@Test
 	public void searchNewsletterListByNameOrCategoryId_Invalid_CategoryId_throwException() {
 		// When Then
-		assertThrows(UuidConvertFailException.class, () -> newsletterService.searchNewsletterListByNameOrCategoryId(
-			"test", "wrong uuid"));
+		assertThrows(UuidConvertFailException.class,
+			() -> newsletterService.searchNewsletterListByNameOrCategoryId(
+				"test", "wrong uuid"));
 	}
 
 	@Test

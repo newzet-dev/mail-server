@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.business;
+package com.newzet.api.newsletter.business.service;
 
 import java.util.List;
 import java.util.Optional;
@@ -11,20 +11,21 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.util.UuidConverter;
+import com.newzet.api.newsletter.business.NewsletterRepository;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
-import com.newzet.api.newsletter.domain.Newsletter;
-import com.newzet.api.newsletter.domain.NewsletterStatus;
+import com.newzet.api.newsletter.domain.model.Newsletter;
+import com.newzet.api.newsletter.domain.model.NewsletterStatus;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Transactional
+@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class NewsletterService {
 
@@ -36,7 +37,9 @@ public class NewsletterService {
 	private final NewsletterRepository newsletterRepository;
 	private final CacheUtil cacheUtil;
 	private final LockFactory lockFactory;
+	private final NewsletterRecommendationService newsletterRecommendationService;
 
+	@Transactional
 	public Newsletter findOrCreateNewsletter(String name, String domain, String mailingList) {
 		return findByDomainOnCache(domain)
 			.orElseGet(() -> findOrCreateByDomainOrMailingListWithLock(name, domain, mailingList));
@@ -64,6 +67,7 @@ public class NewsletterService {
 			newsletter.getDayOfWeek(), newsletter.getSubscriptionUrl(), false,
 			newsletter.getCategory().getName());
 	}
+
 
 	private Optional<Newsletter> findByDomainOnCache(String domain) {
 		return cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)

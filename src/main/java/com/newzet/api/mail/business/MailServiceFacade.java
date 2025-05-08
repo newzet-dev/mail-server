@@ -3,8 +3,8 @@ package com.newzet.api.mail.business;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.newzet.api.newsletter.business.NewsletterService;
-import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.business.service.NewsletterService;
+import com.newzet.api.newsletter.domain.model.Newsletter;
 import com.newzet.api.subscription.business.service.SubscriptionService;
 import com.newzet.api.user.business.service.UserService;
 import com.newzet.api.user.domain.User;

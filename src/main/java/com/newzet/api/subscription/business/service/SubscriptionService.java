@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.model.Newsletter;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import com.newzet.api.subscription.domain.Subscription;
 import com.newzet.api.user.domain.User;

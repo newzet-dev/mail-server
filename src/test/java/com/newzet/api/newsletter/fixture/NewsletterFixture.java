@@ -2,13 +2,11 @@ package com.newzet.api.newsletter.fixture;
 
 import java.util.UUID;
 
-import com.newzet.api.category.business.dto.CategoryEntityDto;
 import com.newzet.api.category.domain.Category;
 import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
-import com.newzet.api.newsletter.domain.Color;
-import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.model.Color;
+import com.newzet.api.newsletter.domain.model.Newsletter;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 
 public class NewsletterFixture {
@@ -40,8 +38,8 @@ public class NewsletterFixture {
 			mailingList, 1, "test", "test", "test", "test", "test", "test", Color.DEFAULT);
 	}
 
-	public static NewsletterEntityDto createDefaultEntityDto(CategoryEntityDto categoryEntityDto) {
-		return NewsletterEntityDto.create(null, name, categoryEntityDto, domain,
+	public static NewsletterEntity createEntityUnique(String domain, CategoryEntity categoryEntity) {
+		return NewsletterEntity.create(name, categoryEntity, domain,
 			mailingList, 1, "test", "test", "test", "test", "test", "test", Color.DEFAULT);
 	}
 

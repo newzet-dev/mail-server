@@ -7,7 +7,7 @@ import org.hibernate.annotations.UuidGenerator;
 
 import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
-import com.newzet.api.newsletter.domain.Color;
+import com.newzet.api.newsletter.domain.model.Color;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

@@ -3,8 +3,8 @@ package com.newzet.api.newsletter.business.dto;
 import java.util.UUID;
 
 import com.newzet.api.category.business.dto.CategoryEntityDto;
-import com.newzet.api.newsletter.domain.Color;
-import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.model.Color;
+import com.newzet.api.newsletter.domain.model.Newsletter;
 
 import lombok.AccessLevel;
 import lombok.Builder;
