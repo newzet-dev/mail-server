@@ -147,7 +147,7 @@ class NewsletterRepositoryImplTest {
 		assertEquals(newsletterList.get(0).getName(), newsletter.getName());
 		assertEquals(category.getId(), newsletter.getCategory().getId());
 	}
-	
+
 
 	@Test
 	public void getNewsletterById() {
