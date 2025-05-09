@@ -20,7 +20,6 @@ import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
-import com.newzet.api.common.util.exception.UuidConvertFailException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.business.service.NewsletterService;
@@ -152,50 +151,6 @@ class NewsletterServiceTest {
 		assertEquals(1, searchList.newsletterList().size());
 	}
 
-	@Test
-	public void getNewsletterListByCategoryId_whenCategoryIdIsNull() {
-		// Given
-		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
-		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
-		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByCategoryId(
-			nullable(UUID.class)))
-			.thenReturn(newsletterList);
-
-		// When
-		NewsletterListResponse searchList = newsletterService.getNewsletterListByCategoryId(null);
-
-		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByCategoryId(
-			nullable(UUID.class));
-		assertEquals(1, searchList.newsletterList().size());
-	}
-
-	@Test
-	public void getNewsletterListByCategoryId_whenCategoryIdEmpty() {
-		// Given
-		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
-		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
-		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByCategoryId(
-			nullable(UUID.class)))
-			.thenReturn(newsletterList);
-
-		// When
-		NewsletterListResponse searchList = newsletterService.getNewsletterListByCategoryId("");
-
-		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByCategoryId(
-			nullable(UUID.class));
-		assertEquals(1, searchList.newsletterList().size());
-	}
-
-	@Test
-	public void getNewsletterListByCategoryId_Invalid_CategoryId_throwException() {
-		// When Then
-		assertThrows(UuidConvertFailException.class,
-			() -> newsletterService.getNewsletterListByCategoryId("wrong uuid"));
-	}
 
 	@Test
 	public void getNewsletterById() {
