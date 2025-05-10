@@ -45,11 +45,22 @@ public class NewsletterService {
 			.orElseGet(() -> findOrCreateByDomainOrMailingListWithLock(name, domain, mailingList));
 	}
 
-	public NewsletterListResponse searchNewsletterListByNameOrCategoryId(String name,
-		String categoryId) {
-		UUID categoryUuid = UuidConverter.convert(categoryId);
-		List<NewsletterResponse> newsletterResponseList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
-				name, categoryUuid).stream()
+	public NewsletterListResponse searchNewsletterListByName(String name) {
+		List<NewsletterResponse> newsletterResponseList = newsletterRepository.findNewsLetterListByName(
+				name).stream()
+			.map(newsletterEntity -> NewsletterResponse.create(newsletterEntity.getId(),
+				newsletterEntity.getName(), newsletterEntity.getImageUrl(),
+				newsletterEntity.getDescription(), newsletterEntity.getPriority()))
+			.toList();
+
+		return NewsletterListResponse.create(newsletterResponseList);
+	}
+
+	public NewsletterListResponse getNewsletterListByCategoryId(String categoryId) {
+		UUID categoryIdUuid = UuidConverter.convert(categoryId);
+
+		List<NewsletterResponse> newsletterResponseList = newsletterRepository.findNewsLetterListByCategoryId(
+				categoryIdUuid).stream()
 			.map(newsletterEntity -> NewsletterResponse.create(newsletterEntity.getId(),
 				newsletterEntity.getName(), newsletterEntity.getImageUrl(),
 				newsletterEntity.getDescription(), newsletterEntity.getPriority()))
@@ -67,7 +78,6 @@ public class NewsletterService {
 			newsletter.getDayOfWeek(), newsletter.getSubscriptionUrl(), false,
 			newsletter.getCategory().getName());
 	}
-
 
 	private Optional<Newsletter> findByDomainOnCache(String domain) {
 		return cacheUtil.get(CACHE_DOMAIN_PREFIX + domain, NewsletterCacheDto.class)

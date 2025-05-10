@@ -12,7 +12,9 @@ public interface NewsletterRepository {
 
 	Optional<NewsletterEntityDto> findByDomainOrMailingList(String domain, String mailingList);
 
-	List<NewsletterEntityDto> findNewsLetterListByNameOrCategoryId(String name, UUID categoryId);
+	List<NewsletterEntityDto> findNewsLetterListByName(String name);
+
+	List<NewsletterEntityDto> findNewsLetterListByCategoryId(UUID categoryId);
 
 	NewsletterEntityDto getById(UUID id);
 

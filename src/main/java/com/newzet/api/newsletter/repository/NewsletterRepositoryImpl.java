@@ -33,9 +33,15 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 	}
 
 	@Override
-	public List<NewsletterEntityDto> findNewsLetterListByNameOrCategoryId(String name,
-		UUID categoryId) {
-		return newsletterJpaRepository.findNewsletterListByNameOrCategoryId(name, categoryId).stream()
+	public List<NewsletterEntityDto> findNewsLetterListByName(String name) {
+		return newsletterJpaRepository.findNewsletterListByName(name).stream()
+			.map(NewsletterEntity::toEntityDto)
+			.toList();
+	}
+
+	@Override
+	public List<NewsletterEntityDto> findNewsLetterListByCategoryId(UUID categoryId) {
+		return newsletterJpaRepository.findNewsletterListByCategoryId(categoryId).stream()
 			.map(NewsletterEntity::toEntityDto)
 			.toList();
 	}
