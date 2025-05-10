@@ -6,7 +6,7 @@ import com.newzet.api.common.util.exception.UuidConvertFailException;
 
 public class UuidConverter {
 	public static UUID convert(String stringId) {
-		if (stringId == null || stringId.isEmpty()) {
+		if (stringId == null || stringId.isBlank()) {
 			throw new UuidConvertFailException("빈 값을 uuid로 변환할 수 없습니다.");
 		}
 

@@ -1,6 +1,7 @@
 package com.newzet.api.common.util;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.UUID;
 import java.util.stream.Stream;
@@ -18,6 +19,8 @@ class UuidConverterTest {
 
 	private static Stream<Arguments> invalidUuidString() {
 		return Stream.of(
+			null,
+			Arguments.of(""),
 			Arguments.of(" "),
 			Arguments.of("invalid-uuid"),
 			Arguments.of(uuid + " "),
@@ -31,7 +34,7 @@ class UuidConverterTest {
 	void success_on_valid_uuid_string() {
 		UUID convertedUuid = UuidConverter.convert(uuid);
 
-		assertThat(convertedUuid.toString()).isEqualTo(uuid);
+		assertEquals(uuid, convertedUuid.toString());
 	}
 
 	@ParameterizedTest
@@ -39,15 +42,6 @@ class UuidConverterTest {
 	void fail_on_invalid_uuid_string(String value) {
 		assertThatThrownBy(() -> UuidConverter.convert(value)).isInstanceOf(
 			UuidConvertFailException.class);
-	}
-
-	@Test
-	void fail_on_empty_string() {
-		assertThatThrownBy(() -> UuidConverter.convert(null)).isInstanceOf(
-			UuidConvertFailException.class).hasMessage("빈 값을 uuid로 변환할 수 없습니다.");
-
-		assertThatThrownBy(() -> UuidConverter.convert("")).isInstanceOf(
-			UuidConvertFailException.class).hasMessage("빈 값을 uuid로 변환할 수 없습니다.");
 	}
 
 }
