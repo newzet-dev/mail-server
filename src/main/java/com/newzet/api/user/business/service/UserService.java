@@ -1,6 +1,7 @@
 package com.newzet.api.user.business.service;
 
 import java.util.Optional;
+import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,9 +27,9 @@ public class UserService {
 	private final UserRepository userRepository;
 	private final OAuthLoginService oAuthLoginService;
 
-	public User getUserByEmail(String email) {
-		UserEntityDto userEntityDto = userRepository.getByEmail(email);
-		return userEntityDto.toDomain();
+	@Transactional(readOnly = true)
+	public UUID getUserIdByEmail(String email) {
+		return userRepository.getByEmail(email).getId();
 	}
 
 	public UniqueMailResponse checkEmailUniqueness(String email) {
@@ -50,7 +51,6 @@ public class UserService {
 		}
 	}
 
-	@Transactional
 	public JwtResponse signUp(SignupRequest request) {
 		UniqueMailResponse uniqueCheck = checkEmailUniqueness(request.email());
 		if (!uniqueCheck.isUnique()) {
