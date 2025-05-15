@@ -1,23 +1,12 @@
 package com.newzet.api.subscription.repository.repository;
 
-import java.time.LocalDateTime;
-import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
-import com.newzet.api.newsletter.repository.NewsletterEntity;
-import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
-import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import com.newzet.api.subscription.business.service.SubscriptionRepository;
 import com.newzet.api.subscription.repository.entity.SubscriptionEntity;
-import com.newzet.api.subscription.repository.exception.NoSubscriptionException;
-import com.newzet.api.user.business.dto.UserEntityDto;
-import com.newzet.api.user.exception.NoUserException;
-import com.newzet.api.user.repository.entity.UserEntity;
-import com.newzet.api.user.repository.repository.UserJpaRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,39 +15,11 @@ import lombok.RequiredArgsConstructor;
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
 	private final SubscriptionJpaRepository subscriptionJpaRepository;
-	private final NewsletterJpaRepository newsletterJpaRepository;
-	private final UserJpaRepository userJpaRepository;
 
 	@Override
-	public SubscriptionEntityDto create(UserEntityDto userDto, NewsletterEntityDto newsletterDto) {
-		UserEntity user = userJpaRepository.findById(userDto.getId())
-			.orElseThrow(() -> new NoUserException("해당 user를 찾을 수 없습니다."));
-		NewsletterEntity newsletter = newsletterJpaRepository.findById(newsletterDto.getId())
-			.orElseThrow(() -> new NoNewsletterException("해당 newsletter를 찾을 수 없습니다."));
-		SubscriptionEntity subscriptionEntity = SubscriptionEntity.create(user, newsletter,
-			LocalDateTime.now(), null);
+	public SubscriptionEntityDto save(UUID userId, String newsletterName, String newsletterDomain, String newsletterMailingList) {
+		SubscriptionEntity subscriptionEntity = SubscriptionEntity.
+			create(userId, newsletterName, newsletterDomain, newsletterMailingList);
 		return subscriptionJpaRepository.save(subscriptionEntity).toEntityDto();
-	}
-
-	@Override
-	public Optional<SubscriptionEntityDto> findByUserIdAndNewsletterId(UUID userId,
-		UUID newsletterId) {
-		return subscriptionJpaRepository.findByUserIdAndNewsletterId(userId, newsletterId)
-			.map(SubscriptionEntity::toEntityDto);
-	}
-
-	@Override
-	public void save(SubscriptionEntityDto subscriptionDto) {
-		SubscriptionEntity subscriptionEntity = subscriptionJpaRepository.findById(
-				subscriptionDto.getId())
-			.orElseThrow(() -> new NoSubscriptionException("일치하는 구독을 찾을 수 없습니다."));
-		subscriptionEntity.update(subscriptionDto.getCreatedAt(), subscriptionDto.getDeletedAt());
-	}
-
-	@Override
-	public SubscriptionEntityDto getById(UUID id) {
-		return subscriptionJpaRepository.findById(id)
-			.orElseThrow(() -> new NoSubscriptionException("일치하는 구독을 찾을 수 없습니다."))
-			.toEntityDto();
 	}
 }
