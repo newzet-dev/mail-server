@@ -23,11 +23,9 @@ public class SubscriptionJpaQueryRepository implements SubscriptionQueryReposito
 			.selectOne()
 			.from(subscriptionEntity)
 			.where(
-				subscriptionEntity.userId.eq(userId)
-					.and(
-						subscriptionEntity.newsletterDomain.eq(fromDomain)
-							.or(subscriptionEntity.newsletterMailingList.eq(mailingList))
-					)
+				(subscriptionEntity.userId.eq(userId)
+					.and(subscriptionEntity.newsletterDomain.eq(fromDomain)))
+					.or(subscriptionEntity.userId.eq(userId).and(subscriptionEntity.newsletterMailingList.eq(mailingList)))
 			)
 			.fetchFirst() != null;
 	}
