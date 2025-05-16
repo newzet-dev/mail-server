@@ -1,135 +1,54 @@
 package com.newzet.api.subscription.business;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import org.junit.jupiter.api.BeforeEach;
+import java.util.UUID;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.bean.override.mockito.MockitoSpyBean;
-import org.springframework.transaction.annotation.Transactional;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newzet.api.category.repository.CategoryEntity;
-import com.newzet.api.category.repository.CategoryJpaRepository;
-import com.newzet.api.config.PostgresTestContainerConfig;
-import com.newzet.api.config.RedisTestContainerConfig;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
-import com.newzet.api.newsletter.fixture.NewsletterFixture;
-import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
-import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
+import com.newzet.api.subscription.business.service.SubscriptionQueryRepository;
 import com.newzet.api.subscription.business.service.SubscriptionRepository;
 import com.newzet.api.subscription.business.service.SubscriptionService;
-import com.newzet.api.subscription.domain.Subscription;
-import com.newzet.api.user.business.dto.UserEntityDto;
-import com.newzet.api.user.domain.User;
-import com.newzet.api.user.repository.entity.UserEntity;
-import com.newzet.api.user.repository.repository.UserJpaRepository;
 
-@DataJpaTest
-@ComponentScan(basePackages = "com.newzet.api.subscription")
-@Import(ObjectMapper.class)
-@ExtendWith({PostgresTestContainerConfig.class, RedisTestContainerConfig.class})
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-@Transactional
+@ExtendWith(MockitoExtension.class)
 public class SubscriptionServiceTest {
 
-	private static User user;
-	private static NewsletterEntityDto newsletterEntityDto;
-	private static CategoryEntity categoryEntity;
-
-	@Autowired
-	private UserJpaRepository userRepository;
-	@Autowired
-	private NewsletterJpaRepository newsletterRepository;
-	@Autowired
-	private CategoryJpaRepository categoryRepository;
-	@Autowired
-	private SubscriptionService subscriptionService;
-	@MockitoSpyBean
+	@Mock
 	private SubscriptionRepository subscriptionRepository;
+	@Mock
+	private SubscriptionQueryRepository subscriptionQueryRepository;
+	@InjectMocks
+	private SubscriptionService subscriptionService;
 
-	@BeforeEach
-	public void setUp() {
-		UserEntity userEntity = userRepository.save(
-			UserEntity.create("test@example.com", "test", "ACTIVE"));
-		user = UserEntityDto.create(userEntity.getId(), userEntity.getEmail(),
-			userEntity.getStatus().name()).toDomain();
+	@Test
+	public void addSubscriptionIfUnsubscribed_whenSubscribed_saveSubscription() {
+	    //Given
+		UUID userId = UUID.randomUUID();
+		String fromName = "name";
+		String fromDomain = "domain";
+		String mailingList = "mailingList";
+		when(subscriptionQueryRepository.isSubscribed(any(), any(), any())).thenReturn(false);
 
-		categoryEntity = categoryRepository.save(CategoryEntity.create("test", "test", "test"));
-		newsletterEntityDto = newsletterRepository.save(
-			NewsletterFixture.createDefaultEntity(categoryEntity)).toEntityDto();
+	    //When
+		subscriptionService.addSubscriptionIfUnsubscribed(userId, fromName, fromDomain, mailingList);
+
+	    //Then
+		verify(subscriptionRepository, times(1)).save(userId, fromName, fromDomain, mailingList);
 	}
 
 	@Test
-	public void addSubscription_whenSubscriptionNoExist_createNewSubscription() {
-		//When
-		subscriptionService.addSubscription(user, newsletterEntityDto.toDomain());
-
-		//Then
-		verify(subscriptionRepository, times(1)).create(any(), any());
-		verify(subscriptionRepository, never()).save(any());
-	}
-
-	@Test
-	public void subscribe_whenSubscription_doNothing() {
+	public void addSubscriptionIfSubscribed_whenUnSubscribed_doNothing() {
 		//Given
-		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletterEntityDto);
+		when(subscriptionQueryRepository.isSubscribed(any(), any(), any())).thenReturn(true);
 
 		//When
-		subscriptionService.addSubscription(user, newsletterEntityDto.toDomain());
+		subscriptionService.addSubscriptionIfUnsubscribed(UUID.randomUUID(), "testName", "testDomain", "testMailingList");
 
 		//Then
-		Subscription reactivatedSubscription = subscriptionRepository.getById(
-			subscriptionDto.getId()).toDomain();
-
-		verify(subscriptionRepository, times(1)).save(any());
-		verify(subscriptionRepository, times(1)).create(any(), any());
-		assertEquals(subscriptionDto.getDeletedAt(), reactivatedSubscription.getDeletedAt());
-		assertEquals(subscriptionDto.getCreatedAt(), reactivatedSubscription.getCreatedAt());
-	}
-
-	@Test
-	public void subscribe_whenSubscriptionIsDeleted_updateDeletedAtIsNull() {
-		//Given
-		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletterEntityDto);
-		subscriptionService.deleteSubscription(subscriptionDto.getId());
-
-		//When
-		subscriptionService.addSubscription(user, newsletterEntityDto.toDomain());
-
-		//Then
-		Subscription reactivatedSubscription = subscriptionRepository.getById(
-			subscriptionDto.getId()).toDomain();
-
-		verify(subscriptionRepository, times(2)).save(any());
-		verify(subscriptionRepository, times(1)).create(any(), any());
-		assertNull(reactivatedSubscription.getDeletedAt());
-		assertEquals(subscriptionDto.getCreatedAt(), reactivatedSubscription.getCreatedAt());
-	}
-
-	@Test
-	public void deleteSubscription() {
-		//Given
-		SubscriptionEntityDto subscriptionDto = subscriptionRepository.create(
-			user.toEntityDto(), newsletterEntityDto);
-
-		//When
-		subscriptionService.deleteSubscription(subscriptionDto.getId());
-
-		//Then
-		Subscription deletedSubscription = subscriptionRepository.getById(
-			subscriptionDto.getId()).toDomain();
-
-		assertNotNull(deletedSubscription.getDeletedAt());
-		assertNotEquals(subscriptionDto.getDeletedAt(), deletedSubscription.getDeletedAt());
-		assertEquals(subscriptionDto.getCreatedAt(), deletedSubscription.getCreatedAt());
+		verify(subscriptionRepository, never()).save(any(), any(), any(), any());
 	}
 }

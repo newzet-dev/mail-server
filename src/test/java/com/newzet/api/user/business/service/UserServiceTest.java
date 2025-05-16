@@ -18,7 +18,6 @@ import com.newzet.api.auth.domain.OAuthProvider;
 import com.newzet.api.user.business.dto.SignupRequest;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.user.business.dto.UserEntityDto;
-import com.newzet.api.user.domain.User;
 import com.newzet.api.user.exception.UserEmailDuplicateException;
 
 @ExtendWith(MockitoExtension.class)
@@ -34,7 +33,7 @@ class UserServiceTest {
 	private UserService userService;
 
 	@Test
-	void getUserByEmail_WhenEmailExists_ThenReturnUser() {
+	void getUserIdByEmail_WhenEmailExists_ThenReturnUser() {
 		//Given
 		String email = "test@example.com";
 		UUID userId = UUID.randomUUID();
@@ -44,13 +43,10 @@ class UserServiceTest {
 		when(userRepository.getByEmail(email)).thenReturn(userEntityDto);
 
 		//When
-		User result = userService.getUserByEmail(email);
+		UUID foundedUserId = userService.getUserIdByEmail(email);
 
 		//Then
-		assertNotNull(result);
-		assertEquals(userId, result.getId());
-		assertEquals(email, result.getEmail());
-		assertEquals("testUser", result.getNickname());
+		assertEquals(userId, foundedUserId);
 	}
 
 	@Test

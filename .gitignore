@@ -46,3 +46,4 @@ out/
 .env.redis.dev
 /dockercomposes/monitoring/newrelic-infra/newrelic-infra.yml
 
+push.sh
