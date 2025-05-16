@@ -117,13 +117,13 @@ class NewsletterRepositoryImplTest {
 	}
 
 	@Test
-	public void findNewsletterListByNameOrCategoryId_WithName() {
+	public void findNewsletterListByName_WithName() {
 		//Given
 		NewsletterEntityDto savedNewsletter = saveNewsletter();
 
 		//When
-		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
-			savedNewsletter.getName(), null);
+		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByName(
+			savedNewsletter.getName());
 
 		//Then
 		assertEquals(1, newsletterList.size());
@@ -131,7 +131,7 @@ class NewsletterRepositoryImplTest {
 	}
 
 	@Test
-	public void findNewsletterListByNameOrCategoryId_WithCategoryId() {
+	public void findNewsletterListByCategoryId_WithCategoryId() {
 		//Given
 		CategoryEntity category = categoryJpaRepository.save(
 			CategoryEntity.create("testCategory", "test", "test"));
@@ -139,8 +139,8 @@ class NewsletterRepositoryImplTest {
 			NewsletterFixture.createDefaultEntity(category));
 
 		//When
-		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
-			null, category.getId());
+		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByCategoryId(
+			category.getId());
 
 		//Then
 		assertEquals(1, newsletterList.size());
@@ -148,23 +148,6 @@ class NewsletterRepositoryImplTest {
 		assertEquals(category.getId(), newsletter.getCategory().getId());
 	}
 
-	@Test
-	public void findNewsletterListByNameOrCategoryId_WithName_andCategoryId() {
-		//Given
-		CategoryEntity category = categoryJpaRepository.save(
-			CategoryEntity.create("testCategory", "test", "test"));
-		NewsletterEntity newsletter = newsletterJpaRepository.save(
-			NewsletterFixture.createDefaultEntity(category));
-
-		//When
-		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByNameOrCategoryId(
-			newsletter.getName(), category.getId());
-
-		//Then
-		assertEquals(1, newsletterList.size());
-		assertEquals(newsletterList.get(0).getName(), newsletter.getName());
-		assertEquals(category.getId(), newsletter.getCategory().getId());
-	}
 
 	@Test
 	public void getNewsletterById() {

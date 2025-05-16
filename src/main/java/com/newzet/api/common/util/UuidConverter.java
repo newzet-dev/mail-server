@@ -6,13 +6,14 @@ import com.newzet.api.common.util.exception.UuidConvertFailException;
 
 public class UuidConverter {
 	public static UUID convert(String stringId) {
-		if (stringId != null && !stringId.isEmpty()) {
-			try {
-				return UUID.fromString(stringId);
-			} catch (IllegalArgumentException e) {
-				throw new UuidConvertFailException(e.getMessage());
-			}
+		if (stringId == null || stringId.isBlank()) {
+			throw new UuidConvertFailException("빈 값을 uuid로 변환할 수 없습니다.");
 		}
-		return null;
+
+		try {
+			return UUID.fromString(stringId);
+		} catch (IllegalArgumentException e) {
+			throw new UuidConvertFailException(e.getMessage());
+		}
 	}
 }

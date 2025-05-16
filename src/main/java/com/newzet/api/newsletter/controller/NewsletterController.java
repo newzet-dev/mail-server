@@ -32,13 +32,25 @@ public class NewsletterController {
 	private final NewsletterRecommendationService newsletterRecommendationService;
 
 	@GetMapping("/search")
+	@Operation(summary = "뉴스레터 검색",
+		description = "뉴스레터 이름으로 뉴스테러를 검색한다.")
+	public ResponseEntity<SuccessResponse<NewsletterListResponse>> getNewsletterListByName(
+		@RequestParam(value = "name") String name) {
+		NewsletterListResponse newsletterListResponse = newsletterService.searchNewsletterListByName(
+			name);
+		SuccessResponse<NewsletterListResponse> response = SuccessResponse.create(
+			ResponseCode.SUCCESS, "뉴스레터 목록 조회 성공", newsletterListResponse);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping
 	@Operation(summary = "뉴스레터 리스트 조회",
-		description = "뉴스레터 이름 혹은 카테고리 id로 뉴스테러 리스트를 조회한다.")
-	public ResponseEntity<SuccessResponse<NewsletterListResponse>> getNewsletterListByNameOrCategoryId(
-		@RequestParam(value = "name", required = false) String name,
-		@RequestParam(value = "categoryId", required = false) String categoryId) {
-		NewsletterListResponse newsletterListResponse = newsletterService.searchNewsletterListByNameOrCategoryId(
-			name, categoryId);
+		description = "뉴스레터 카테고리 id로 뉴스테러 리스트를 조회한다.")
+	public ResponseEntity<SuccessResponse<NewsletterListResponse>> getNewsletterListByCategoryId(
+		@RequestParam(value = "categoryId") String categoryId) {
+		NewsletterListResponse newsletterListResponse = newsletterService.getNewsletterListByCategoryId(
+			categoryId);
 		SuccessResponse<NewsletterListResponse> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "뉴스레터 목록 조회 성공", newsletterListResponse);
 

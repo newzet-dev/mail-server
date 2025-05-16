@@ -20,7 +20,6 @@ import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
-import com.newzet.api.common.util.exception.UuidConvertFailException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.business.service.NewsletterService;
@@ -134,72 +133,24 @@ class NewsletterServiceTest {
 	}
 
 	@Test
-	public void searchNewsletterListByNameOrCategoryId() {
+	public void searchNewsletterListByName() {
 		// Given
 		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
 		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
 		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class),
-			any(UUID.class)))
+		when(newsletterRepository.findNewsLetterListByName(any(String.class)))
 			.thenReturn(newsletterList);
 
 		// When
-		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
-			newsletter.getName(), String.valueOf(categoryEntity.getId()));
+		NewsletterListResponse searchList = newsletterService.searchNewsletterListByName(
+			newsletter.getName());
 
 		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(
-			any(String.class), any(UUID.class));
+		verify(newsletterRepository, times(1)).findNewsLetterListByName(
+			any(String.class));
 		assertEquals(1, searchList.newsletterList().size());
 	}
 
-	@Test
-	public void searchNewsletterListByNameOrCategoryId_whenCategoryIdIsNull() {
-		// Given
-		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
-		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
-		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class),
-			nullable(UUID.class)))
-			.thenReturn(newsletterList);
-
-		// When
-		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
-			newsletter.getName(), null);
-
-		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(
-			any(String.class), nullable(UUID.class));
-		assertEquals(1, searchList.newsletterList().size());
-	}
-
-	@Test
-	public void searchNewsletterListByNameOrCategoryId_whenCategoryIdEmpty() {
-		// Given
-		NewsletterEntityDto newsletter = NewsletterFixture.createEntityWithId().toEntityDto();
-		List<NewsletterEntityDto> newsletterList = new ArrayList<>();
-		newsletterList.add(newsletter);
-		when(newsletterRepository.findNewsLetterListByNameOrCategoryId(any(String.class),
-			nullable(UUID.class)))
-			.thenReturn(newsletterList);
-
-		// When
-		NewsletterListResponse searchList = newsletterService.searchNewsletterListByNameOrCategoryId(
-			newsletter.getName(), "");
-
-		// Then
-		verify(newsletterRepository, times(1)).findNewsLetterListByNameOrCategoryId(
-			any(String.class), nullable(UUID.class));
-		assertEquals(1, searchList.newsletterList().size());
-	}
-
-	@Test
-	public void searchNewsletterListByNameOrCategoryId_Invalid_CategoryId_throwException() {
-		// When Then
-		assertThrows(UuidConvertFailException.class,
-			() -> newsletterService.searchNewsletterListByNameOrCategoryId(
-				"test", "wrong uuid"));
-	}
 
 	@Test
 	public void getNewsletterById() {
