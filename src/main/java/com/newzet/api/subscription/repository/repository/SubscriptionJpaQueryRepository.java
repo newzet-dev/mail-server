@@ -18,7 +18,7 @@ public class SubscriptionJpaQueryRepository implements SubscriptionQueryReposito
 	private final JPAQueryFactory queryFactory;
 
 	@Override
-	public boolean isSubscribe(UUID userId, String fromDomain, String mailingList) {
+	public boolean isSubscribed(UUID userId, String fromDomain, String mailingList) {
 		return queryFactory
 			.selectOne()
 			.from(subscriptionEntity)

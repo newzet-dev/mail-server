@@ -31,7 +31,7 @@ public class SubscriptionServiceTest {
 		String fromName = "name";
 		String fromDomain = "domain";
 		String mailingList = "mailingList";
-		when(subscriptionQueryRepository.isSubscribe(any(), any(), any())).thenReturn(false);
+		when(subscriptionQueryRepository.isSubscribed(any(), any(), any())).thenReturn(false);
 
 	    //When
 		subscriptionService.addSubscriptionIfUnsubscribed(userId, fromName, fromDomain, mailingList);
@@ -43,7 +43,7 @@ public class SubscriptionServiceTest {
 	@Test
 	public void addSubscriptionIfSubscribed_whenUnSubscribed_doNothing() {
 		//Given
-		when(subscriptionQueryRepository.isSubscribe(any(), any(), any())).thenReturn(true);
+		when(subscriptionQueryRepository.isSubscribed(any(), any(), any())).thenReturn(true);
 
 		//When
 		subscriptionService.addSubscriptionIfUnsubscribed(UUID.randomUUID(), "testName", "testDomain", "testMailingList");

@@ -16,7 +16,7 @@ public class SubscriptionService {
 	private final SubscriptionQueryRepository subscriptionQueryRepository;
 
 	public void addSubscriptionIfUnsubscribed(UUID userId, String fromName, String fromDomain, String mailingList) {
-		boolean isSubscribed = subscriptionQueryRepository.isSubscribe(userId, fromDomain, mailingList);
+		boolean isSubscribed = subscriptionQueryRepository.isSubscribed(userId, fromDomain, mailingList);
 		if (!isSubscribed) {
 			subscriptionRepository.save(userId, fromName, fromDomain, mailingList);
 		}

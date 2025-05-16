@@ -41,16 +41,16 @@ public class SubscriptionJpaQueryRepositoryTest {
 		subscriptionRepositoryImpl.save(userId, name, domain, mailingList);
 
 		//When& Then
-		assertFalse(jpaQueryRepository.isSubscribe(fakeUserId, domain, mailingList));
-		assertFalse(jpaQueryRepository.isSubscribe(userId, fakeDomain, fakeMailingList));
-		assertTrue(jpaQueryRepository.isSubscribe(userId, fakeDomain, mailingList));
-		assertTrue(jpaQueryRepository.isSubscribe(userId, domain, fakeMailingList));
-		assertTrue(jpaQueryRepository.isSubscribe(userId, domain, mailingList));
+		assertFalse(jpaQueryRepository.isSubscribed(fakeUserId, domain, mailingList));
+		assertFalse(jpaQueryRepository.isSubscribed(userId, fakeDomain, fakeMailingList));
+		assertTrue(jpaQueryRepository.isSubscribed(userId, fakeDomain, mailingList));
+		assertTrue(jpaQueryRepository.isSubscribed(userId, domain, fakeMailingList));
+		assertTrue(jpaQueryRepository.isSubscribed(userId, domain, mailingList));
 	}
 
 	@Test
 	public void isSubscribe_whenUnSubscribed_returnFalse() {
 		//When & Then
-		assertFalse(jpaQueryRepository.isSubscribe(userId, domain, mailingList));
+		assertFalse(jpaQueryRepository.isSubscribed(userId, domain, mailingList));
 	}
 }
