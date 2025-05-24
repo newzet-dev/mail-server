@@ -8,7 +8,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import com.newzet.api.subscription.business.service.SubscriptionQueryRepository;
-import com.newzet.api.subscription.controller.dto.SubscriptionWithImageListResponse;
+import com.newzet.api.subscription.controller.dto.SubscriptionListWithImageResponse;
 import com.newzet.api.subscription.controller.dto.SubscriptionWithImageResponse;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
@@ -36,8 +36,8 @@ public class SubscriptionJpaQueryRepository implements SubscriptionQueryReposito
 	}
 
 	@Override
-	public SubscriptionWithImageListResponse getSubscriptionWithImage(UUID userId) {
-		return SubscriptionWithImageListResponse.of(queryFactory
+	public SubscriptionListWithImageResponse getSubscriptionWithImage(UUID userId) {
+		return SubscriptionListWithImageResponse.of(queryFactory
 			.select(Projections.constructor(SubscriptionWithImageResponse.class,
 				subscriptionEntity.id,
 				subscriptionEntity.newsletterName,
