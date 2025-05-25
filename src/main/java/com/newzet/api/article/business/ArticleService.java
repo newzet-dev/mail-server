@@ -18,14 +18,14 @@ public class ArticleService {
 
 	private final ArticleRepository articleRepository;
 
-	public ArticleListResponse getArticleListAtYearAndMonth(String userId, int year, int month) {
+	public ArticleListResponse getMonthlyArticleList(String userId, int year, int month) {
 		UUID convertUserId = UuidConverter.convert(userId);
 		List<ArticleEntityDto> articleListAtYearAndMonth = articleRepository.getMonthlyArticleWithImage(
 			convertUserId, year, month);
 
 	}
 
-	public ArticleDetailResponse getArticleAndRead(String articleId) {
+	public ArticleDetailResponse getArticle(String articleId) {
 
 	}
 
