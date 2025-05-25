@@ -7,7 +7,7 @@ import com.newzet.api.article.business.dto.ArticleEntityDto;
 
 public interface ArticleRepository {
 
-	List<ArticleEntityDto> getArticleListAtYearAndMonth(UUID userId, int year, int month);
+	List<ArticleEntityDto> getMonthlyArticleWithImage(UUID userId, int year, int month);
 
-	ArticleEntityDto getById(UUID articleId);
+	ArticleEntityDto getArticleAndRead(ArticleEntityDto articleEntityDto);
 }

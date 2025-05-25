@@ -20,7 +20,7 @@ public class ArticleService {
 
 	public ArticleListResponse getArticleListAtYearAndMonth(String userId, int year, int month) {
 		UUID convertUserId = UuidConverter.convert(userId);
-		List<ArticleEntityDto> articleListAtYearAndMonth = articleRepository.getArticleListAtYearAndMonth(
+		List<ArticleEntityDto> articleListAtYearAndMonth = articleRepository.getMonthlyArticleWithImage(
 			convertUserId, year, month);
 
 	}
