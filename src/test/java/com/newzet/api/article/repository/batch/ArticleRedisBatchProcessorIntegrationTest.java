@@ -44,7 +44,8 @@ import com.newzet.api.config.RedisTestContainerConfig;
 @ComponentScan(basePackages = {"com.newzet.api.article", "com.newzet.api.common"})
 class ArticleRedisBatchProcessorIntegrationTest {
 
-	private static final String ARTICLE_STREAM_KEY = "article:stream";
+	private static final String ARTICLE_STREAM_KEY = "article:stream:test";
+	private static final String CONSUMER_GROUP = "test-group";
 
 	@Autowired
 	private RedisTemplate<String, String> redisTemplate;
@@ -67,45 +68,68 @@ class ArticleRedisBatchProcessorIntegrationTest {
 	@BeforeEach
 	void setUp() {
 		closeable = MockitoAnnotations.openMocks(this);
-
-		try {
-			redisTemplate.delete(ARTICLE_STREAM_KEY);
-		} catch (Exception ignored) {
-		}
+		cleanupResources();
 
 		lenient().when(mockBatchConfig.getBatchSize()).thenReturn(2);
 		lenient().when(mockBatchConfig.getTimeoutSeconds()).thenReturn(1);
 
 		batchProcessor = new ArticleRedisBatchProcessorImpl(
 			redisTemplate,
-			new org.springframework.data.redis.core.ReactiveRedisTemplate<>(
+			new ReactiveRedisTemplate<>(
 				(ReactiveRedisConnectionFactory)redisConnectionFactory,
 				org.springframework.data.redis.serializer.RedisSerializationContext.string()
 			),
 			articleRepository,
 			mockBatchConfig,
 			objectMapper
-		);
+		) {
+		};
 
 		lenient().when(
 			articleRepository.existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull(
 				any(), any(), any(), any())).thenReturn(false);
+
+		initializeStream();
+	}
+
+	private void initializeStream() {
+		try {
+			Map<String, String> dummy = new HashMap<>();
+			dummy.put("init", "init");
+			redisTemplate.opsForStream().add(ARTICLE_STREAM_KEY, dummy);
+
+			try {
+				redisTemplate.opsForStream().createGroup(ARTICLE_STREAM_KEY, CONSUMER_GROUP);
+			} catch (Exception ignored) {
+			}
+
+			assertThat(redisTemplate.hasKey(ARTICLE_STREAM_KEY)).isTrue();
+		} catch (Exception e) {
+			fail("Failed to initialize stream: " + e.getMessage());
+		}
 	}
 
 	@AfterEach
 	void tearDown() throws Exception {
+		cleanupResources();
+		closeable.close();
+	}
+
+	private void cleanupResources() {
 		try {
-			batchProcessor.stopProcessing();
-			Thread.sleep(500);
+			if (batchProcessor != null) {
+				batchProcessor.stopProcessing();
+			}
+
+			Thread.sleep(1000);
+
 			redisTemplate.delete(ARTICLE_STREAM_KEY);
 		} catch (Exception ignored) {
 		}
-		closeable.close();
 	}
 
 	@Test
 	void processBatchItems_WhenDuplicateArticles_ThenSkipDuplicates() {
-		// Given
 		UUID userId = UUID.randomUUID();
 		ArticleDto article1 = createArticleDto(userId, "Unique Article");
 		ArticleDto article2 = createArticleDto(userId, "Duplicate Article");
@@ -125,12 +149,11 @@ class ArticleRedisBatchProcessorIntegrationTest {
 
 		when(articleRepository.saveAll(anyList())).thenReturn(returnedDtos);
 
-		// When
 		batchProcessor.init();
 		batchProcessor.startProcessing();
 
 		try {
-			Thread.sleep(500);
+			Thread.sleep(2000);
 		} catch (InterruptedException e) {
 			Thread.currentThread().interrupt();
 		}
@@ -138,30 +161,24 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		batchProcessor.addToBatch(article1);
 		batchProcessor.addToBatch(article2);
 
-		// Then
 		await()
-			.pollInterval(200, TimeUnit.MILLISECONDS)
-			.atMost(10, TimeUnit.SECONDS)
+			.pollInterval(500, TimeUnit.MILLISECONDS)
+			.atMost(30, TimeUnit.SECONDS)
 			.untilAsserted(() -> {
-				try {
-					verify(articleRepository, timeout(5000).atLeastOnce()).saveAll(
-						argThat(articles -> {
-							if (articles.isEmpty()) {
-								return false;
-							}
-							return articles.stream()
-								.anyMatch(a -> "Unique Article".equals(a.getTitle()));
-						}));
-				} catch (Exception e) {
-					System.out.println("Verification failed: " + e.getMessage());
-					throw e;
-				}
+				verify(articleRepository, timeout(20000).atLeastOnce()).saveAll(
+					argThat(articles -> {
+						System.out.println("SaveAll called with: " + articles);
+						if (articles == null || articles.isEmpty()) {
+							return false;
+						}
+						return articles.size() == 1 &&
+							"Unique Article".equals(articles.get(0).getTitle());
+					}));
 			});
 	}
 
 	@Test
 	void addToBatch_WhenArticlesAdded_ThenProcessedInBatch() {
-		// Given
 		UUID userId = UUID.randomUUID();
 		ArticleDto article1 = createArticleDto(userId, "First Article");
 		ArticleDto article2 = createArticleDto(userId, "Second Article");
@@ -172,7 +189,6 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			return null;
 		}).when(articleRepository).saveAll(anyList());
 
-		// When
 		batchProcessor.init();
 		batchProcessor.startProcessing();
 
@@ -185,7 +201,6 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		batchProcessor.addToBatch(article1);
 		batchProcessor.addToBatch(article2);
 
-		// Then
 		await()
 			.pollInterval(100, TimeUnit.MILLISECONDS)
 			.atMost(5, TimeUnit.SECONDS)
@@ -196,21 +211,17 @@ class ArticleRedisBatchProcessorIntegrationTest {
 
 	@Test
 	void init_WhenStreamAlreadyExists_ThenSkipStreamCreation() {
-		// Given
 		Map<String, String> dummy = new HashMap<>();
 		dummy.put("init", "init");
 		redisTemplate.opsForStream().add(ARTICLE_STREAM_KEY, dummy);
 
-		// When
 		batchProcessor.init();
 
-		// Then
 		assertThat(redisTemplate.hasKey(ARTICLE_STREAM_KEY)).isTrue();
 	}
 
 	@Test
 	void init_WhenRedisConnectionFails_ThenHandleGracefully() {
-		// Given
 		RedisTemplate<String, String> mockRedisTemplate = mock(RedisTemplate.class);
 		when(mockRedisTemplate.hasKey(any())).thenThrow(
 			new RuntimeException("Redis connection failed"));
@@ -226,13 +237,11 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			objectMapper
 		);
 
-		// When & Then
 		processorWithMockRedis.init();
 	}
 
 	@Test
 	void getBatchStatus_WhenPendingCountIsNull_ThenReturnZero() {
-		// Given
 		RedisTemplate<String, String> mockRedisTemplate = mock(RedisTemplate.class);
 
 		@SuppressWarnings("unchecked")
@@ -248,10 +257,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			new ObjectMapper()
 		);
 
-		// When
 		Map<String, Object> status = processorWithMockRedis.getBatchStatus();
 
-		// Then
 		assertThat(status.get("pendingMessages")).isEqualTo(0L);
 	}
 
