@@ -11,9 +11,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 
-@Getter
-@Builder(access = AccessLevel.PROTECTED)
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
+	@Getter
+	@Builder(access = AccessLevel.PROTECTED)
+	@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class NewsletterEntityDto {
 	private final UUID id;
 	private final String name;
