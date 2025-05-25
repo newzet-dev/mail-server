@@ -18,7 +18,7 @@ import com.newzet.api.common.lock.redis.RedisLock;
 import com.newzet.api.common.lock.redis.RedisLockFactory;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.config.RedisTestContainerConfig;
-import com.newzet.api.config.RedissonConfig;
+import com.newzet.api.config.cache.RedissonConfig;
 
 @DataRedisTest
 @Import({ObjectMapper.class, OptionalObjectMapper.class, RedisUtil.class, RedisLockFactory.class,

@@ -7,9 +7,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.newzet.api.auth.domain.AuthUser;
-import com.newzet.api.auth.infrastructure.annotation.Login;
-import com.newzet.api.auth.infrastructure.annotation.RequireAuth;
+import com.newzet.api.common.auth.annotation.Login;
+import com.newzet.api.common.auth.annotation.RequireAuth;
+import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
 import com.newzet.api.newsletter.business.service.NewsletterRecommendationService;
