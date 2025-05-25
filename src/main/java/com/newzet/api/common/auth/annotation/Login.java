@@ -1,4 +1,4 @@
-package com.newzet.api.auth.infrastructure.annotation;
+package com.newzet.api.common.auth.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

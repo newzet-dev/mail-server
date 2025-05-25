@@ -1,4 +1,4 @@
-package com.newzet.api.config;
+package com.newzet.api.config.cache;
 
 import org.redisson.Redisson;
 import org.redisson.api.RedissonClient;
@@ -10,16 +10,13 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class RedissonConfig {
 
+	private static final String REDISSON_HOST_PREFIX = "redis://";
 	@Value("${spring.data.redis.host}")
 	private String redisHost;
-
 	@Value("${spring.data.redis.port}")
 	private int redisPort;
-
 	@Value("${spring.data.redis.password}")
 	private String password;
-
-	private static final String REDISSON_HOST_PREFIX = "redis://";
 
 	@Bean
 	public RedissonClient redissonClient() {

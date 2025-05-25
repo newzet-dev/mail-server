@@ -1,4 +1,4 @@
-package com.newzet.api.config;
+package com.newzet.api.config.db;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

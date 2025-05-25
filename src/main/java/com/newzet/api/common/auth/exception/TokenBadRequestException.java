@@ -1,4 +1,4 @@
-package com.newzet.api.auth.exception;
+package com.newzet.api.common.auth.exception;
 
 import com.newzet.api.common.exception.NewzetException;
 import com.newzet.api.common.response.ResponseCode;

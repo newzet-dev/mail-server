@@ -1,4 +1,4 @@
-package com.newzet.api.config;
+package com.newzet.api.config.cache;
 
 import java.time.Duration;
 

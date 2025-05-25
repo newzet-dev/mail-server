@@ -1,4 +1,4 @@
-package com.newzet.api.config;
+package com.newzet.api.config.web;
 
 import java.util.List;
 
@@ -12,8 +12,8 @@ import org.springframework.web.method.support.HandlerMethodArgumentResolver;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import com.newzet.api.auth.infrastructure.interceptor.AuthInterceptor;
-import com.newzet.api.auth.infrastructure.resolver.AuthUserArgumentResolver;
+import com.newzet.api.common.auth.interceptor.AuthInterceptor;
+import com.newzet.api.common.auth.resolver.AuthUserArgumentResolver;
 
 import lombok.RequiredArgsConstructor;
 
