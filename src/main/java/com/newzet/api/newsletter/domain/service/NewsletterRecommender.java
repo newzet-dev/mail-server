@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
+import com.newzet.api.common.logging.LogExecution;
 import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
 import com.newzet.api.newsletter.domain.model.Newsletter;
 import com.newzet.api.newsletter.domain.strategy.RecommendationStrategy;
@@ -36,6 +37,7 @@ public class NewsletterRecommender {
 		return recommendedNewsletterList;
 	}
 
+	@LogExecution
 	private int getRemainingQuarter(int filledQuarter, int size) {
 		int resQuarter = RECOMMENDATION_QUARTER_SIZE - filledQuarter;
 		if (size < resQuarter) {
