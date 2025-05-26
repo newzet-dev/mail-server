@@ -19,19 +19,19 @@ public class LoggingAspect {
 	public void servicePointcut() {
 	}
 
-	// @Pointcut("execution(* com.newzet..api..domain..*.*(..))")
-	// public void domainPointcut() {
-	// }
-
 	@Pointcut("execution(* com.newzet..api..repository..*RepositoryImpl.*(..))")
 	public void repositoryPointcut() {
 	}
 
 	@Pointcut("execution(* com.newzet..api.common.lock..*LockFactory.*(..))")
-	public void LockFactoryPointcut() {
+	public void lockFactoryPointcut() {
 	}
 
-	@AfterThrowing(pointcut = "servicePointcut() || repositoryPointcut() || LockFactoryPointcut()", throwing = "e")
+	@Pointcut("@annotation(com.newzet.api.common.logging.LogExecution)")
+	public void logExecutionPointcut() {
+	}
+
+	@AfterThrowing(pointcut = "servicePointcut() || repositoryPointcut() || lockFactoryPointcut() || logExecutionPointcut()", throwing = "e")
 	public void logException(JoinPoint joinPoint, Throwable e) {
 		String method = joinPoint.getSignature().toShortString();
 		String args = Arrays.toString(joinPoint.getArgs());
