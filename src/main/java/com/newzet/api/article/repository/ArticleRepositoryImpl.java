@@ -19,7 +19,6 @@ import lombok.RequiredArgsConstructor;
 public class ArticleRepositoryImpl implements ArticleRepository {
 
 	private static final int BATCH_SIZE = 50;
-	private final ArticleJpaRepository articleJpaRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
 

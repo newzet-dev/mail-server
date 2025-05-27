@@ -29,15 +29,12 @@ import jakarta.persistence.EntityManager;
 class ArticleRepositoryTest {
 
 	@Mock
-	private ArticleJpaRepository articleJpaRepository;
-	@Mock
 	private EntityManager entityManager;
 	@InjectMocks
 	private ArticleRepositoryImpl articleRepository;
 
 	@BeforeEach
 	void setUp() {
-		articleRepository = new ArticleRepositoryImpl(articleJpaRepository);
 		ReflectionTestUtils.setField(articleRepository, "entityManager", entityManager);
 	}
 
@@ -148,7 +145,6 @@ class ArticleRepositoryTest {
 		assertThat(result).isEmpty();
 		verifyNoInteractions(entityManager);
 
-		verify(articleJpaRepository, never()).saveAll(any());
 		verify(entityManager, never()).persist(any());
 		verify(entityManager, never()).merge(any());
 		verify(entityManager, never()).flush();
