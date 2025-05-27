@@ -7,8 +7,7 @@ import lombok.Getter;
 @Configuration
 @Getter
 public class BatchConfig {
-	private final int batchSize = 50;
-	private final int processingInterval = 5000; // ms
+	private final int batchSize = 100;
 	private final boolean autoStart = true;
 	private final int timeoutSeconds = 10;
 }
