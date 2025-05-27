@@ -13,9 +13,11 @@ import com.newzet.api.article.repository.entity.ArticleEntity;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Repository
 @RequiredArgsConstructor
+@Slf4j
 public class ArticleRepositoryImpl implements ArticleRepository {
 
 	private static final int BATCH_SIZE = 100;
@@ -37,7 +39,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 		int processedArticles = 0;
 
 		for (ArticleEntity entityToSave : entitiesToSave) {
-			entityManager.persist(entityToSave);
+			try {
+				entityManager.persist(entityToSave);
+			} catch (Exception e) {
+				log.error("Failed to persist ArticleEntity: {}", entityToSave, e);
+			}
 			result.add(entityToSave.toEntityDto());
 			processedArticles++;
 
