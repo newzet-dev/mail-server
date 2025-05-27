@@ -42,46 +42,6 @@ class ArticleRepositoryTest {
 	}
 
 	@Test
-	void existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull_WhenArticleExists_ThenReturnTrue() {
-		// Given
-		UUID userId = UUID.randomUUID();
-		String fromName = "Newsletter";
-		String fromDomain = "example.com";
-		String title = "Weekly News";
-
-		when(
-			articleJpaRepository.existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull(
-				fromName, fromDomain, title, userId)).thenReturn(true);
-
-		// When
-		boolean exists = articleRepository.existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull(
-			fromName, fromDomain, title, userId);
-
-		// Then
-		assertThat(exists).isTrue();
-	}
-
-	@Test
-	void existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull_WhenArticleDoesNotExist_ThenReturnFalse() {
-		// Given
-		UUID userId = UUID.randomUUID();
-		String fromName = "Newsletter";
-		String fromDomain = "example.com";
-		String title = "Weekly News";
-
-		when(
-			articleJpaRepository.existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull(
-				fromName, fromDomain, title, userId)).thenReturn(false);
-
-		// When
-		boolean exists = articleRepository.existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull(
-			fromName, fromDomain, title, userId);
-
-		// Then
-		assertThat(exists).isFalse();
-	}
-
-	@Test
 	void saveAll_WhenEntitiesLessThanBatchSize_ThenFlushOnce() {
 		// Given
 		int entityCount = 20;

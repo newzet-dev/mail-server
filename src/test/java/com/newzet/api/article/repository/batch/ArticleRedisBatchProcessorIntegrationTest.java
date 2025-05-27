@@ -85,10 +85,6 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		) {
 		};
 
-		lenient().when(
-			articleRepository.existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull(
-				any(), any(), any(), any())).thenReturn(false);
-
 		initializeStream();
 	}
 

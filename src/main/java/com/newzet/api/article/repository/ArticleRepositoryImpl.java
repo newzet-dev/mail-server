@@ -2,7 +2,6 @@ package com.newzet.api.article.repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
@@ -60,12 +59,5 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 		}
 
 		return result;
-	}
-
-	@Override
-	public boolean existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull(
-		String fromName, String fromDomain, String title, UUID toUserId) {
-		return articleJpaRepository.existsByFromNameAndFromDomainAndTitleAndToUserIdAndDeletedAtIsNull(
-			fromName, fromDomain, title, toUserId);
 	}
 }
