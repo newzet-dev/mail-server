@@ -32,6 +32,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.article.business.dto.ArticleDto;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
+import com.newzet.api.common.batch.BatchConsumer;
+import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.OAuthTestConfig;
@@ -62,7 +64,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 	@Mock
 	private BatchConfig mockBatchConfig;
 
-	private ArticleRedisBatchProcessorImpl batchProcessor;
+	private BatchProducer producer;
+	private BatchConsumer consumer;
 	private AutoCloseable closeable;
 
 	@BeforeEach
@@ -73,26 +76,34 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		lenient().when(mockBatchConfig.getBatchSize()).thenReturn(2);
 		lenient().when(mockBatchConfig.getTimeoutSeconds()).thenReturn(1);
 
-		batchProcessor = new ArticleRedisBatchProcessorImpl(
+		ReactiveRedisTemplate<String, String> reactiveRedisTemplate = new ReactiveRedisTemplate<>(
+			(ReactiveRedisConnectionFactory)redisConnectionFactory,
+			org.springframework.data.redis.serializer.RedisSerializationContext.string()
+		);
+
+		producer = new ArticleRedisBatchProducerImpl(
+			reactiveRedisTemplate,
+			objectMapper
+		);
+
+		consumer = new ArticleRedisBatchConsumerImpl(
 			redisTemplate,
-			new ReactiveRedisTemplate<>(
-				(ReactiveRedisConnectionFactory)redisConnectionFactory,
-				org.springframework.data.redis.serializer.RedisSerializationContext.string()
-			),
+			reactiveRedisTemplate,
 			articleRepository,
 			mockBatchConfig,
 			objectMapper
-		) {
-		};
+		);
 
 		initializeStream();
 	}
 
 	private void initializeStream() {
 		try {
-			Map<String, String> dummy = new HashMap<>();
-			dummy.put("init", "init");
-			redisTemplate.opsForStream().add(ARTICLE_STREAM_KEY, dummy);
+			if (!Boolean.TRUE.equals(redisTemplate.hasKey(ARTICLE_STREAM_KEY))) {
+				Map<String, String> dummy = new HashMap<>();
+				dummy.put("init", "init");
+				redisTemplate.opsForStream().add(ARTICLE_STREAM_KEY, dummy);
+			}
 
 			try {
 				redisTemplate.opsForStream().createGroup(ARTICLE_STREAM_KEY, CONSUMER_GROUP);
@@ -113,8 +124,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 
 	private void cleanupResources() {
 		try {
-			if (batchProcessor != null) {
-				batchProcessor.stopProcessing();
+			if (consumer != null) {
+				consumer.stopProcessing();
 			}
 
 			Thread.sleep(1000);
@@ -145,8 +156,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 
 		when(articleRepository.saveAll(anyList())).thenReturn(returnedDtos);
 
-		batchProcessor.init();
-		batchProcessor.startProcessing();
+		consumer.startProcessing();
 
 		try {
 			Thread.sleep(2000);
@@ -154,8 +164,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			Thread.currentThread().interrupt();
 		}
 
-		batchProcessor.addToBatch(article1);
-		batchProcessor.addToBatch(article2);
+		producer.addToBatch(article1);
+		producer.addToBatch(article2);
 
 		await()
 			.pollInterval(500, TimeUnit.MILLISECONDS)
@@ -182,11 +192,10 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		doAnswer(invocation -> {
 			List<ArticleEntityDto> dtos = invocation.getArgument(0);
 			assertThat(dtos).hasSizeGreaterThanOrEqualTo(1);
-			return null;
+			return dtos;
 		}).when(articleRepository).saveAll(anyList());
 
-		batchProcessor.init();
-		batchProcessor.startProcessing();
+		consumer.startProcessing();
 
 		try {
 			Thread.sleep(100);
@@ -194,8 +203,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			Thread.currentThread().interrupt();
 		}
 
-		batchProcessor.addToBatch(article1);
-		batchProcessor.addToBatch(article2);
+		producer.addToBatch(article1);
+		producer.addToBatch(article2);
 
 		await()
 			.pollInterval(100, TimeUnit.MILLISECONDS)
@@ -211,8 +220,6 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		dummy.put("init", "init");
 		redisTemplate.opsForStream().add(ARTICLE_STREAM_KEY, dummy);
 
-		batchProcessor.init();
-
 		assertThat(redisTemplate.hasKey(ARTICLE_STREAM_KEY)).isTrue();
 	}
 
@@ -222,7 +229,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		when(mockRedisTemplate.hasKey(any())).thenThrow(
 			new RuntimeException("Redis connection failed"));
 
-		ArticleRedisBatchProcessorImpl processorWithMockRedis = new ArticleRedisBatchProcessorImpl(
+		ArticleRedisBatchConsumerImpl consumerWithMockRedis = new ArticleRedisBatchConsumerImpl(
 			mockRedisTemplate,
 			new org.springframework.data.redis.core.ReactiveRedisTemplate<>(
 				(ReactiveRedisConnectionFactory)redisConnectionFactory,
@@ -233,7 +240,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			objectMapper
 		);
 
-		processorWithMockRedis.init();
+		consumerWithMockRedis.init();
 	}
 
 	@Test
@@ -245,7 +252,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		when(mockRedisTemplate.opsForStream()).thenReturn(mockStreamOps);
 		when(mockStreamOps.size(any())).thenReturn(null);
 
-		ArticleRedisBatchProcessorImpl processorWithMockRedis = new ArticleRedisBatchProcessorImpl(
+		ArticleRedisBatchConsumerImpl consumerWithMockRedis = new ArticleRedisBatchConsumerImpl(
 			mockRedisTemplate,
 			mock(ReactiveRedisTemplate.class),
 			mock(ArticleRepository.class),
@@ -253,7 +260,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			new ObjectMapper()
 		);
 
-		Map<String, Object> status = processorWithMockRedis.getBatchStatus();
+		Map<String, Object> status = consumerWithMockRedis.getBatchStatus();
 
 		assertThat(status.get("pendingMessages")).isEqualTo(0L);
 	}
