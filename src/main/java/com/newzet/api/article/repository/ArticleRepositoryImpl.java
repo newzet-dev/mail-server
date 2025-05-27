@@ -29,25 +29,25 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 			return List.of();
 		}
 
-		List<ArticleEntity> entities = articleEntityDtoList.stream()
+		List<ArticleEntity> entitiesToSave = articleEntityDtoList.stream()
 			.map(ArticleEntity::fromEntityDto)
 			.toList();
 
 		List<ArticleEntityDto> result = new ArrayList<>();
-		int i = 0;
+		int processedArticles = 0;
 
-		for (ArticleEntity entity : entities) {
-			entityManager.persist(entity);
-			result.add(entity.toEntityDto());
-			i++;
+		for (ArticleEntity entityToSave : entitiesToSave) {
+			entityManager.persist(entityToSave);
+			result.add(entityToSave.toEntityDto());
+			processedArticles++;
 
-			if (i % BATCH_SIZE == 0) {
+			if (processedArticles % BATCH_SIZE == 0) {
 				entityManager.flush();
 				entityManager.clear();
 			}
 		}
 
-		if (i % BATCH_SIZE != 0) {
+		if (processedArticles % BATCH_SIZE != 0) {
 			entityManager.flush();
 			entityManager.clear();
 		}
