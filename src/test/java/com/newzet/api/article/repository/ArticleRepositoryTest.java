@@ -58,7 +58,7 @@ class ArticleRepositoryTest {
 	@Test
 	void saveAll_WhenEntitiesMoreThanBatchSize_ThenFlushMultipleTimes() {
 		// Given
-		int batchSize = 50;
+		int batchSize = 100;
 		int entityCount = 120;
 		int expectedFlushCount = (entityCount / batchSize) + (entityCount % batchSize > 0 ? 1 : 0);
 
@@ -76,7 +76,7 @@ class ArticleRepositoryTest {
 	@Test
 	void saveAll_WhenBatchSizeExactlyMatches_ThenFlushOnce() {
 		// Given
-		int batchSize = 50;
+		int batchSize = 100;
 		List<ArticleEntityDto> dtos = createMockArticleDtos(batchSize);
 
 		// When
@@ -89,28 +89,20 @@ class ArticleRepositoryTest {
 	}
 
 	@Test
-	void saveAll_WhenMixedEntities_ThenCallMergeOrPersistAccordingly() {
+	void saveAll_WhenMixedEntities_ThenCallPersistOnly() {
 		// Given
 		List<ArticleEntityDto> dtos = new ArrayList<>();
-
 		dtos.addAll(createMockArticleDtos(5));
 		dtos.addAll(createMockArticleDtosWithIds(5));
 
 		ArgumentCaptor<ArticleEntity> persistCaptor = ArgumentCaptor.forClass(ArticleEntity.class);
-		ArgumentCaptor<ArticleEntity> mergeCaptor = ArgumentCaptor.forClass(ArticleEntity.class);
 
 		// When
 		articleRepository.saveAll(dtos);
 
 		// Then
-		verify(entityManager, times(5)).persist(persistCaptor.capture());
-		verify(entityManager, times(5)).merge(mergeCaptor.capture());
-
-		assertThat(persistCaptor.getAllValues())
-			.allMatch(entity -> entity.getId() == null);
-
-		assertThat(mergeCaptor.getAllValues())
-			.allMatch(entity -> entity.getId() != null);
+		verify(entityManager, times(10)).persist(persistCaptor.capture());
+		verify(entityManager, never()).merge(any(ArticleEntity.class));
 	}
 
 	@Test
@@ -152,17 +144,18 @@ class ArticleRepositoryTest {
 	}
 
 	@Test
-	void saveAll_WhenExceptionOccurs_ThenPropagateException() {
+	void saveAll_WhenExceptionOccurs_ThenShouldNotPropagateException() {
 		// Given
-		List<ArticleEntityDto> dtos = createMockArticleDtos(5);
+		List<ArticleEntityDto> dtos = createMockArticleDtos(3);
 
 		doThrow(new RuntimeException("Test exception")).when(entityManager)
 			.persist(any(ArticleEntity.class));
 
+		// When
+		List<ArticleEntityDto> result = articleRepository.saveAll(dtos);
+
 		// Then
-		assertThatThrownBy(() -> articleRepository.saveAll(dtos))
-			.isInstanceOf(RuntimeException.class)
-			.hasMessageContaining("Test exception");
+		assertThat(result).hasSize(3);
 	}
 
 	@Test
@@ -185,6 +178,26 @@ class ArticleRepositoryTest {
 		ArticleEntity capturedEntity = entityCaptor.getValue();
 		assertThat(capturedEntity.getFromName()).isNull();
 		assertThat(capturedEntity.getFromDomain()).isNull();
+	}
+
+	@Test
+	void saveAll_WhenPersistThrowsException_ShouldContinueSavingOthers() {
+		// Given
+		List<ArticleEntityDto> dtos = createMockArticleDtos(3);
+
+		doThrow(new RuntimeException("persist fail"))
+			.doNothing()
+			.doNothing()
+			.when(entityManager).persist(any(ArticleEntity.class));
+
+		// When
+		List<ArticleEntityDto> result = articleRepository.saveAll(dtos);
+
+		// Then
+		assertThat(result).hasSize(3);
+		verify(entityManager, times(3)).persist(any(ArticleEntity.class));
+		verify(entityManager, atLeast(1)).flush();
+		verify(entityManager, atLeast(1)).clear();
 	}
 
 	private List<ArticleEntityDto> createMockArticleDtos(int count) {
