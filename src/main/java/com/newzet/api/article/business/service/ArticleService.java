@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 
 import com.newzet.api.article.business.dto.ArticleDto;
 import com.newzet.api.article.domain.Article;
-import com.newzet.api.common.batch.BatchProcessor;
+import com.newzet.api.common.batch.BatchProducer;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -16,13 +16,13 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ArticleService {
 
-	private final BatchProcessor batchProcessor;
+	private final BatchProducer batchProducer;
 
 	public void saveArticleBatch(UUID userId, String fromName, String fromDomain,
 		String mailingList, String htmlLink, String title) {
 		Article article = Article.createNewArticle(userId, fromName, fromDomain, mailingList, title,
 			htmlLink);
 		ArticleDto articleDto = ArticleDto.from(article);
-		batchProcessor.addToBatch(articleDto);
+		batchProducer.addToBatch(articleDto);
 	}
 }

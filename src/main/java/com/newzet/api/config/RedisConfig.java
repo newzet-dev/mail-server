@@ -5,8 +5,6 @@ import java.time.Duration;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
-import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisPassword;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
@@ -32,7 +30,7 @@ public class RedisConfig {
 	private String password;
 
 	@Bean
-	public RedisConnectionFactory redisConnectionFactory() {
+	public LettuceConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration serverConfig = new RedisStandaloneConfiguration(host, port);
 		serverConfig.setPassword(RedisPassword.of(password));
 
@@ -59,8 +57,9 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public ReactiveRedisTemplate<String, String> reactiveRedisTemplate(
-		ReactiveRedisConnectionFactory connectionFactory) {
+	public ReactiveRedisTemplate<String, String> reactiveRedisTemplate() {
+		LettuceConnectionFactory connectionFactory = redisConnectionFactory();
+
 		StringRedisSerializer keySerializer = new StringRedisSerializer();
 		StringRedisSerializer valueSerializer = new StringRedisSerializer();
 
