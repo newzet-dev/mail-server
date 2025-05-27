@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
@@ -11,14 +12,13 @@ import com.newzet.api.article.repository.entity.ArticleEntity;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
 @Repository
 @RequiredArgsConstructor
 public class ArticleRepositoryImpl implements ArticleRepository {
 
-	private static final int BATCH_SIZE = 50;
+	private static final int BATCH_SIZE = 100;
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -37,12 +37,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 		int i = 0;
 
 		for (ArticleEntity entity : entities) {
-			if (entity.getId() == null) {
-				entityManager.persist(entity);
-			} else {
-				entityManager.merge(entity);
-			}
-
+			entityManager.persist(entity);
 			result.add(entity.toEntityDto());
 			i++;
 
