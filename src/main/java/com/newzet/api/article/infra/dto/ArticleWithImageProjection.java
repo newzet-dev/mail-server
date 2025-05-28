@@ -6,7 +6,7 @@ import java.util.UUID;
 import lombok.AllArgsConstructor;
 
 @AllArgsConstructor
-public class ArticleWithImageResponse {
+public class ArticleWithImageProjection {
 	private UUID articleId;
 	private String fromName;
 	private String title;
