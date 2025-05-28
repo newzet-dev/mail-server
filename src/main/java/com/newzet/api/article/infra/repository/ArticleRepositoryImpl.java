@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import com.newzet.api.article.business.ArticleRepository;
-import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.infra.dto.ArticleWithImageProjection;
 
 import lombok.RequiredArgsConstructor;
@@ -24,7 +23,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 	}
 
 	@Override
-	public ArticleEntityDto getArticleAndRead(ArticleEntityDto articleEntityDto) {
-		return null;
+	public ArticleWithImageProjection getArticleByUserId(UUID userId) {
+		return articleJpaRepository.findArticleWithImage(userId);
 	}
 }
