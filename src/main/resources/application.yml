@@ -54,8 +54,3 @@ server:
   tomcat:
     mbeanregistry:
       enabled: true
-
-mybatis:
-  mapper-locations: classpath:mapper/**/*.xml   # XML 위치
-  configuration:
-    map-underscore-to-camel-case: true          # 언더스코어 → 카멜케이스 매핑 자동화

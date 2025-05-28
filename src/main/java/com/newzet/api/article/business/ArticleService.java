@@ -22,11 +22,11 @@ public class ArticleService {
 		UUID convertUserId = UuidConverter.convert(userId);
 		List<ArticleEntityDto> articleListAtYearAndMonth = articleRepository.getMonthlyArticleWithImage(
 			convertUserId, year, month);
-
+		return null;
 	}
 
 	public ArticleDetailResponse getArticle(String articleId) {
-
+		return null;
 	}
 
 }

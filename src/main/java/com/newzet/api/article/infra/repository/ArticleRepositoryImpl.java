@@ -14,9 +14,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class ArticleRepositoryImpl implements ArticleRepository {
 
+
 	@Override
 	public List<ArticleEntityDto> getMonthlyArticleWithImage(UUID userId, int year, int month) {
-		return List.of();
+
+		return null;
 	}
 
 	@Override
