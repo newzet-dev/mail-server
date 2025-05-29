@@ -17,6 +17,6 @@ public record ArticleDetailResponse(
 	}
 
 	public int getDay() {
-		return createdAt.split("-")[2].charAt(0) - '0';
+		return LocalDateTime.parse(createdAt).getDayOfMonth();
 	}
 }
