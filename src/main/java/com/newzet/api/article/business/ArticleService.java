@@ -40,11 +40,12 @@ public class ArticleService {
 	public ArticleContentResponse getArticle(String articleId) {
 		UUID convertArticleId = UuidConverter.convert(articleId);
 		Article article = articleRepository.getById(convertArticleId).toDomain();
-		if (article.checkIsUnRead()) {
+
+		if (article.checkIsUnRead()) { // isRead가 false이면 읽기 처리 수행
 			Article updatedArticle = article.readArticle();
 			articleRepository.readArticle(updatedArticle.getId());
 			return ArticleContentResponse.of(updatedArticle.getTitle(),
-				updatedArticle.getContentUrl(), updatedArticle.isLike());
+				updatedArticle.getContentUrl(), updatedArticle.isRead());
 		}
 
 		return ArticleContentResponse.of(article.getTitle(), article.getContentUrl(),
