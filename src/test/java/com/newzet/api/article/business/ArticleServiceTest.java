@@ -46,6 +46,23 @@ class ArticleServiceTest {
 		assertTrue(articleResponse.isLike());
 	}
 
-	
+	@DisplayName("아티클을 처음 조회하는 것이 아닌 경우에 조회 처리를 하지 않는다.")
+	@Test
+	void read_article_not_in_first_time() {
+		// Given
+		Article article = Article.create(UUID.randomUUID(), UUID.randomUUID(), "newsletter name",
+			"domain",
+			"mail-list", "title", "https://", true, false, false, LocalDateTime.now(),
+			LocalDateTime.now());
+		String articleId = article.getId().toString();
+		when(articleRepository.getById(any(UUID.class)))
+			.thenReturn(ArticleEntityDto.fromDomain(article));
 
+		// When
+		assertTrue(article.isRead());
+		ArticleContentResponse articleResponse = articleService.getArticle(articleId);
+
+		// Then
+		verify(articleRepository, never()).readArticle(any(UUID.class));
+	}
 }
