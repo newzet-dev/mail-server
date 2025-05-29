@@ -5,37 +5,56 @@ import java.util.UUID;
 
 import com.newzet.api.article.domain.Article;
 
-import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
-import lombok.RequiredArgsConstructor;
 
+@Builder
 @Getter
-@RequiredArgsConstructor(access = AccessLevel.PRIVATE)
 public class ArticleEntityDto {
-
-	private final UUID articleId;
-	private final String toUserId;
+	private final UUID id;
+	private final UUID toUserId;
 	private final String fromName;
 	private final String fromDomain;
 	private final String mailingList;
 	private final String title;
 	private final String contentUrl;
-	private final Boolean isRead;
-	private final Boolean isLike;
-	private final Boolean isShare;
+	private final boolean isRead;
+	private final boolean isLike;
+	private final boolean isShare;
 	private final LocalDateTime createdAt;
 	private final LocalDateTime deletedAt;
 
-	public static ArticleEntityDto create(UUID articleId, String toUserId, String fromName,
-		String fromDomain, String mailingList, String title, String contentUrl,
-		Boolean isRead, Boolean isLike, Boolean isShare, LocalDateTime createdAt,
-		LocalDateTime deletedAt) {
-		return new ArticleEntityDto(articleId, toUserId, fromName, fromDomain, mailingList, title,
-			contentUrl, isRead, isLike, isShare, createdAt, deletedAt);
+	public static ArticleEntityDto fromDomain(Article article) {
+		return ArticleEntityDto.builder()
+			.id(article.getId())
+			.toUserId(article.getToUserId())
+			.fromName(article.getFromName())
+			.fromDomain(article.getFromDomain())
+			.mailingList(article.getMailingList())
+			.title(article.getTitle())
+			.contentUrl(article.getContentUrl())
+			.isRead(article.isRead())
+			.isLike(article.isLike())
+			.isShare(article.isShare())
+			.createdAt(article.getCreatedAt())
+			.deletedAt(article.getDeletedAt())
+			.build();
 	}
 
 	public Article toDomain() {
-		return Article.create(articleId, title, contentUrl, isRead, isLike, isShare);
+		return Article.create(
+			id,
+			toUserId,
+			fromName,
+			fromDomain,
+			mailingList,
+			title,
+			contentUrl,
+			isRead,
+			isLike,
+			isShare,
+			createdAt,
+			deletedAt
+		);
 	}
-
 }

@@ -1,4 +1,4 @@
-package com.newzet.api.article.infra.repository;
+package com.newzet.api.article.repository;
 
 import java.util.List;
 import java.util.UUID;
@@ -6,7 +6,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import com.newzet.api.article.business.ArticleRepository;
-import com.newzet.api.article.infra.dto.ArticleWithImageProjection;
+import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 
 import lombok.RequiredArgsConstructor;
 

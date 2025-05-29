@@ -1,9 +1,11 @@
-package com.newzet.api.article.infra;
+package com.newzet.api.article.repository.entity;
 
 import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
+
+import com.newzet.api.article.business.dto.ArticleEntityDto;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -62,6 +64,37 @@ public class ArticleEntity {
 
 	private LocalDateTime deletedAt;
 
+	public static ArticleEntity fromEntityDto(ArticleEntityDto dto) {
+		return ArticleEntity.builder()
+			.id(dto.getId())
+			.toUserId(dto.getToUserId())
+			.fromName(dto.getFromName())
+			.fromDomain(dto.getFromDomain())
+			.mailingList(dto.getMailingList())
+			.title(dto.getTitle())
+			.contentUrl(dto.getContentUrl())
+			.isRead(dto.isRead())
+			.isLike(dto.isLike())
+			.isShare(dto.isShare())
+			.createdAt(dto.getCreatedAt() != null ? dto.getCreatedAt() : LocalDateTime.now())
+			.deletedAt(dto.getDeletedAt())
+			.build();
+	}
 
-
+	public ArticleEntityDto toEntityDto() {
+		return ArticleEntityDto.builder()
+			.id(id)
+			.toUserId(toUserId)
+			.fromName(fromName)
+			.fromDomain(fromDomain)
+			.mailingList(mailingList)
+			.title(title)
+			.contentUrl(contentUrl)
+			.isRead(isRead)
+			.isLike(isLike)
+			.isShare(isShare)
+			.createdAt(createdAt)
+			.deletedAt(deletedAt)
+			.build();
+	}
 }

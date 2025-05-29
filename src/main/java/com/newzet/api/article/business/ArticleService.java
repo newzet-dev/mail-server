@@ -5,9 +5,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.newzet.api.article.infra.dto.ArticleWithImageProjection;
-import com.newzet.api.article.presentation.dto.ArticleDetailResponse;
-import com.newzet.api.article.presentation.dto.ArticleListResponse;
+import com.newzet.api.article.controller.dto.ArticleDetailResponse;
+import com.newzet.api.article.controller.dto.ArticleListResponse;
+import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.common.util.UuidConverter;
 
 import lombok.RequiredArgsConstructor;

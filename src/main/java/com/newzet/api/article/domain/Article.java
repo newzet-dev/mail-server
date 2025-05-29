@@ -1,24 +1,78 @@
 package com.newzet.api.article.domain;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
 @Getter
+@Builder(access = AccessLevel.PRIVATE)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Article {
-
-	private final UUID articleId;
+	private final UUID id;
+	private final UUID toUserId;
+	private final String fromName;
+	private final String fromDomain;
+	private final String mailingList;
 	private final String title;
 	private final String contentUrl;
-	private final Boolean isRead;
-	private final Boolean isLike;
-	private final Boolean isShare;
+	private final boolean isRead;
+	private final boolean isLike;
+	private final boolean isShare;
+	private final LocalDateTime createdAt;
+	private final LocalDateTime deletedAt;
 
-	public static Article create(UUID articleId, String title, String contentUrl, Boolean isRead,
-		Boolean isLike, Boolean isShare) {
-		return new Article(articleId, title, contentUrl, isRead, isLike, isShare);
+	public static Article create(
+		UUID id,
+		UUID toUserId,
+		String fromName,
+		String fromDomain,
+		String mailingList,
+		String title,
+		String contentUrl,
+		boolean isRead,
+		boolean isLike,
+		boolean isShare,
+		LocalDateTime createdAt,
+		LocalDateTime deletedAt) {
+		return Article.builder()
+			.id(id)
+			.toUserId(toUserId)
+			.fromName(fromName)
+			.fromDomain(fromDomain)
+			.mailingList(mailingList)
+			.title(title)
+			.contentUrl(contentUrl)
+			.isRead(isRead)
+			.isLike(isLike)
+			.isShare(isShare)
+			.createdAt(createdAt != null ? createdAt : LocalDateTime.now())
+			.deletedAt(deletedAt)
+			.build();
+	}
+
+	public static Article createNewArticle(
+		UUID toUserId,
+		String fromName,
+		String fromDomain,
+		String mailingList,
+		String title,
+		String contentUrl) {
+		return Article.builder()
+			.toUserId(toUserId)
+			.fromName(fromName)
+			.fromDomain(fromDomain)
+			.mailingList(mailingList)
+			.title(title)
+			.contentUrl(contentUrl)
+			.isRead(false)
+			.isLike(false)
+			.isShare(false)
+			.createdAt(LocalDateTime.now())
+			.build();
 	}
 }
+

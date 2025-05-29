@@ -1,4 +1,4 @@
-package com.newzet.api.article.infra.dto;
+package com.newzet.api.article.repository.dto;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

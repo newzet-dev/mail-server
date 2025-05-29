@@ -1,4 +1,4 @@
-package com.newzet.api.article.presentation.dto;
+package com.newzet.api.article.controller.dto;
 
 public record ArticleListResponse(
 	DailyArticleResponse dailyArticleList
