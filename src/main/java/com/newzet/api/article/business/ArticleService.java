@@ -1,6 +1,10 @@
 package com.newzet.api.article.business;
 
+import static java.util.Map.Entry.*;
+import static java.util.stream.Collectors.*;
+
 import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
@@ -33,7 +37,7 @@ public class ArticleService {
 				articleWithImageProjection.getIsRead(), articleWithImageProjection.getCreatedAt()))
 			.toList();
 
-		return ArticleListResponse.from(DailyArticleResponse.of(31, articleList));
+		return ArticleListResponse.from(getDailyArticleList(articleList));
 	}
 
 	public ArticleContentResponse getArticle(String articleId) {
@@ -49,6 +53,23 @@ public class ArticleService {
 
 		return ArticleContentResponse.of(article.getTitle(), article.getContentUrl(),
 			article.isLike());
+	}
+
+	private List<DailyArticleResponse> getDailyArticleList(
+		List<ArticleDetailResponse> articleDetailResponseList) {
+		// 일별로 아티클 모으기(key: day, value: Article List)
+		List<Entry<Integer, List<ArticleDetailResponse>>> articleSubListSortedByDay =
+			articleDetailResponseList.stream()
+				.collect(groupingBy(ArticleDetailResponse::getDay))
+				.entrySet().stream()
+				.sorted(comparingByKey())
+				.toList();
+
+		return articleSubListSortedByDay.stream()
+			.map(articleSubList ->
+				DailyArticleResponse.of(articleSubList.getKey(),
+					articleSubList.getValue()))
+			.toList();
 	}
 
 }

@@ -15,4 +15,8 @@ public record ArticleDetailResponse(
 	public static ArticleDetailResponse of(UUID id, String newsletterName, String newsletterImgUrl, String title, boolean isRead, LocalDateTime createdAt) {
 		return new ArticleDetailResponse(id.toString(), newsletterName, newsletterImgUrl, title, isRead, createdAt.toString());
 	}
+
+	public int getDay() {
+		return createdAt.split("-")[2].charAt(0) - '0';
+	}
 }
