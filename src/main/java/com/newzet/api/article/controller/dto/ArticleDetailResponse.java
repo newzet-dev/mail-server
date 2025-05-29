@@ -1,5 +1,8 @@
 package com.newzet.api.article.controller.dto;
 
+import java.time.LocalDateTime;
+import java.util.UUID;
+
 public record ArticleDetailResponse(
 	String id,
 	String newsletterName,
@@ -9,7 +12,7 @@ public record ArticleDetailResponse(
 	String createdAt
 ) {
 
-	public static ArticleDetailResponse of(String id, String newsletterName, String newsletterImgUrl, String title, boolean isRead, String createdAt) {
-		return new ArticleDetailResponse(id, newsletterName, newsletterImgUrl, title, isRead, createdAt);
+	public static ArticleDetailResponse of(UUID id, String newsletterName, String newsletterImgUrl, String title, boolean isRead, LocalDateTime createdAt) {
+		return new ArticleDetailResponse(id.toString(), newsletterName, newsletterImgUrl, title, isRead, createdAt.toString());
 	}
 }

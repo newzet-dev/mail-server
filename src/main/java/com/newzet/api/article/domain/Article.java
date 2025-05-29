@@ -74,5 +74,26 @@ public class Article {
 			.createdAt(LocalDateTime.now())
 			.build();
 	}
+
+	public boolean checkIsUnRead() {
+		return !isRead;
+	}
+
+	public Article readArticle() {
+		return Article.builder()
+			.id(id)
+			.toUserId(toUserId)
+			.fromName(fromName)
+			.fromDomain(fromDomain)
+			.mailingList(mailingList)
+			.title(title)
+			.contentUrl(contentUrl)
+			.isRead(true)
+			.isLike(isLike)
+			.isShare(isShare)
+			.createdAt(createdAt != null ? createdAt : LocalDateTime.now())
+			.deletedAt(deletedAt)
+			.build();
+	}
 }
 
