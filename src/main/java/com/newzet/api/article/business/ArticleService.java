@@ -21,10 +21,9 @@ public class ArticleService {
 
 	private final ArticleRepository articleRepository;
 
-	public ArticleListResponse getMonthlyArticleList(String userId, int year, int month) {
-		UUID convertUserId = UuidConverter.convert(userId);
+	public ArticleListResponse getMonthlyArticleList(UUID userId, int year, int month) {
 		List<ArticleWithImageProjection> articleListAtYearAndMonth = articleRepository.getMonthlyArticleWithImage(
-			convertUserId, year, month);
+			userId, year, month);
 
 		List<ArticleDetailResponse> articleList = articleListAtYearAndMonth.stream()
 			.map(articleWithImageProjection -> ArticleDetailResponse.of(
