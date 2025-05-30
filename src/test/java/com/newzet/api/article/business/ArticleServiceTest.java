@@ -22,6 +22,7 @@ import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
+import com.newzet.api.article.repository.TestArticleWithImageProjection;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 
 @ExtendWith(MockitoExtension.class)
@@ -42,7 +43,7 @@ class ArticleServiceTest {
 		for (int i = 0; i < 100; i++) {
 			int day = random.nextInt(31) + 1;
 			LocalDateTime date = LocalDateTime.of(2025, 1, day, 1, 1);
-			ArticleWithImageProjection projection = new ArticleWithImageProjection(
+			TestArticleWithImageProjection projection = new TestArticleWithImageProjection(
 				UUID.randomUUID(), "fromName",
 				"title", false, date, "imageUrl");
 			articleListAtYearAndMonth.add(projection);
