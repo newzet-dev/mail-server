@@ -9,7 +9,7 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class ArticleWithImageProjection {
-	private UUID articleId;
+	private UUID id;
 	private String fromName;
 	private String title;
 	private Boolean isRead;

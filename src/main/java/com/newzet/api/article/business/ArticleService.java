@@ -31,7 +31,7 @@ public class ArticleService {
 
 		List<ArticleDetailResponse> articleList = articleListAtYearAndMonth.stream()
 			.map(articleWithImageProjection -> ArticleDetailResponse.of(
-				articleWithImageProjection.getArticleId(),
+				articleWithImageProjection.getId(),
 				articleWithImageProjection.getFromName(), articleWithImageProjection.getImageUrl(),
 				articleWithImageProjection.getTitle(),
 				articleWithImageProjection.getIsRead(), articleWithImageProjection.getCreatedAt()))
