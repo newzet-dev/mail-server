@@ -51,7 +51,7 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 	private final ObjectMapper objectMapper;
 	private ExecutorService executorService;
 	private ExecutorService ackExecutorService;
-	private AtomicBoolean isProcessing = new AtomicBoolean(false);
+	private final AtomicBoolean isProcessing = new AtomicBoolean(false);
 
 	@PostConstruct
 	public void init() {
