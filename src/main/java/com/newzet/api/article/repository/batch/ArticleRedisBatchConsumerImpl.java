@@ -11,6 +11,7 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.springframework.data.redis.connection.stream.Consumer;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.connection.stream.StreamOffset;
@@ -126,7 +127,7 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 				StreamReceiver.create(reactiveRedisTemplate.getConnectionFactory(), options);
 
 			receiver.receive(
-					org.springframework.data.redis.connection.stream.Consumer.from(CONSUMER_GROUP,
+					Consumer.from(CONSUMER_GROUP,
 						CONSUMER_NAME),
 					StreamOffset.create(ARTICLE_STREAM_KEY, ReadOffset.lastConsumed())
 				)
