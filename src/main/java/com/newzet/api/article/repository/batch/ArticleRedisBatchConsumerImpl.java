@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutorService;
@@ -20,7 +21,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.StreamReceiver;
 import org.springframework.stereotype.Component;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.domain.Article;
@@ -28,6 +28,7 @@ import com.newzet.api.article.repository.batch.dto.BatchProcessingResult;
 import com.newzet.api.article.repository.batch.dto.BatchSaveData;
 import com.newzet.api.common.batch.BatchConsumer;
 import com.newzet.api.common.batch.config.BatchConfig;
+import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -49,7 +50,7 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 	private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
 	private final ArticleRepository articleRepository;
 	private final BatchConfig batchConfig;
-	private final ObjectMapper objectMapper;
+	private final OptionalObjectMapper optionalObjectMapper;
 	private ExecutorService executorService;
 	private ExecutorService ackExecutorService;
 	private final AtomicBoolean isProcessing = new AtomicBoolean(false);
@@ -155,13 +156,9 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 		List<Article> articles = new ArrayList<>();
 
 		for (MapRecord<String, String, String> record : records) {
-			try {
-				String data = record.getValue().get("data");
-				Article article = objectMapper.readValue(data, Article.class);
-				articles.add(article);
-			} catch (Exception e) {
-				log.error("Failed to deserialize article from Redis stream", e);
-			}
+			String data = record.getValue().get("data");
+			Optional<Article> article = optionalObjectMapper.deserialize(data, Article.class);
+			article.ifPresent(articles::add);
 		}
 
 		processBatchItems(articles);
