@@ -28,13 +28,13 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.StreamOperations;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.common.batch.BatchConsumer;
 import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.batch.config.BatchConfig;
+import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.OAuthTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
@@ -56,7 +56,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 	private RedisConnectionFactory redisConnectionFactory;
 
 	@Autowired
-	private ObjectMapper objectMapper;
+	private OptionalObjectMapper optionalObjectMapper;
 
 	@MockitoBean
 	private ArticleRepository articleRepository;
@@ -83,7 +83,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 
 		producer = new ArticleRedisBatchProducerImpl(
 			reactiveRedisTemplate,
-			objectMapper
+			optionalObjectMapper
 		);
 
 		consumer = new ArticleRedisBatchConsumerImpl(
@@ -91,7 +91,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			reactiveRedisTemplate,
 			articleRepository,
 			mockBatchConfig,
-			objectMapper
+			optionalObjectMapper
 		);
 
 		initializeStream();
@@ -237,7 +237,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			),
 			articleRepository,
 			mockBatchConfig,
-			objectMapper
+			optionalObjectMapper
 		);
 
 		consumerWithMockRedis.init();
@@ -257,7 +257,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			mock(ReactiveRedisTemplate.class),
 			mock(ArticleRepository.class),
 			mock(BatchConfig.class),
-			new ObjectMapper()
+			optionalObjectMapper
 		);
 
 		Map<String, Object> status = consumerWithMockRedis.getBatchStatus();
