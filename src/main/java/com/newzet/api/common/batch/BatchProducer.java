@@ -1,7 +1,7 @@
 package com.newzet.api.common.batch;
 
-import com.newzet.api.article.business.dto.ArticleDto;
+import com.newzet.api.article.domain.Article;
 
 public interface BatchProducer {
-	void addToBatch(ArticleDto articleDto);
+	void addToBatch(Article article);
 }

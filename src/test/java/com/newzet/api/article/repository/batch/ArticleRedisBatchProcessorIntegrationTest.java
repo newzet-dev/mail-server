@@ -29,9 +29,9 @@ import org.springframework.data.redis.core.StreamOperations;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newzet.api.article.business.dto.ArticleDto;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
+import com.newzet.api.article.domain.Article;
 import com.newzet.api.common.batch.BatchConsumer;
 import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.batch.config.BatchConfig;
@@ -138,8 +138,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 	@Test
 	void processBatchItems_WhenDuplicateArticles_ThenSkipDuplicates() {
 		UUID userId = UUID.randomUUID();
-		ArticleDto article1 = createArticleDto(userId, "Unique Article");
-		ArticleDto article2 = createArticleDto(userId, "Duplicate Article");
+		Article article1 = createArticleDto(userId, "Unique Article");
+		Article article2 = createArticleDto(userId, "Duplicate Article");
 
 		String duplicateCacheKey =
 			"article:dup:newsletter_example.com_" + userId.toString().substring(0, 8) + "_" +
@@ -186,8 +186,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 	@Test
 	void addToBatch_WhenArticlesAdded_ThenProcessedInBatch() {
 		UUID userId = UUID.randomUUID();
-		ArticleDto article1 = createArticleDto(userId, "First Article");
-		ArticleDto article2 = createArticleDto(userId, "Second Article");
+		Article article1 = createArticleDto(userId, "First Article");
+		Article article2 = createArticleDto(userId, "Second Article");
 
 		doAnswer(invocation -> {
 			List<ArticleEntityDto> dtos = invocation.getArgument(0);
@@ -265,17 +265,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		assertThat(status.get("pendingMessages")).isEqualTo(0L);
 	}
 
-	private ArticleDto createArticleDto(UUID userId, String title) {
-		return ArticleDto.builder()
-			.toUserId(userId)
-			.fromName("Newsletter")
-			.fromDomain("example.com")
-			.mailingList("daily")
-			.title(title)
-			.contentUrl("https://example.com/" + title.toLowerCase().replace(' ', '-'))
-			.isRead(false)
-			.isLike(false)
-			.isShare(false)
-			.build();
+	private Article createArticleDto(UUID userId, String title) {
+		return Article.createNewArticle(userId, "Newsletter", "example.com", "daily", title,
+			"https://example.com/" + title.toLowerCase().replace(' ', '-'));
 	}
 }

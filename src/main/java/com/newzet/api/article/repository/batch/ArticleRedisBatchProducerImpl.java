@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newzet.api.article.business.dto.ArticleDto;
+import com.newzet.api.article.domain.Article;
 import com.newzet.api.common.batch.BatchProducer;
 
 import lombok.RequiredArgsConstructor;
@@ -25,9 +25,9 @@ public class ArticleRedisBatchProducerImpl implements BatchProducer {
 	private final ObjectMapper objectMapper;
 
 	@Override
-	public void addToBatch(ArticleDto articleDto) {
+	public void addToBatch(Article article) {
 		try {
-			String jsonData = objectMapper.writeValueAsString(articleDto);
+			String jsonData = objectMapper.writeValueAsString(article);
 
 			Map<String, String> fields = new HashMap<>();
 			fields.put("data", jsonData);
@@ -38,12 +38,12 @@ public class ArticleRedisBatchProducerImpl implements BatchProducer {
 				.doOnSuccess(recordId -> {
 					if (log.isDebugEnabled()) {
 						log.debug("Article added to batch queue: {}, recordId: {}",
-							articleDto.getTitle(), recordId);
+							article.getTitle(), recordId);
 					}
 				})
 				.doOnError(error ->
 					log.error("Failed to add article to stream: {}, error: {}",
-						articleDto.getTitle(), error.getMessage(), error)
+						article.getTitle(), error.getMessage(), error)
 				)
 				.subscribe();
 		} catch (JsonProcessingException e) {

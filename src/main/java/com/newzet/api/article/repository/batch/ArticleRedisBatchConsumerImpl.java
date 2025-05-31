@@ -20,9 +20,9 @@ import org.springframework.data.redis.stream.StreamReceiver;
 import org.springframework.stereotype.Component;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.newzet.api.article.business.dto.ArticleDto;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
+import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.batch.dto.BatchProcessingResult;
 import com.newzet.api.article.repository.batch.dto.BatchSaveData;
 import com.newzet.api.common.batch.BatchConsumer;
@@ -151,13 +151,13 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 	}
 
 	private void processBatchWithAck(List<MapRecord<String, String, String>> records) {
-		List<ArticleDto> articles = new ArrayList<>();
+		List<Article> articles = new ArrayList<>();
 
 		for (MapRecord<String, String, String> record : records) {
 			try {
 				String data = record.getValue().get("data");
-				ArticleDto articleDto = objectMapper.readValue(data, ArticleDto.class);
-				articles.add(articleDto);
+				Article article = objectMapper.readValue(data, Article.class);
+				articles.add(article);
 			} catch (Exception e) {
 				log.error("Failed to deserialize article from Redis stream", e);
 			}
@@ -191,7 +191,7 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 		}, ackExecutorService);
 	}
 
-	private void processBatchItems(List<ArticleDto> articles) {
+	private void processBatchItems(List<Article> articles) {
 		long startTime = System.currentTimeMillis();
 		BatchProcessingResult result = new BatchProcessingResult();
 
@@ -214,13 +214,12 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 	}
 
 	private Map<String, List<ArticleEntityDto>> prepareArticlesWithCacheKeys(
-		List<ArticleDto> articles, BatchProcessingResult result) {
+		List<Article> articles, BatchProcessingResult result) {
 		Map<String, List<ArticleEntityDto>> keyToArticlesMap = new HashMap<>();
 
-		for (ArticleDto articleDto : articles) {
+		for (Article article : articles) {
 			try {
-				var articleDomain = articleDto.toDomain();
-				var entityDto = ArticleEntityDto.fromDomain(articleDomain);
+				ArticleEntityDto entityDto = ArticleEntityDto.fromDomain(article);
 
 				String cacheKey = generateSimpleCacheKey(
 					entityDto.getFromName(),
@@ -232,7 +231,7 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 				keyToArticlesMap.computeIfAbsent(cacheKey, k -> new ArrayList<>()).add(entityDto);
 			} catch (Exception e) {
 				result.incrementFailCount();
-				log.error("Failed to process article: {}, error: {}", articleDto.getTitle(),
+				log.error("Failed to process article: {}, error: {}", article.getTitle(),
 					e.getMessage(), e);
 			}
 		}

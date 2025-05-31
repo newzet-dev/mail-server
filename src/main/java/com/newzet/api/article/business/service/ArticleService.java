@@ -4,7 +4,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.newzet.api.article.business.dto.ArticleDto;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.common.batch.BatchProducer;
 
@@ -22,7 +21,6 @@ public class ArticleService {
 		String mailingList, String htmlLink, String title) {
 		Article article = Article.createNewArticle(userId, fromName, fromDomain, mailingList, title,
 			htmlLink);
-		ArticleDto articleDto = ArticleDto.from(article);
-		batchProducer.addToBatch(articleDto);
+		batchProducer.addToBatch(article);
 	}
 }
