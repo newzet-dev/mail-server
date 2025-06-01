@@ -5,11 +5,15 @@ import java.util.UUID;
 
 public interface ArticleWithImageProjection {
 	UUID getId();
-	String getFromName();
-	String getTitle();
-	Boolean getIsRead();
-	LocalDateTime getCreatedAt();
-	String getImageUrl();
 
+	String getFromName();
+
+	String getTitle();
+
+	Boolean getIsRead();
+
+	LocalDateTime getCreatedAt();
+
+	String getImageUrl();
 
 }
