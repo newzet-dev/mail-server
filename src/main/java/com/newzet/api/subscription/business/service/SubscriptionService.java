@@ -5,6 +5,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.newzet.api.common.util.UuidConverter;
+
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -15,10 +17,17 @@ public class SubscriptionService {
 	private final SubscriptionRepository subscriptionRepository;
 	private final SubscriptionQueryRepository subscriptionQueryRepository;
 
-	public void addSubscriptionIfUnsubscribed(UUID userId, String fromName, String fromDomain, String mailingList) {
-		boolean isSubscribed = subscriptionQueryRepository.isSubscribed(userId, fromDomain, mailingList);
+	public void addSubscriptionIfUnsubscribed(UUID userId, String fromName, String fromDomain,
+		String mailingList) {
+		boolean isSubscribed = subscriptionQueryRepository.isSubscribed(userId, fromDomain,
+			mailingList);
 		if (!isSubscribed) {
 			subscriptionRepository.save(userId, fromName, fromDomain, mailingList);
 		}
+	}
+
+	public void deleteSubscription(String subscriptionId) {
+		UUID convertedSubscriptionId = UuidConverter.convert(subscriptionId);
+		subscriptionRepository.delete(convertedSubscriptionId);
 	}
 }

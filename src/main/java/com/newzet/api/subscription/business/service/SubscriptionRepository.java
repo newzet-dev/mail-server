@@ -6,4 +6,6 @@ import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 
 public interface SubscriptionRepository {
 	SubscriptionEntityDto save(UUID userId, String newsletterName, String newsletterDomain, String newsletterMailingList);
+
+	void delete(UUID subscriptionId);
 }
