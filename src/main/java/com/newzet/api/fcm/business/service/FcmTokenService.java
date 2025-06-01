@@ -1,29 +1,33 @@
 package com.newzet.api.fcm.business.service;
 
-import static java.util.stream.Collectors.*;
-
-import java.util.List;
 import java.util.UUID;
+
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.fcm.business.FcmTokenRepository;
 import com.newzet.api.fcm.domain.FcmToken;
-import org.springframework.stereotype.Service;
-
-import com.newzet.api.category.business.dto.CategoryEntityDto;
-import com.newzet.api.category.controller.dto.CategoryListResponse;
-import com.newzet.api.category.controller.dto.CategoryResponse;
-import com.newzet.api.category.domain.Category;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FcmTokenService {
 
 	private final FcmTokenRepository fcmTokenRepository;
 
-	public Boolean createFcmToken(UUID userId, String value) {
-		fcmTokenRepository.create(userId, value);
-		return true;
+	@Transactional
+	public FcmToken createFcmToken(UUID userId, String value) {
+		return fcmTokenRepository.createIfAbsent(userId, value).toDomain();
+	}
+
+	@Transactional
+	public void deleteFcmToken(UUID userId, String value) {
+		boolean deleted = fcmTokenRepository.deleteFcmToken(userId, value);
+		if (!deleted) {
+			log.warn("비정상 흐름: 존재하지 않는 FCM 토큰 삭제 시도. userId: {}, token: {}", userId, value);
+		}
 	}
 }
