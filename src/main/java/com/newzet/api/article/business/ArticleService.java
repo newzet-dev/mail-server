@@ -8,6 +8,7 @@ import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleDetailResponse;
@@ -21,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ArticleService {
 
 	private final ArticleRepository articleRepository;
@@ -40,13 +42,13 @@ public class ArticleService {
 		return ArticleListResponse.from(getDailyArticleList(articleList));
 	}
 
+	@Transactional
 	public ArticleContentResponse getArticle(String articleId) {
-		UUID convertArticleId = UuidConverter.convert(articleId);
-		Article article = articleRepository.getById(convertArticleId).toDomain();
+		UUID convertedArticleId = UuidConverter.convert(articleId);
+		Article article = articleRepository.getById(convertedArticleId).toDomain();
 
 		if (article.checkIsUnRead()) { // isRead가 false이면 읽기 처리 수행
-			Article updatedArticle = article.readArticle();
-			articleRepository.readArticle(updatedArticle.getId());
+			Article updatedArticle = articleRepository.readArticle(article.getId()).toDomain();
 			return ArticleContentResponse.of(updatedArticle.getTitle(),
 				updatedArticle.getContentUrl(), updatedArticle.isRead());
 		}

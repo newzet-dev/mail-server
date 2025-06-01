@@ -12,7 +12,7 @@ public interface ArticleRepository {
 
 	ArticleEntityDto getById(UUID articleId);
 
-	void readArticle(UUID articleId);
+	ArticleEntityDto readArticle(UUID articleId);
 
 	ArticleWithImageProjection getArticleByUserId(UUID userId);
 }

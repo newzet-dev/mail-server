@@ -34,11 +34,12 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 	}
 
 	@Override
-	public void readArticle(UUID articleId) {
+	public ArticleEntityDto readArticle(UUID articleId) {
 		ArticleEntity articleEntity = articleJpaRepository.findById(articleId)
 			.orElseThrow(() -> new NoArticleException("해당 id의 아티클이 존재하지 않습니다."));
 
 		articleEntity.readArticle();
+		return articleEntity.toEntityDto();
 	}
 
 	@Override
