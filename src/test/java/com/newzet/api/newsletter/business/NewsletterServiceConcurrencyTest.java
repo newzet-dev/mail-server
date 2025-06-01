@@ -18,7 +18,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.config.JwtTestConfig;
-import com.newzet.api.config.OAuthTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
 import com.newzet.api.newsletter.business.service.NewsletterService;
@@ -31,7 +30,7 @@ import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 @Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class,
-	JwtTestConfig.class, OAuthTestConfig.class})
+	JwtTestConfig.class})
 public class NewsletterServiceConcurrencyTest {
 
 	private final String name = "test";
