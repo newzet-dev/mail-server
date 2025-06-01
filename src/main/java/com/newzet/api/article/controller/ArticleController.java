@@ -14,6 +14,7 @@ import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.auth.domain.AuthUser;
 import com.newzet.api.auth.infrastructure.annotation.Login;
+import com.newzet.api.auth.infrastructure.annotation.RequireAuth;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
 
@@ -30,6 +31,7 @@ public class ArticleController {
 	private final ArticleService articleService;
 
 	@GetMapping
+	@RequireAuth
 	@Operation(summary = "아티클 월별 목록 조회",
 		description = "유저가 구독한 뉴스레터들의 월별 아티클 목록을 조회한다.")
 	public ResponseEntity<SuccessResponse<ArticleListResponse>> getMonthlyArticleList(
@@ -46,10 +48,11 @@ public class ArticleController {
 	}
 
 	@GetMapping("/{articleId}")
+	@RequireAuth
 	@Operation(summary = "아티클 단건 조회",
 		description = "유저가 구독한 뉴스레터의 아티클을 조회한다.")
 	public ResponseEntity<SuccessResponse<ArticleContentResponse>> getArticle(
-		@PathVariable("articleId") String articleId, @Login AuthUser user) {
+		@PathVariable("articleId") String articleId) {
 		ArticleContentResponse articleContentResponse = articleService.getArticle(articleId);
 
 		SuccessResponse<ArticleContentResponse> response = SuccessResponse.create(
