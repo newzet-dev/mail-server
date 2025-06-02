@@ -85,10 +85,16 @@ class ArticleServiceTest {
 			"domain",
 			"mail-list", "title", "https://", false, false, false, LocalDateTime.now(),
 			LocalDateTime.now());
+		ArticleEntityDto updatedArticle = ArticleEntityDto.builder()
+			.title("title")
+			.contentUrl("https://")
+			.isRead(true)
+			.build();
 		String articleId = article.getId().toString();
 		when(articleRepository.getById(any(UUID.class)))
 			.thenReturn(ArticleEntityDto.fromDomain(article));
-		doNothing().when(articleRepository).readArticle(any(UUID.class));
+		when(articleRepository.readArticle(any(UUID.class)))
+			.thenReturn(updatedArticle);
 
 		// When
 		assertFalse(article.isRead());
