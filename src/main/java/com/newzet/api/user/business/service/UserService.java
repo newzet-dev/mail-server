@@ -6,16 +6,9 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.newzet.api.auth.business.dto.JwtResponse;
-import com.newzet.api.auth.business.service.OAuthLoginService;
-import com.newzet.api.auth.domain.DeviceType;
-import com.newzet.api.auth.exception.OAuthBadRequestException;
-import com.newzet.api.user.business.dto.SignupRequest;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.user.business.dto.UserEntityDto;
 import com.newzet.api.user.domain.User;
-import com.newzet.api.user.domain.UserStatus;
-import com.newzet.api.user.exception.UserEmailDuplicateException;
 
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 
 	private final UserRepository userRepository;
-	private final OAuthLoginService oAuthLoginService;
 
 	@Transactional(readOnly = true)
 	public UUID getUserIdByEmail(String email) {
@@ -48,29 +40,6 @@ public class UserService {
 			return UniqueMailResponse.ofInActive();
 		} else {
 			return UniqueMailResponse.ofDuplicate();
-		}
-	}
-
-	public JwtResponse signUp(SignupRequest request) {
-		UniqueMailResponse uniqueCheck = checkEmailUniqueness(request.email());
-		if (!uniqueCheck.isUnique()) {
-			throw new UserEmailDuplicateException(uniqueCheck.message());
-		}
-
-		UserEntityDto userEntityDto = userRepository.save(request.email(), request.nickname(),
-			UserStatus.ACTIVE.name());
-		User user = userEntityDto.toDomain();
-
-		try {
-			return oAuthLoginService.linkOAuthWithUser(
-				user,
-				request.oAuthMappingEntityId(),
-				request.provider(),
-				DeviceType.fromString(request.deviceType())
-			);
-		} catch (OAuthBadRequestException e) {
-			userRepository.delete(user.getId());
-			throw e;
 		}
 	}
 }

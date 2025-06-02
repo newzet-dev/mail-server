@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import com.newzet.api.config.PostgresTestContainerConfig;
-import com.newzet.api.config.QuerydslConfig;
+import com.newzet.api.config.db.QuerydslConfig;
 import com.newzet.api.subscription.repository.repository.SubscriptionJpaQueryRepository;
 import com.newzet.api.subscription.repository.repository.SubscriptionRepositoryImpl;
 
