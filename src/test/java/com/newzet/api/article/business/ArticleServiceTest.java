@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Random;
 import java.util.UUID;
@@ -50,6 +51,10 @@ class ArticleServiceTest {
 				"title", false, date, "imageUrl");
 			articleListAtYearAndMonth.add(projection);
 		}
+
+		// Repository에서 이미 정렬된 형태로 데이터가 넘어옴을 가정하므로, 정렬된 형태여야 한다.
+		articleListAtYearAndMonth.sort(
+			Comparator.comparing(ArticleWithImageProjection::getCreatedAt));
 
 		when(articleRepository.getMonthlyArticleWithImage(any(UUID.class), any(Integer.class),
 			any(Integer.class)))

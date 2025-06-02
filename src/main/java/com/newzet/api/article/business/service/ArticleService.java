@@ -1,11 +1,9 @@
 package com.newzet.api.article.business.service;
 
-import static java.util.Map.Entry.*;
-import static java.util.stream.Collectors.*;
-
+import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -68,20 +66,16 @@ public class ArticleService {
 			article.isLike());
 	}
 
-	private List<DailyArticleResponse> getDailyArticleList(
-		List<ArticleDetailResponse> articleDetailResponseList) {
-		// 일별로 아티클 모으기(key: day, value: Article List)
-		List<Map.Entry<Integer, List<ArticleDetailResponse>>> articleSubListSortedByDay =
-			articleDetailResponseList.stream()
-				.collect(groupingBy(ArticleDetailResponse::getDay))
-				.entrySet().stream()
-				.sorted(comparingByKey())
-				.toList();
-
-		return articleSubListSortedByDay.stream()
-			.map(articleSubList ->
-				DailyArticleResponse.of(articleSubList.getKey(),
-					articleSubList.getValue()))
+	// 반환된 dto의 정렬된 순서를 유지하면서, day 별로 DailyArticleResponse를 묶음
+	private List<DailyArticleResponse> getDailyArticleList(List<ArticleDetailResponse> articleDetailResponseList) {
+		return articleDetailResponseList.stream()
+			.collect(Collectors.groupingBy(
+				ArticleDetailResponse::getDay,
+				LinkedHashMap::new, // 입력 순서 유지
+				Collectors.toList()
+			))
+			.entrySet().stream()
+			.map(entry -> DailyArticleResponse.of(entry.getKey(), entry.getValue()))
 			.toList();
 	}
 }
