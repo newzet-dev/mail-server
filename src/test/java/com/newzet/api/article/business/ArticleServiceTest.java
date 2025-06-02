@@ -18,6 +18,8 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.article.business.dto.ArticleEntityDto;
+import com.newzet.api.article.business.repository.ArticleRepository;
+import com.newzet.api.article.business.service.ArticleService;
 import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;

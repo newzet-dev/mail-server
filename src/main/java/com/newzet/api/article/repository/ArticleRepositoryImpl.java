@@ -7,8 +7,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.newzet.api.article.business.ArticleRepository;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
+import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.article.repository.entity.ArticleEntity;
 import com.newzet.api.article.repository.exception.NoArticleException;
@@ -24,9 +24,9 @@ import lombok.extern.slf4j.Slf4j;
 public class ArticleRepositoryImpl implements ArticleRepository {
 
 	private static final int BATCH_SIZE = 100;
+	private final ArticleJpaRepository articleJpaRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
-	private final ArticleJpaRepository articleJpaRepository;
 
 	@Override
 	public List<ArticleWithImageProjection> getMonthlyArticleWithImage(UUID userId, int year,
