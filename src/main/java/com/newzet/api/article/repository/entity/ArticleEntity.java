@@ -61,7 +61,6 @@ public class ArticleEntity {
 	private LocalDateTime createdAt;
 
 	@Column(name = "deleted_at")
-
 	private LocalDateTime deletedAt;
 
 	public static ArticleEntity fromEntityDto(ArticleEntityDto dto) {

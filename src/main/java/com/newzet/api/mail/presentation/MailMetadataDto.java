@@ -14,4 +14,5 @@ public class MailMetadataDto {
 	private final String toDomain;
 	private final String mailingList;
 	private final String htmlLink;
+	private final String title;
 }

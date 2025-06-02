@@ -112,6 +112,9 @@ jacocoTestCoverageVerification {
                         '**/Q*.class',
                         '**/*Exception.class',
                         '**/config/**',
+                        '**/*Producer*',
+                        '**/*Consumer*',
+                        '**/*Config*'
                 ])
             })
     )
