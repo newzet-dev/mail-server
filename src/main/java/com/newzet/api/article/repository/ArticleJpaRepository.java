@@ -33,6 +33,7 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, UUID>
 		FROM filtered_article fa
 		LEFT JOIN newsletters n
 		  ON (fa.from_domain = n.domain) OR (fa.mailing_list IS NOT NULL AND fa.mailing_list = n.mailing_list)
+		ORDER BY fa.created_at ASC
 		""", nativeQuery = true)
 	List<ArticleWithImageProjection> findMonthlyArticlesWithImage(
 		@Param("userId") UUID userId,
