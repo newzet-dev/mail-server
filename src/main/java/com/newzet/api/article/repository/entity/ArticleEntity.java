@@ -96,4 +96,8 @@ public class ArticleEntity {
 			.deletedAt(deletedAt)
 			.build();
 	}
+
+	public void readArticle() {
+		this.isRead = true;
+	}
 }

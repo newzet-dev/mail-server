@@ -74,4 +74,9 @@ public class Article {
 			.createdAt(LocalDateTime.now())
 			.build();
 	}
+
+	public boolean checkIsUnRead() {
+		return !isRead;
+	}
 }
+

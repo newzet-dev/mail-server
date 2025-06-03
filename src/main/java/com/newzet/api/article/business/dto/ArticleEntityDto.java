@@ -40,4 +40,21 @@ public class ArticleEntityDto {
 			.deletedAt(article.getDeletedAt())
 			.build();
 	}
+
+	public Article toDomain() {
+		return Article.create(
+			id,
+			toUserId,
+			fromName,
+			fromDomain,
+			mailingList,
+			title,
+			contentUrl,
+			isRead,
+			isLike,
+			isShare,
+			createdAt,
+			deletedAt
+		);
+	}
 }
