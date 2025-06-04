@@ -85,7 +85,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 	}
 
 	@Override
-	public ArticleWithImageProjection getLikeArticleWithImage(UUID userId) {
+	public List<ArticleWithImageProjection> getLikeArticleWithImage(UUID userId) {
 		return articleJpaRepository.findLikeArticleWithImage(userId);
 	}
 

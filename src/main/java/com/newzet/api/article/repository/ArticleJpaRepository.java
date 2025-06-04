@@ -59,7 +59,7 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, UUID>
 		  ON (fa.from_domain = n.domain) OR (fa.mailing_list IS NOT NULL AND fa.mailing_list = n.mailing_list)
 		ORDER BY fa.created_at DESC
 		""", nativeQuery = true)
-	ArticleWithImageProjection findLikeArticleWithImage(@Param("userId") UUID userId);
+	List<ArticleWithImageProjection> findLikeArticleWithImage(@Param("userId") UUID userId);
 
 
 }
