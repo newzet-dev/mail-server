@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.newzet.api.article.business.service.ArticleService;
 import com.newzet.api.article.controller.dto.ArticleContentResponse;
+import com.newzet.api.article.controller.dto.ArticleLikeListResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.annotation.RequireAuth;
@@ -57,6 +58,21 @@ public class ArticleController {
 
 		SuccessResponse<ArticleContentResponse> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "아티클 단건 조회 성공", articleContentResponse);
+
+		return ResponseEntity.ok(response);
+	}
+
+	@GetMapping("/like")
+	@RequireAuth
+	@Operation(summary = "좋아요 아티클 목록 조회",
+		description = "유저가 좋아요를 누른 뉴스레터의 아티클 목록을 조회한다.")
+	public ResponseEntity<SuccessResponse<ArticleLikeListResponse>> getArticleLikeList(
+		@Login AuthUser user) {
+		UUID userId = user.getId();
+		ArticleLikeListResponse articleLikeList = articleService.getArticleLikeList(userId);
+
+		SuccessResponse<ArticleLikeListResponse> response = SuccessResponse.create(
+			ResponseCode.SUCCESS, "아티클 좋아요 목록 조회 성공", articleLikeList);
 
 		return ResponseEntity.ok(response);
 	}
