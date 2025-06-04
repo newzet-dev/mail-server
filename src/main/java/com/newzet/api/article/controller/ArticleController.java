@@ -4,6 +4,7 @@ import java.util.UUID;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -77,4 +78,18 @@ public class ArticleController {
 		return ResponseEntity.ok(response);
 	}
 
+	@PatchMapping("/like/{articleId}")
+	@RequireAuth
+	@Operation(summary = "아티클 좋아요 상태 변경",
+		description = "유저가 좋아요의 상태를 변경한다.")
+	public ResponseEntity<SuccessResponse<String>> updateArticleLike(
+		@PathVariable("articleId") String articleId,
+		@RequestParam("isLike") boolean newLikeStatus) {
+		articleService.changeLikeStatus(articleId, newLikeStatus);
+
+		SuccessResponse<String> response = SuccessResponse.create(
+			ResponseCode.SUCCESS, "좋아요 상태 업데이트 성공", "empty");
+
+		return ResponseEntity.ok(response);
+	}
 }

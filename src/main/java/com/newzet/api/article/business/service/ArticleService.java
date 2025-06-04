@@ -81,6 +81,12 @@ public class ArticleService {
 		return ArticleLikeListResponse.from(articleList);
 	}
 
+	@Transactional
+	public void changeLikeStatus(String articleId, boolean newLikeStatus) {
+		UUID convertedArticleId = UuidConverter.convert(articleId);
+		articleRepository.updateLikeStatus(convertedArticleId, newLikeStatus);
+	}
+
 	// 반환된 dto의 정렬된 순서를 유지하면서, day 별로 DailyArticleResponse를 묶음
 	private List<DailyArticleResponse> getDailyArticleList(
 		List<ArticleDetailResponse> articleDetailResponseList) {
