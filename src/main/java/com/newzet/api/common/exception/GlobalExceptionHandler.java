@@ -13,12 +13,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class GlobalExceptionHandler {
 
+	private static void printLogForException(Exception e) {
+		StackTraceElement origin = e.getStackTrace()[0];
+		log.error("[예외 발생] 클래스: {} / 메서드: {}\n[메시지] {}\n[스택-트레이스]",
+			origin.getClassName(),
+			origin.getMethodName(),
+			e.getMessage(),
+			e
+		);
+	}
+
 	@ExceptionHandler(NewzetException.class)
 	public ProblemDetail handleNewzetEx(NewzetException e) {
 		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.OK);
 		problemDetail.setTitle("Newzet Service Error");
 		problemDetail.setProperty("code", e.getResponseCode().getCode());
 		problemDetail.setProperty("message", e.getMessage());
+
+		printLogForException(e);
 		return problemDetail;
 	}
 
@@ -28,6 +40,8 @@ public class GlobalExceptionHandler {
 		problemDetail.setTitle("Internal Error");
 		problemDetail.setProperty("code", ResponseCode.SERVER_ERROR);
 		problemDetail.setProperty("message", "내부에서 요청 처리에 실패하였습니다. 다시 시도해주세요.");
+
+		printLogForException(e);
 		return problemDetail;
 	}
 
@@ -36,7 +50,10 @@ public class GlobalExceptionHandler {
 		ProblemDetail problemDetail = ProblemDetail.forStatus(HttpStatus.OK);
 		problemDetail.setTitle("Unknown Error");
 		problemDetail.setProperty("code", ResponseCode.SERVER_ERROR);
-		problemDetail.setProperty("message", "알 수 없는 서버 내부 오류가 발생하였습니다, Exception Class=" + e.getClass().getSimpleName());
+		problemDetail.setProperty("message",
+			"알 수 없는 서버 내부 오류가 발생하였습니다, Exception Class=" + e.getClass().getSimpleName());
+
+		printLogForException(e);
 		return problemDetail;
 	}
 }
