@@ -19,6 +19,10 @@ spring:
         time-zone: Asia/Seoul
     properties:
       hibernate.dialect: org.hibernate.dialect.PostgreSQLDialect
+      hibernate.jdbc.batch_size: 100
+      hibernate.order_inserts: true
+      hibernate.order_updates: true
+      hibernate.generate_statistics: false #Hibernate에서 성능 통계 정보 생성 여부 (배치처리 확인용)
     show-sql: ${SPRING_JPA_SHOW_SQL}
 
   data:
