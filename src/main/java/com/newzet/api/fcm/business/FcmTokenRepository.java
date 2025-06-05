@@ -1,11 +1,14 @@
 package com.newzet.api.fcm.business;
 
+import com.newzet.api.fcm.domain.FcmToken;
+
+import java.util.Optional;
 import java.util.UUID;
 
-import com.newzet.api.fcm.business.dto.FcmTokenEntityResponse;
-
 public interface FcmTokenRepository {
-	FcmTokenEntityResponse createIfAbsent(UUID userId, String value);
+    Optional<FcmToken> findByTokenValue(String value);
 
-	Boolean deleteFcmToken(UUID userId, String value);
+    boolean deleteFcmToken(UUID userId, String value);
+
+    FcmToken save(FcmToken fcmToken);
 }
