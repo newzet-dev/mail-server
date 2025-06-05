@@ -42,6 +42,7 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		return buildAuthUserFromToken(token);
 	}
 
+	//TODO: userId 캐시에 올려놓고, 존재하는 userId 인지 확인 필요
 	private AuthUser buildAuthUserFromToken(Token token) {
 		return AuthUser.from(token);
 	}
