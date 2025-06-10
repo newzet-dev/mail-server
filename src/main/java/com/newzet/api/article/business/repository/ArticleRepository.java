@@ -17,5 +17,5 @@ public interface ArticleRepository {
 
 	List<ArticleWithImageProjection> getLikeArticleWithImage(UUID userId);
 
-	void updateLikeStatus(UUID articleId, boolean newLikeStatus);
+	boolean updateLikeStatus(UUID articleId, boolean newLikeStatus);
 }
