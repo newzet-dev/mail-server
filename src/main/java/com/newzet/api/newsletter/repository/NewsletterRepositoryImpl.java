@@ -6,9 +6,9 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import com.newzet.api.newsletter.business.NewsletterRepository;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
-import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
+import com.newzet.api.newsletter.business.repository.NewsletterRepository;
+import com.newzet.api.newsletter.exception.NoNewsletterException;
 
 import lombok.RequiredArgsConstructor;
 
