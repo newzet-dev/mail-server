@@ -1,0 +1,48 @@
+package com.newzet.api.userinfo.presentation.controller;
+
+import java.util.UUID;
+
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import com.newzet.api.common.auth.annotation.Login;
+import com.newzet.api.common.auth.domain.AuthUser;
+import com.newzet.api.common.response.ResponseCode;
+import com.newzet.api.common.response.SuccessResponse;
+import com.newzet.api.userinfo.orchestrator.UserinfoOrchestrator;
+import com.newzet.api.userinfo.presentation.dto.UserinfoUpdateRequest;
+import com.newzet.api.userinfo.presentation.dto.UserinfoWithCategoryListResponse;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+
+@RestController
+@RequiredArgsConstructor
+@Tag(name = "유저정보", description = "유저정보 관련 API")
+@RequestMapping("/api/v1/user")
+public class UserinfoController {
+
+	private final UserinfoOrchestrator userinfoOrchestrator;
+
+	@GetMapping("/info")
+	@Operation(summary = "유저정보 조회",
+		description = "유저정보를 조회한다.")
+	public SuccessResponse<UserinfoWithCategoryListResponse> getUserinfo(@Login AuthUser authUser) {
+		UserinfoWithCategoryListResponse response = userinfoOrchestrator.getUserinfoWithCategoryList(authUser.id());
+		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 조회 성공", response);
+	}
+
+	@PatchMapping("/info")
+	@Operation(summary = "유저정보 수정",
+		description = "유저정보를 수정한다.")
+	public SuccessResponse<Object> updateUserinfo(@Valid @RequestBody UserinfoUpdateRequest request, UUID userId) {
+		userinfoOrchestrator.updateUserinfo(UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"), request.email(),
+			request.nickname(), request.userCategory());
+		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 수정 성공", null);
+	}
+}

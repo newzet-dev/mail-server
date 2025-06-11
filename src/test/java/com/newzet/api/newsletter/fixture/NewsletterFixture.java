@@ -3,11 +3,10 @@ package com.newzet.api.newsletter.fixture;
 import java.util.UUID;
 
 import com.newzet.api.category.domain.Category;
-import com.newzet.api.category.repository.CategoryEntity;
+import com.newzet.api.category.jpa.CategoryEntity;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
-import com.newzet.api.newsletter.domain.model.Color;
-import com.newzet.api.newsletter.domain.model.Newsletter;
-import com.newzet.api.newsletter.repository.NewsletterEntity;
+import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.repository.entity.NewsletterEntity;
 
 public class NewsletterFixture {
 

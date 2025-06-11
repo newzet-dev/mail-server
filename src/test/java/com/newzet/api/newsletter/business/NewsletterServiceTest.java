@@ -15,18 +15,19 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.newzet.api.category.repository.CategoryEntity;
+import com.newzet.api.category.jpa.CategoryEntity;
 import com.newzet.api.common.cache.CacheUtil;
 import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.repository.NewsletterRepository;
 import com.newzet.api.newsletter.business.service.NewsletterService;
-import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
-import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
-import com.newzet.api.newsletter.domain.model.Newsletter;
+import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
+import com.newzet.api.newsletter.presentation.dto.NewsletterInfoResponse;
+import com.newzet.api.newsletter.presentation.dto.NewsletterListResponse;
 
 @ExtendWith(MockitoExtension.class)
 class NewsletterServiceTest {
@@ -150,7 +151,6 @@ class NewsletterServiceTest {
 			any(String.class));
 		assertEquals(1, searchList.newsletterList().size());
 	}
-
 
 	@Test
 	public void getNewsletterById() {

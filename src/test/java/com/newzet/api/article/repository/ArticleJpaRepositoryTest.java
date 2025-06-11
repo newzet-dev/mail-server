@@ -24,9 +24,8 @@ import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.article.repository.entity.ArticleEntity;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
-import com.newzet.api.newsletter.repository.NewsletterEntity;
-import com.newzet.api.newsletter.repository.NewsletterEntityStatus;
 import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
+import com.newzet.api.newsletter.repository.entity.NewsletterEntity;
 
 @DataJpaTest
 

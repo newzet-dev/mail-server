@@ -10,7 +10,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.auth.domain.Token;
-import com.newzet.api.common.auth.exception.TokenBadRequestException;
 
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -28,21 +27,15 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		return hasAuthenticatedUserAnnotation && hasAuthUserParameterType;
 	}
 
+	//TODO: OptionalAuth랑 분리하기
 	@Override
 	public Object resolveArgument(MethodParameter parameter, ModelAndViewContainer mavContainer,
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 		HttpServletRequest request = (HttpServletRequest)webRequest.getNativeRequest();
 		Token token = (Token)request.getAttribute(AUTH_TOKEN_ATTRIBUTE);
-
 		if (token == null) {
-			throw new TokenBadRequestException(
-				"인증 정보를 찾을 수 없습니다. 인증이 필요한 로직인 경우 @requiresAuth 를 추가하세요.");
+			return new AuthUser(null);
 		}
-
-		return buildAuthUserFromToken(token);
-	}
-
-	private AuthUser buildAuthUserFromToken(Token token) {
-		return AuthUser.from(token);
+		return new AuthUser(token.getSubject());
 	}
 }

@@ -1,63 +1,46 @@
 package com.newzet.api.newsletter.business.service;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.newzet.api.advertise.business.AdvertiseRepository;
-import com.newzet.api.newsletter.business.NewsletterRepository;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
-import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
-import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
-import com.newzet.api.newsletter.domain.model.Newsletter;
-import com.newzet.api.newsletter.domain.service.NewsletterRecommender;
-import com.newzet.api.usercategory.business.UserCategoryRepository;
+import com.newzet.api.newsletter.business.exception.NotEnoughNewslettersException;
+import com.newzet.api.newsletter.domain.Newsletter;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class NewsletterRecommendationService {
+	public static final int RECOMMENDATION_QUARTER_SIZE = 4;
+	public static final boolean ADVERTISE_INCLUDED_IN = true; // 정책 상 모든 Advertise Newsletter는 Recommendation List에 포함된다.
+	private final RecommendationStrategy recommendationStrategy;
 
-	private final NewsletterRepository newsletterRepository;
-	private final UserCategoryRepository userCategoryRepository;
-	private final AdvertiseRepository advertiseRepository;
-	private final NewsletterRecommender newsletterRecommender;
+	public List<Newsletter> recommendNewsletterList(List<Newsletter> advertiseNewsletterList,
+		List<Newsletter> userCategoryNewsletterList) {
 
-	public NewsletterRecommendResponse recommendNewsletterList(UUID userId) {
-		List<Newsletter> advertiseNewsletterList = prepareAdvertiseNewsletterList();
-		List<Newsletter> userCategoryNewsletterList = prepareUserCategoryNewsletterList(userId);
+		List<Newsletter> recommendedNewsletterList = new ArrayList<>();
+		if (ADVERTISE_INCLUDED_IN) {
+			recommendedNewsletterList.addAll(advertiseNewsletterList);
+		}
 
-		List<Newsletter> recommendNewsletterList = newsletterRecommender.recommendNewsletterList(
-			advertiseNewsletterList,
-			userCategoryNewsletterList);
-		return NewsletterRecommendResponse.create(recommendNewsletterList.stream()
-			.map(newsletter -> NewsletterResponse.create(newsletter.getId(),
-				newsletter.getName(), newsletter.getImageUrl(), newsletter.getDescription(),
-				newsletter.getPriority()))
-			.toList());
+		int resQuarter = getRemainingQuarter(advertiseNewsletterList.size(),
+			userCategoryNewsletterList.size());
+
+		List<Newsletter> userCategoryRecommendationNewsletterList = recommendationStrategy.createRecommendationList(
+			userCategoryNewsletterList, resQuarter);
+		recommendedNewsletterList.addAll(userCategoryRecommendationNewsletterList);
+
+		return recommendedNewsletterList;
 	}
 
-	private List<Newsletter> prepareUserCategoryNewsletterList(UUID userId) {
-		List<UUID> userCategoryIdList = userCategoryRepository.getUserCategoryListByUserId(
-				userId).stream()
-			.map(userCategoryEntityDto -> userCategoryEntityDto.getCategory().getId())
-			.toList();
-
-		return newsletterRepository.getNewsLetterListByCategoryIdList(
-				userCategoryIdList).stream()
-			.map(NewsletterEntityDto::toDomain)
-			.toList();
-	}
-
-	private List<Newsletter> prepareAdvertiseNewsletterList() {
-		return advertiseRepository.getAllAdvertise()
-			.stream()
-			.map(advertiseEntityDto -> newsletterRepository.getById(
-				advertiseEntityDto.getNewsletterId()))
-			.map(NewsletterEntityDto::toDomain)
-			.toList();
+	private int getRemainingQuarter(int filledQuarter, int size) {
+		int resQuarter = RECOMMENDATION_QUARTER_SIZE - filledQuarter;
+		if (size < resQuarter) {
+			throw new NotEnoughNewslettersException("추천할 뉴스레터 count 수보다 존재하는 뉴스레터 수가 적습니다.");
+		}
+		return resQuarter;
 	}
 
 }

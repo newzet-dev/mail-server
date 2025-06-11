@@ -1,13 +1,10 @@
 package com.newzet.api.newsletter.domain;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.Test;
 
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
-import com.newzet.api.newsletter.domain.model.Newsletter;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
-import com.newzet.api.newsletter.repository.NewsletterEntity;
+import com.newzet.api.newsletter.repository.entity.NewsletterEntity;
 
 class NewsletterTest {
 

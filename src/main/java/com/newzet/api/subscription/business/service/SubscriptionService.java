@@ -6,6 +6,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.util.UuidConverter;
+import com.newzet.api.subscription.business.repository.SubscriptionQueryRepository;
+import com.newzet.api.subscription.business.repository.SubscriptionRepository;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,5 +31,9 @@ public class SubscriptionService {
 	public void deleteSubscription(String subscriptionId) {
 		UUID convertedSubscriptionId = UuidConverter.convert(subscriptionId);
 		subscriptionRepository.delete(convertedSubscriptionId);
+	}
+
+	public boolean isSubscribing(UUID userId, String domain, String mailingList) {
+		return subscriptionQueryRepository.isSubscribed(userId, domain, mailingList);
 	}
 }

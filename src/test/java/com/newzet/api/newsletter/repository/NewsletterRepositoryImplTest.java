@@ -15,11 +15,13 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import com.newzet.api.category.repository.CategoryEntity;
-import com.newzet.api.category.repository.CategoryJpaRepository;
+import com.newzet.api.category.jpa.CategoryEntity;
+import com.newzet.api.category.jpa.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
+import com.newzet.api.newsletter.jpa.repository.NewsletterRepositoryImpl;
+import com.newzet.api.newsletter.repository.entity.NewsletterEntity;
 import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 
 @DataJpaTest
@@ -33,8 +35,7 @@ class NewsletterRepositoryImplTest {
 	@Autowired
 	private CategoryJpaRepository categoryJpaRepository;
 	@Autowired
-	private NewsletterJpaRepository newsletterJpaRepository;
-
+	private com.newzet.api.newsletter.repository.NewsletterJpaRepository newsletterJpaRepository;
 
 	private static void verifyFindByDomainOrMailingList(NewsletterEntityDto n1,
 		NewsletterEntityDto n2) {
@@ -148,7 +149,6 @@ class NewsletterRepositoryImplTest {
 		assertEquals(category.getId(), newsletter.getCategory().getId());
 	}
 
-
 	@Test
 	public void getNewsletterById() {
 		//Given
@@ -179,7 +179,7 @@ class NewsletterRepositoryImplTest {
 		//Given
 		List<NewsletterEntity> newsletterEntityList = new ArrayList<>();
 		List<UUID> categoryIdList = new ArrayList<>();
-		for (int i=0;i<5;i++) {
+		for (int i = 0; i < 5; i++) {
 			CategoryEntity category = categoryJpaRepository.save(
 				CategoryEntity.create("testCategory" + i, "test", "test"));
 			NewsletterEntity newsletter = newsletterJpaRepository.save(
@@ -193,8 +193,9 @@ class NewsletterRepositoryImplTest {
 			categoryIdList);
 
 		//Then
-		for (int i=0;i<5;i++) {
-			Assertions.assertThat(newsLetterListByCategoryIdList.get(i).getId()).isEqualTo(newsletterEntityList.get(i).getId());
+		for (int i = 0; i < 5; i++) {
+			Assertions.assertThat(newsLetterListByCategoryIdList.get(i).getId())
+				.isEqualTo(newsletterEntityList.get(i).getId());
 		}
 
 	}

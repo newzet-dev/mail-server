@@ -10,8 +10,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.newzet.api.subscription.business.service.SubscriptionQueryRepository;
-import com.newzet.api.subscription.business.service.SubscriptionRepository;
+import com.newzet.api.subscription.business.repository.SubscriptionQueryRepository;
+import com.newzet.api.subscription.business.repository.SubscriptionRepository;
 import com.newzet.api.subscription.business.service.SubscriptionService;
 
 @ExtendWith(MockitoExtension.class)
@@ -26,17 +26,17 @@ public class SubscriptionServiceTest {
 
 	@Test
 	public void addSubscriptionIfUnsubscribed_whenSubscribed_saveSubscription() {
-	    //Given
+		//Given
 		UUID userId = UUID.randomUUID();
 		String fromName = "name";
 		String fromDomain = "domain";
 		String mailingList = "mailingList";
 		when(subscriptionQueryRepository.isSubscribed(any(), any(), any())).thenReturn(false);
 
-	    //When
+		//When
 		subscriptionService.addSubscriptionIfUnsubscribed(userId, fromName, fromDomain, mailingList);
 
-	    //Then
+		//Then
 		verify(subscriptionRepository, times(1)).save(userId, fromName, fromDomain, mailingList);
 	}
 
@@ -46,7 +46,8 @@ public class SubscriptionServiceTest {
 		when(subscriptionQueryRepository.isSubscribed(any(), any(), any())).thenReturn(true);
 
 		//When
-		subscriptionService.addSubscriptionIfUnsubscribed(UUID.randomUUID(), "testName", "testDomain", "testMailingList");
+		subscriptionService.addSubscriptionIfUnsubscribed(UUID.randomUUID(), "testName", "testDomain",
+			"testMailingList");
 
 		//Then
 		verify(subscriptionRepository, never()).save(any(), any(), any(), any());

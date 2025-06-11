@@ -1,0 +1,9 @@
+version: '3'
+services:
+
+  postgresql-main:
+    build:
+      context: .
+      dockerfile: Dockerfile.main.local
+    ports:
+      - '5432:5432'
