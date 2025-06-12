@@ -100,6 +100,10 @@ public class ArticleEntity {
 			.build();
 	}
 
+	public void addImageUrlForSave(String imageUrl) {
+		this.imageUrl = imageUrl;
+	}
+
 	public void readArticle() {
 		this.isRead = true;
 	}

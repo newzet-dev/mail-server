@@ -12,6 +12,7 @@ import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.article.repository.entity.ArticleEntity;
 import com.newzet.api.article.repository.exception.NoArticleException;
+import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -25,6 +26,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
 	private static final int BATCH_SIZE = 100;
 	private final ArticleJpaRepository articleJpaRepository;
+	private final NewsletterJpaRepository newsletterJpaRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
 
@@ -50,6 +52,9 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
 		for (ArticleEntity entityToSave : entitiesToSave) {
 			try {
+				String imageUrl = newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+					entityToSave.getFromDomain(), entityToSave.getMailingList());
+				entityToSave.addImageUrlForSave(imageUrl);
 				entityManager.persist(entityToSave);
 			} catch (Exception e) {
 				log.error("Failed to persist ArticleEntity: {}", entityToSave, e);
