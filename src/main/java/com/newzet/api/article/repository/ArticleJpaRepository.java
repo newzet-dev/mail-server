@@ -16,24 +16,18 @@ import io.lettuce.core.dynamic.annotation.Param;
 public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, UUID> {
 
 	@Query(value = """
-		WITH filtered_article AS (
-		    SELECT a.id, a.from_name, a.title, a.is_read, a.created_at, a.mailing_list, a.from_domain
-		    FROM article a
-		    WHERE a.to_user_id = :userId
-		      AND a.created_at >= make_date(:year, :month, 1)
-		      AND a.created_at < make_date(:year, :month, 1) + INTERVAL '1 month'
-		)
-		SELECT 
-		    fa.id,
-		    fa.from_name,
-		    fa.title,
-		    fa.is_read,
-		    fa.created_at,
-		    n.image_url
-		FROM filtered_article fa
-		LEFT JOIN newsletters n
-		  ON (fa.from_domain = n.domain) OR (fa.mailing_list IS NOT NULL AND fa.mailing_list = n.mailing_list)
-		ORDER BY fa.created_at ASC
+		SELECT
+			a.id,
+			a.from_name,
+			a.title,
+			a.is_read,
+			a.created_at,
+			a.image_url
+		FROM article a
+		WHERE a.to_user_id = :userId
+		AND a.created_at >= make_date(:year, :month, 1)
+		AND a.created_at < make_date(:year, :month, 1) + INTERVAL '1 month'
+		ORDER BY a.created_at ASC;
 		""", nativeQuery = true)
 	List<ArticleWithImageProjection> findMonthlyArticlesWithImage(
 		@Param("userId") UUID userId,
@@ -42,21 +36,15 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, UUID>
 	);
 
 	@Query(value = """
-		WITH filtered_article AS (
-		    SELECT a.id, a.from_name, a.title, a.is_read, a.created_at, a.mailing_list, a.from_domain
-		    FROM article a
-		    WHERE a.to_user_id = :userId and a.is_like = true
-		)
 		SELECT 
-		    fa.id AS id,
-		    fa.from_name,
-		    fa.title,
-		    fa.is_read,
-		    fa.created_at,
-		    n.image_url
-		FROM filtered_article fa
-		LEFT JOIN newsletters n
-		  ON (fa.from_domain = n.domain) OR (fa.mailing_list IS NOT NULL AND fa.mailing_list = n.mailing_list)
+		    a.id AS id,
+		    a.from_name,
+		    a.title,
+		    a.is_read,
+		    a.created_at,
+		    a.image_url
+		FROM article a
+		WHERE a.to_user_id = :userId and a.is_like = true
 		ORDER BY fa.created_at DESC;
 		""", nativeQuery = true)
 	ArticleWithImageProjection findArticleWithImage(@Param("userId") UUID userId);
