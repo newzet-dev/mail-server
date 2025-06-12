@@ -88,7 +88,7 @@ class ArticleServiceTest {
 		// Given
 		Article article = Article.create(UUID.randomUUID(), UUID.randomUUID(), "newsletter name",
 			"domain",
-			"mail-list", "title", "https://", false, false, false, LocalDateTime.now(),
+			"mail-list", "title", "https://", "https://", false, false, false, LocalDateTime.now(),
 			LocalDateTime.now());
 		ArticleEntityDto updatedArticle = ArticleEntityDto.builder()
 			.title("title")
@@ -115,7 +115,7 @@ class ArticleServiceTest {
 		// Given
 		Article article = Article.create(UUID.randomUUID(), UUID.randomUUID(), "newsletter name",
 			"domain",
-			"mail-list", "title", "https://", true, false, false, LocalDateTime.now(),
+			"mail-list", "title", "https://", "https://", true, false, false, LocalDateTime.now(),
 			LocalDateTime.now());
 		String articleId = article.getId().toString();
 		when(articleRepository.getById(any(UUID.class)))

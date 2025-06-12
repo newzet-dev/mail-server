@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.entity.ArticleEntity;
+import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 
 import jakarta.persistence.EntityManager;
 
@@ -30,6 +31,8 @@ class ArticleRepositoryTest {
 
 	@Mock
 	private EntityManager entityManager;
+	@Mock
+	private NewsletterJpaRepository newsletterJpaRepository;
 	@InjectMocks
 	private ArticleRepositoryImpl articleRepository;
 
@@ -44,6 +47,8 @@ class ArticleRepositoryTest {
 		int entityCount = 20;
 
 		List<ArticleEntityDto> dtos = createMockArticleDtos(entityCount);
+		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
 		articleRepository.saveAll(dtos);
@@ -63,6 +68,8 @@ class ArticleRepositoryTest {
 		int expectedFlushCount = (entityCount / batchSize) + (entityCount % batchSize > 0 ? 1 : 0);
 
 		List<ArticleEntityDto> dtos = createMockArticleDtos(entityCount);
+		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
 		articleRepository.saveAll(dtos);
@@ -78,6 +85,8 @@ class ArticleRepositoryTest {
 		// Given
 		int batchSize = 100;
 		List<ArticleEntityDto> dtos = createMockArticleDtos(batchSize);
+		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
 		articleRepository.saveAll(dtos);
@@ -96,6 +105,8 @@ class ArticleRepositoryTest {
 		dtos.addAll(createMockArticleDtosWithIds(5));
 
 		ArgumentCaptor<ArticleEntity> persistCaptor = ArgumentCaptor.forClass(ArticleEntity.class);
+		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
 		articleRepository.saveAll(dtos);
@@ -110,6 +121,8 @@ class ArticleRepositoryTest {
 		// Given
 		int entityCount = 10;
 		List<ArticleEntityDto> inputDtos = createMockArticleDtos(entityCount);
+		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
 		doAnswer(invocation -> {
@@ -147,6 +160,8 @@ class ArticleRepositoryTest {
 	void saveAll_WhenExceptionOccurs_ThenShouldNotPropagateException() {
 		// Given
 		List<ArticleEntityDto> dtos = createMockArticleDtos(3);
+		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+			anyString(), anyString())).thenReturn("imageUrl");
 
 		doThrow(new RuntimeException("Test exception")).when(entityManager)
 			.persist(any(ArticleEntity.class));
@@ -167,6 +182,8 @@ class ArticleRepositoryTest {
 			.fromDomain(null)
 			.title("Test Title")
 			.build();
+		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+			any(), any())).thenReturn(null);
 
 		// When
 		articleRepository.saveAll(List.of(dto));
@@ -185,6 +202,8 @@ class ArticleRepositoryTest {
 		// Given
 		List<ArticleEntityDto> dtos = createMockArticleDtos(3);
 
+		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+			anyString(), anyString())).thenReturn("imageUrl");
 		doThrow(new RuntimeException("persist fail"))
 			.doNothing()
 			.doNothing()
