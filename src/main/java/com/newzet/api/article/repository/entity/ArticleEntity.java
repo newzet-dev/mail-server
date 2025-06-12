@@ -45,6 +45,9 @@ public class ArticleEntity {
 	@Column(name = "title")
 	private String title;
 
+	@Column(name = "image_url")
+	private String imageUrl;
+
 	@Column(name = "content_url")
 	private String contentUrl;
 

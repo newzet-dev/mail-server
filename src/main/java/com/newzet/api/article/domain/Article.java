@@ -18,6 +18,7 @@ public class Article {
 	private final String fromDomain;
 	private final String mailingList;
 	private final String title;
+	private final String imageUrl;
 	private final String contentUrl;
 	private final boolean isRead;
 	private final boolean isLike;
@@ -32,6 +33,7 @@ public class Article {
 		String fromDomain,
 		String mailingList,
 		String title,
+		String imageUrl,
 		String contentUrl,
 		boolean isRead,
 		boolean isLike,
@@ -45,6 +47,7 @@ public class Article {
 			.fromDomain(fromDomain)
 			.mailingList(mailingList)
 			.title(title)
+			.imageUrl(imageUrl)
 			.contentUrl(contentUrl)
 			.isRead(isRead)
 			.isLike(isLike)
