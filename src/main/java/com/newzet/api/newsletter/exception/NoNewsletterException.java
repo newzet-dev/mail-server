@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.repository.exception;
+package com.newzet.api.newsletter.exception;
 
 import com.newzet.api.common.exception.NewzetException;
 import com.newzet.api.common.response.ResponseCode;

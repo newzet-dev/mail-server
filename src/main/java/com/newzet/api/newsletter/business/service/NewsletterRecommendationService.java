@@ -6,8 +6,8 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 
 import com.newzet.api.advertise.business.AdvertiseRepository;
-import com.newzet.api.newsletter.business.NewsletterRepository;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.repository.NewsletterRepository;
 import com.newzet.api.newsletter.controller.dto.NewsletterRecommendResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterResponse;
 import com.newzet.api.newsletter.domain.model.Newsletter;

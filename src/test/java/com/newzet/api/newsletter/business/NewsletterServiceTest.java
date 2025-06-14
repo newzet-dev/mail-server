@@ -22,6 +22,7 @@ import com.newzet.api.common.lock.LockFactory;
 import com.newzet.api.common.lock.exception.LocalLockAcquisitionException;
 import com.newzet.api.newsletter.business.dto.NewsletterCacheDto;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.repository.NewsletterRepository;
 import com.newzet.api.newsletter.business.service.NewsletterService;
 import com.newzet.api.newsletter.controller.dto.NewsletterInfoResponse;
 import com.newzet.api.newsletter.controller.dto.NewsletterListResponse;
@@ -150,7 +151,6 @@ class NewsletterServiceTest {
 			any(String.class));
 		assertEquals(1, searchList.newsletterList().size());
 	}
-
 
 	@Test
 	public void getNewsletterById() {

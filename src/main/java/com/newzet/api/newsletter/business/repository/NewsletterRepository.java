@@ -1,4 +1,4 @@
-package com.newzet.api.newsletter.business;
+package com.newzet.api.newsletter.business.repository;
 
 import java.util.List;
 import java.util.Optional;
