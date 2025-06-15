@@ -25,7 +25,7 @@ public interface SubscriptionJpaRepository extends JpaRepository<SubscriptionEnt
 			  FROM subscriptions s
 			  WHERE s.user_id = :userId
 			  ) fs
-			LEFT OUTER JOIN
+			INNER JOIN
 			  newsletters n
 			ON
 			  fs.newsletter_domain = n.domain
