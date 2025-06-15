@@ -10,6 +10,7 @@ import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -22,7 +23,10 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "SUBSCRIPTIONS")
+@Table(name = "SUBSCRIPTIONS",
+	indexes = {
+		@Index(name = "idx_subscriptions_user_id", columnList = "user_id")
+	})
 public class SubscriptionEntity {
 	@Id
 	@UuidGenerator
@@ -47,7 +51,8 @@ public class SubscriptionEntity {
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private LocalDateTime deletedAt;
 
-	public static SubscriptionEntity create(UUID userId, String newsletterName, String newsletterDomain, String newsletterMailingList) {
+	public static SubscriptionEntity create(UUID userId, String newsletterName,
+		String newsletterDomain, String newsletterMailingList) {
 		return SubscriptionEntity.builder()
 			.userId(userId)
 			.newsletterName(newsletterName)
@@ -58,6 +63,7 @@ public class SubscriptionEntity {
 	}
 
 	public SubscriptionEntityDto toEntityDto() {
-		return SubscriptionEntityDto.create(id, userId, newsletterName, newsletterDomain, newsletterMailingList);
+		return SubscriptionEntityDto.create(id, userId, newsletterName, newsletterDomain,
+			newsletterMailingList);
 	}
 }
