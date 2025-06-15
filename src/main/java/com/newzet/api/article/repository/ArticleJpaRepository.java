@@ -45,8 +45,8 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, UUID>
 		    a.image_url
 		FROM article a
 		WHERE a.to_user_id = :userId and a.is_like = true
-		ORDER BY fa.created_at DESC;
+		ORDER BY a.created_at DESC;
 		""", nativeQuery = true)
-	ArticleWithImageProjection findArticleWithImage(@Param("userId") UUID userId);
+	List<ArticleWithImageProjection> findLikeArticleWithImage(@Param("userId") UUID userId);
 
 }

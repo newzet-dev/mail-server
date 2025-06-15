@@ -15,5 +15,5 @@ public interface ArticleRepository {
 
 	ArticleEntityDto readArticle(UUID articleId);
 
-	ArticleWithImageProjection getArticleByUserId(UUID userId);
+	List<ArticleWithImageProjection> findLikeArticleWithImage(UUID userId);
 }
