@@ -48,4 +48,9 @@ public class NewsletterFixture {
 				.toDomain(), domain,
 			mailingList, 1, "test", "test", "test", "test", "test", "test", Color.DEFAULT);
 	}
+
+	public static NewsletterEntity createEntityWithImageUrlAndDomainAndMailingList(CategoryEntity categoryEntity, String imageUrl, String domain, String mailingList) {
+		return NewsletterEntity.create(name, categoryEntity, domain,
+			mailingList, 1, imageUrl, "test", "test", "test", "test", "test", Color.DEFAULT);
+	}
 }

@@ -1,5 +1,6 @@
 package com.newzet.api.newsletter.repository;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.util.ArrayList;
@@ -7,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.assertj.core.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,6 +20,7 @@ import com.newzet.api.category.repository.CategoryEntity;
 import com.newzet.api.category.repository.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.dto.NewsletterImageUrlCacheDto;
 import com.newzet.api.newsletter.exception.NoNewsletterException;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
 
@@ -192,10 +194,61 @@ class NewsletterRepositoryImplTest {
 
 		//Then
 		for (int i = 0; i < 5; i++) {
-			Assertions.assertThat(newsLetterListByCategoryIdList.get(i).getId())
+			assertThat(newsLetterListByCategoryIdList.get(i).getId())
 				.isEqualTo(newsletterEntityList.get(i).getId());
 		}
 
+	}
+
+	@Test
+	@DisplayName("성공: domain으로 이미지 URL을 정확히 조회한다")
+	void findNewsLetterImageUrlByDomainAndMailingList_success_byDomain() {
+		// given (준비): 테스트 데이터를 DB에 저장
+		CategoryEntity categoryEntity = categoryJpaRepository.save(CategoryEntity.create("testCategory", "test", "test"));
+		String expectedUrl = "http://test.com/image.png";
+		newsletterJpaRepository.save(
+			NewsletterFixture.createEntityWithImageUrlAndDomainAndMailingList(categoryEntity, expectedUrl,
+				"test.com", "hello-news"));
+		// when (실행): domain은 일치, mailingList는 불일치하는 조건으로 조회
+		NewsletterImageUrlCacheDto resultDto = newsletterRepository.findNewsLetterImageUrlByDomainAndMailingList(
+			"test.com", "another-mailing-list");
+
+		// then (검증): 예상된 URL이 포함된 DTO가 반환되었는지 확인
+		assertThat(resultDto).isNotNull();
+		assertThat(resultDto.imageUrl()).isEqualTo(expectedUrl);
+	}
+
+	@Test
+	@DisplayName("성공: mailingList로 이미지 URL을 정확히 조회한다")
+	void findNewsLetterImageUrlByDomainAndMailingList_success_byMailingList() {
+		// given (준비)
+		CategoryEntity categoryEntity = categoryJpaRepository.save(CategoryEntity.create("testCategory", "test", "test"));
+		String expectedUrl = "http://hello.com/logo.jpg";
+		newsletterJpaRepository.save(
+			NewsletterFixture.createEntityWithImageUrlAndDomainAndMailingList(categoryEntity, expectedUrl,
+				"hello.com", "hello-news"));
+
+		// when (실행): domain은 불일치, mailingList는 일치하는 조건으로 조회
+		NewsletterImageUrlCacheDto resultDto = newsletterRepository.findNewsLetterImageUrlByDomainAndMailingList(
+			"another-domain.com", "hello-news");
+
+		// then (검증)
+		assertThat(resultDto).isNotNull();
+		assertThat(resultDto.imageUrl()).isEqualTo(expectedUrl);
+	}
+
+	@Test
+	@DisplayName("실패: 일치하는 domain이나 mailingList가 없으면 NoNewsletterException 예외를 던진다")
+	void findNewsLetterImageUrlByDomainAndMailingList_failure_throwsException() {
+		// given
+		String nonExistingDomain = "non-existing.com";
+		String nonExistingMailingList = "no-list";
+
+		// when & then
+		assertThrows(NoNewsletterException.class, () -> {
+			newsletterRepository.findNewsLetterImageUrlByDomainAndMailingList(
+				nonExistingDomain, nonExistingMailingList);
+		});
 	}
 
 	private NewsletterEntityDto saveNewsletter() {
