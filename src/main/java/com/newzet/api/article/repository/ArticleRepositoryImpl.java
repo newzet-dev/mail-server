@@ -52,9 +52,6 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
 		for (ArticleEntity entityToSave : entitiesToSave) {
 			try {
-				String imageUrl = newsletterJpaRepository.getImageUrlByDomainOrMailingList(
-					entityToSave.getFromDomain(), entityToSave.getMailingList());
-				entityToSave.addImageUrlForSave(imageUrl);
 				entityManager.persist(entityToSave);
 			} catch (Exception e) {
 				log.error("Failed to persist ArticleEntity: {}", entityToSave, e);
