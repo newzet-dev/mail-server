@@ -69,7 +69,7 @@ public class ArticleService {
 	}
 
 	public ArticleLikeListResponse getArticleLikeList(UUID userId) {
-		List<ArticleDetailResponse> articleList = articleRepository.getLikeArticleWithImage(userId)
+		List<ArticleDetailResponse> articleList = articleRepository.findLikeArticleWithImage(userId)
 			.stream()
 			.map(articleWithImageProjection -> ArticleDetailResponse.of(
 				articleWithImageProjection.getId(),
