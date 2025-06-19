@@ -15,7 +15,7 @@ import lombok.RequiredArgsConstructor;
 public class NewsletterImageUrlService {
 	private static final String CACHE_DOMAIN_PREFIX = "nImgUrl:domain:";
 	private static final String CACHE_MAILING_LIST_PREFIX = "nImgUrl:mList:";
-	private static final Long CACHE_DURATION = 1000 * 60 * 5L;
+	private static final Long CACHE_DURATION = 1000 * 60 * 24 * 7L; // 7일
 	private final NewsletterRepository newsletterRepository;
 	private final CacheUtil cacheUtil;
 
