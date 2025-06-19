@@ -30,7 +30,7 @@ public class NewsletterImageUrlService {
 		NewsletterImageUrlCacheDto cacheDto = newsletterRepository.findNewsLetterImageUrlByDomainAndMailingList(
 			domain, mailingList);
 		cacheUtil.set(CACHE_DOMAIN_PREFIX + domain, cacheDto, CACHE_DURATION);
-		cacheUtil.set(CACHE_MAILING_LIST_PREFIX + domain, cacheDto, CACHE_DURATION);
+		cacheUtil.set(CACHE_MAILING_LIST_PREFIX + mailingList, cacheDto, CACHE_DURATION);
 
 		return cacheDto;
 	}
