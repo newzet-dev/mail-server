@@ -19,7 +19,7 @@ public class NewsletterImageUrlService {
 	private final NewsletterRepository newsletterRepository;
 	private final CacheUtil cacheUtil;
 
-	private NewsletterImageUrlCacheDto findByDomainOrMailingList(String domain,
+	public NewsletterImageUrlCacheDto findByDomainOrMailingList(String domain,
 		String mailingList) {
 		return findByDomainOrMailingListOnCache(domain, mailingList).orElseGet(
 			() -> findByDomainOrMailingListOnDatabase(domain, mailingList));

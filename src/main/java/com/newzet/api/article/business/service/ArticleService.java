@@ -32,9 +32,9 @@ public class ArticleService {
 	private final ArticleRepository articleRepository;
 
 	public void saveArticleBatch(UUID userId, String fromName, String fromDomain,
-		String mailingList, String htmlLink, String title) {
-		Article article = Article.createNewArticle(userId, fromName, fromDomain, mailingList, title,
-			htmlLink);
+		String mailingList, String imageUrl, String htmlLink, String title) {
+		Article article = Article.createNewArticle(userId, fromName, fromDomain, mailingList,
+			imageUrl, title, htmlLink);
 		batchProducer.addToBatch(article);
 	}
 

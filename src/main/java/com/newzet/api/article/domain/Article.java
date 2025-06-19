@@ -62,6 +62,7 @@ public class Article {
 		String fromName,
 		String fromDomain,
 		String mailingList,
+		String imageUrl,
 		String title,
 		String contentUrl) {
 		return Article.builder()
@@ -69,6 +70,7 @@ public class Article {
 			.fromName(fromName)
 			.fromDomain(fromDomain)
 			.mailingList(mailingList)
+			.imageUrl(imageUrl)
 			.title(title)
 			.contentUrl(contentUrl)
 			.isRead(false)
