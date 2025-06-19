@@ -23,6 +23,6 @@ public interface NewsletterJpaRepository extends JpaRepository<NewsletterEntity,
 
 	@Query("select n.imageUrl from NewsletterEntity n"
 		+ " where n.domain in :domain or n.mailingList in :mailingList")
-	String getImageUrlByDomainOrMailingList(@Param("domain") String domain,
+	String findImageUrlByDomainOrMailingList(@Param("domain") String domain,
 		@Param("mailingList") String mailingList);
 }

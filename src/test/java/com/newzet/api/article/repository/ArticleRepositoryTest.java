@@ -47,7 +47,7 @@ class ArticleRepositoryTest {
 		int entityCount = 20;
 
 		List<ArticleEntityDto> dtos = createMockArticleDtos(entityCount);
-		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+		when(newsletterJpaRepository.findImageUrlByDomainOrMailingList(
 			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
@@ -68,7 +68,7 @@ class ArticleRepositoryTest {
 		int expectedFlushCount = (entityCount / batchSize) + (entityCount % batchSize > 0 ? 1 : 0);
 
 		List<ArticleEntityDto> dtos = createMockArticleDtos(entityCount);
-		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+		when(newsletterJpaRepository.findImageUrlByDomainOrMailingList(
 			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
@@ -85,7 +85,7 @@ class ArticleRepositoryTest {
 		// Given
 		int batchSize = 100;
 		List<ArticleEntityDto> dtos = createMockArticleDtos(batchSize);
-		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+		when(newsletterJpaRepository.findImageUrlByDomainOrMailingList(
 			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
@@ -105,7 +105,7 @@ class ArticleRepositoryTest {
 		dtos.addAll(createMockArticleDtosWithIds(5));
 
 		ArgumentCaptor<ArticleEntity> persistCaptor = ArgumentCaptor.forClass(ArticleEntity.class);
-		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+		when(newsletterJpaRepository.findImageUrlByDomainOrMailingList(
 			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
@@ -121,7 +121,7 @@ class ArticleRepositoryTest {
 		// Given
 		int entityCount = 10;
 		List<ArticleEntityDto> inputDtos = createMockArticleDtos(entityCount);
-		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+		when(newsletterJpaRepository.findImageUrlByDomainOrMailingList(
 			anyString(), anyString())).thenReturn("imageUrl");
 
 		// When
@@ -160,7 +160,7 @@ class ArticleRepositoryTest {
 	void saveAll_WhenExceptionOccurs_ThenShouldNotPropagateException() {
 		// Given
 		List<ArticleEntityDto> dtos = createMockArticleDtos(3);
-		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+		when(newsletterJpaRepository.findImageUrlByDomainOrMailingList(
 			anyString(), anyString())).thenReturn("imageUrl");
 
 		doThrow(new RuntimeException("Test exception")).when(entityManager)
@@ -182,7 +182,7 @@ class ArticleRepositoryTest {
 			.fromDomain(null)
 			.title("Test Title")
 			.build();
-		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+		when(newsletterJpaRepository.findImageUrlByDomainOrMailingList(
 			any(), any())).thenReturn(null);
 
 		// When
@@ -202,7 +202,7 @@ class ArticleRepositoryTest {
 		// Given
 		List<ArticleEntityDto> dtos = createMockArticleDtos(3);
 
-		when(newsletterJpaRepository.getImageUrlByDomainOrMailingList(
+		when(newsletterJpaRepository.findImageUrlByDomainOrMailingList(
 			anyString(), anyString())).thenReturn("imageUrl");
 		doThrow(new RuntimeException("persist fail"))
 			.doNothing()
