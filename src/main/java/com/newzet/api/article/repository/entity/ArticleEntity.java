@@ -107,4 +107,8 @@ public class ArticleEntity {
 	public void readArticle() {
 		this.isRead = true;
 	}
+
+	public void updateLike(boolean newLike) {
+		this.isLike = newLike;
+	}
 }

@@ -49,4 +49,5 @@ public interface ArticleJpaRepository extends JpaRepository<ArticleEntity, UUID>
 		""", nativeQuery = true)
 	List<ArticleWithImageProjection> findLikeArticleWithImage(@Param("userId") UUID userId);
 
+
 }

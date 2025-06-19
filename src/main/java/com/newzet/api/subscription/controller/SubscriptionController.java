@@ -43,11 +43,11 @@ public class SubscriptionController {
 	@DeleteMapping("/{subscriptionId}")
 	@Operation(summary = "뉴스레터 구독 삭제",
 		description = "유저의 뉴스레터 구독을 삭제한다.")
-	public ResponseEntity<SuccessResponse> deleteSubscription(
+	public ResponseEntity<SuccessResponse<String>> deleteSubscription(
 		@PathVariable String subscriptionId) {
 		subscriptionService.deleteSubscription(subscriptionId);
 		SuccessResponse<String> response = SuccessResponse.create(
-			ResponseCode.SUCCESS, "뉴스레터 구독 삭제 성공", null);
+			ResponseCode.SUCCESS, "뉴스레터 구독 삭제 성공", "empty");
 
 		return ResponseEntity.ok(response);
 	}
