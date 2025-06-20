@@ -21,14 +21,15 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.StreamReceiver;
 import org.springframework.stereotype.Component;
 
+import com.newzet.api.article.business.batch.ArticleBatchConsumer;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.batch.dto.BatchProcessingResult;
 import com.newzet.api.article.repository.batch.dto.BatchSaveData;
-import com.newzet.api.common.batch.BatchConsumer;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
+import com.newzet.api.fcm.orchestrator.FcmTokenOrchestrator;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -38,7 +39,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
+public class ArticleRedisBatchConsumerImpl implements ArticleBatchConsumer {
 
 	private static final String ARTICLE_STREAM_KEY = "article:stream";
 	private static final String CONSUMER_GROUP = "article-processor-group";
@@ -51,9 +52,10 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 	private final ArticleRepository articleRepository;
 	private final BatchConfig batchConfig;
 	private final OptionalObjectMapper optionalObjectMapper;
+	private final FcmTokenOrchestrator fcmTokenOrchestrator;
+	private final AtomicBoolean isProcessing = new AtomicBoolean(false);
 	private ExecutorService executorService;
 	private ExecutorService ackExecutorService;
-	private final AtomicBoolean isProcessing = new AtomicBoolean(false);
 
 	@PostConstruct
 	public void init() {
@@ -280,12 +282,22 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 			try {
 				List<ArticleEntityDto> saved = articleRepository.saveAll(toSave);
 				result.setSuccessCount(saved.size());
+				sendFCM(saved); // fcm 메시지 전송 배치처리
 			} catch (Exception e) {
 				result.incrementFailCount(toSave.size());
 				log.error("SAVE FAILED for {} articles: {}", toSave.size(), e.getMessage(), e);
 			}
 		} else {
 			log.info("No new articles to save (all are duplicates or failed)");
+		}
+	}
+
+	private void sendFCM(List<ArticleEntityDto> saved) {
+		if (!saved.isEmpty()) {
+			for (ArticleEntityDto articleData : saved) {
+				fcmTokenOrchestrator.sendFcmWhenMailReceivedBatch(articleData.getToUserId(),
+					articleData.getFromName(), articleData.getTitle());
+			}
 		}
 	}
 
@@ -306,7 +318,7 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 
 	private void logBatchSummary(int totalArticles, BatchProcessingResult result, long duration) {
 		log.info(
-			"BATCH SUMMARY: total={}, success={}, duplicate={}, cacheHit={}, failed={}, elapsed={}ms",
+			"ARTICLE BATCH SUMMARY: total={}, success={}, duplicate={}, cacheHit={}, failed={}, elapsed={}ms",
 			totalArticles, result.getSuccessCount(), result.getDuplicateCount(),
 			result.getCacheHitCount(), result.getFailCount(), duration);
 	}
