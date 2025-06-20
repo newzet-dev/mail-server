@@ -31,8 +31,8 @@ class NewsletterImageUrlServiceTest {
 	// 테스트에서 공통으로 사용할 변수들
 	private String domain = "test.com";
 	private String mailingList = "newsletter";
-	private String domainKey = "nImgUrl:domain:" + domain;
-	private String mailingListKey = "nImgUrl:mList:" + mailingList;
+	private String domainKey = "newsletterImageUrl:domain:" + domain;
+	private String mailingListKey = "newsletterImageUrl:mailingList:" + mailingList;
 	private NewsletterImageUrlCacheDto cacheDto = new NewsletterImageUrlCacheDto(
 		"http://image.url");
 

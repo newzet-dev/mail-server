@@ -12,7 +12,6 @@ import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.article.repository.entity.ArticleEntity;
 import com.newzet.api.article.repository.exception.NoArticleException;
-import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -26,14 +25,14 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
 	private static final int BATCH_SIZE = 100;
 	private final ArticleJpaRepository articleJpaRepository;
-	private final NewsletterJpaRepository newsletterJpaRepository;
+	private final ArticleJpaQueryRepository articleJpaQueryRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
 
 	@Override
 	public List<ArticleWithImageProjection> getMonthlyArticleWithImage(UUID userId, int year,
 		int month) {
-		return articleJpaRepository.findMonthlyArticlesWithImage(
+		return articleJpaQueryRepository.findMonthlyArticlesWithImage(
 			userId, year, month);
 	}
 
@@ -88,7 +87,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
 	@Override
 	public List<ArticleWithImageProjection> findLikeArticleWithImage(UUID userId) {
-		return articleJpaRepository.findLikeArticleWithImage(userId);
+		return articleJpaQueryRepository.findLikeArticleWithImage(userId);
 	}
 
 	@Override
