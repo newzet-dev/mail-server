@@ -23,4 +23,8 @@ public class FcmTokenOrchestrator {
 	public void deleteFcmToken(UUID userId, String value) {
 		fcmTokenService.deleteFcmToken(userId, value);
 	}
+
+	public void sendFcmWhenMailReceivedBatch(UUID userId, String fromName, String title) {
+		fcmTokenService.sendFcmWhenMailReceivedBatch(userId, fromName, title);
+	}
 }
