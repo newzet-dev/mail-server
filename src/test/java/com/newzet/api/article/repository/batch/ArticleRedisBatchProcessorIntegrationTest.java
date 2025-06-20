@@ -38,6 +38,7 @@ import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
+import com.newzet.api.fcm.orchestrator.FcmTokenOrchestrator;
 
 @ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class,
 	JwtTestConfig.class})
@@ -56,6 +57,9 @@ class ArticleRedisBatchProcessorIntegrationTest {
 
 	@Autowired
 	private OptionalObjectMapper optionalObjectMapper;
+
+	@Autowired
+	private FcmTokenOrchestrator fcmTokenOrchestrator;
 
 	@MockitoBean
 	private ArticleRepository articleRepository;
@@ -90,7 +94,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			reactiveRedisTemplate,
 			articleRepository,
 			mockBatchConfig,
-			optionalObjectMapper
+			optionalObjectMapper,
+			fcmTokenOrchestrator
 		);
 
 		initializeStream();
@@ -236,7 +241,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			),
 			articleRepository,
 			mockBatchConfig,
-			optionalObjectMapper
+			optionalObjectMapper,
+			fcmTokenOrchestrator
 		);
 
 		consumerWithMockRedis.init();
@@ -256,7 +262,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 			mock(ReactiveRedisTemplate.class),
 			mock(ArticleRepository.class),
 			mock(BatchConfig.class),
-			optionalObjectMapper
+			optionalObjectMapper,
+			fcmTokenOrchestrator
 		);
 
 		Map<String, Object> status = consumerWithMockRedis.getBatchStatus();
