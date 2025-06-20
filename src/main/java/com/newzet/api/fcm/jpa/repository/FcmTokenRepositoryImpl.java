@@ -1,5 +1,6 @@
 package com.newzet.api.fcm.jpa.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -35,7 +36,8 @@ public class FcmTokenRepositoryImpl implements FcmTokenRepository {
 
 	@Override
 	public FcmToken save(FcmToken fcmToken) {
-		FcmTokenEntity savedFcmTokenEntity = fcmTokenJpaRepository.save(FcmTokenMapper.toEntity(fcmToken));
+		FcmTokenEntity savedFcmTokenEntity = fcmTokenJpaRepository.save(
+			FcmTokenMapper.toEntity(fcmToken));
 		return FcmTokenMapper.toDomain(savedFcmTokenEntity);
 	}
 
@@ -44,6 +46,14 @@ public class FcmTokenRepositoryImpl implements FcmTokenRepository {
 		return fcmTokenJpaRepository.findByUserIdAndFcmToken(userId, value)
 			.map(FcmTokenMapper::toDomain)
 			.orElseThrow(
-				() -> new NoFcmTokenException("FCM Token이 존재하지 않습니다. id = " + userId + ", value = " + value));
+				() -> new NoFcmTokenException(
+					"FCM Token이 존재하지 않습니다. id = " + userId + ", value = " + value));
+	}
+
+	@Override
+	public List<FcmToken> findAllByUserId(UUID userId) {
+		return fcmTokenJpaRepository.findAllByUserId(userId)
+			.stream().map(FcmTokenMapper::toDomain)
+			.toList();
 	}
 }
