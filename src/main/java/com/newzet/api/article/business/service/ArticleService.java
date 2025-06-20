@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.newzet.api.article.business.batch.ArticleBatchProducer;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleDetailResponse;
@@ -15,7 +16,6 @@ import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
-import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.util.UuidConverter;
 
 import lombok.RequiredArgsConstructor;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class ArticleService {
 
-	private final BatchProducer batchProducer;
+	private final ArticleBatchProducer batchProducer;
 	private final ArticleRepository articleRepository;
 
 	public void saveArticleBatch(UUID userId, String fromName, String fromDomain,
@@ -67,7 +67,8 @@ public class ArticleService {
 	}
 
 	// 반환된 dto의 정렬된 순서를 유지하면서, day 별로 DailyArticleResponse를 묶음
-	private List<DailyArticleResponse> getDailyArticleList(List<ArticleDetailResponse> articleDetailResponseList) {
+	private List<DailyArticleResponse> getDailyArticleList(
+		List<ArticleDetailResponse> articleDetailResponseList) {
 		return articleDetailResponseList.stream()
 			.collect(Collectors.groupingBy(
 				ArticleDetailResponse::getDay,

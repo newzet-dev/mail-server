@@ -6,8 +6,8 @@ import java.util.Map;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.stereotype.Component;
 
+import com.newzet.api.article.business.batch.ArticleBatchProducer;
 import com.newzet.api.article.domain.Article;
-import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -17,7 +17,7 @@ import reactor.core.scheduler.Schedulers;
 @Slf4j
 @Component
 @RequiredArgsConstructor
-public class ArticleRedisBatchProducerImpl implements BatchProducer {
+public class ArticleRedisBatchProducerImpl implements ArticleBatchProducer {
 
 	private static final String ARTICLE_STREAM_KEY = "article:stream";
 	private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
