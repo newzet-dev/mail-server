@@ -10,7 +10,6 @@ import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
-import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
@@ -23,10 +22,7 @@ import lombok.NoArgsConstructor;
 @Builder(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-@Table(name = "SUBSCRIPTIONS",
-	indexes = {
-		@Index(name = "idx_subscriptions_user_id", columnList = "user_id")
-	})
+@Table(name = "SUBSCRIPTIONS")
 public class SubscriptionEntity {
 	@Id
 	@UuidGenerator
