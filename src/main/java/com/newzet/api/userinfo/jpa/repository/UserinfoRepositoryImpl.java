@@ -1,5 +1,6 @@
 package com.newzet.api.userinfo.jpa.repository;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -8,7 +9,7 @@ import com.newzet.api.userinfo.business.repository.UserinfoRepository;
 import com.newzet.api.userinfo.domain.Userinfo;
 import com.newzet.api.userinfo.exception.NoUserinfoException;
 import com.newzet.api.userinfo.jpa.entity.UserinfoEntity;
-import com.newzet.api.userinfo.jpa.entity.UserinfoEntityMapper;
+import com.newzet.api.userinfo.jpa.mapper.UserinfoEntityMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -29,5 +30,11 @@ public class UserinfoRepositoryImpl implements UserinfoRepository {
 	public Userinfo save(Userinfo userinfo) {
 		UserinfoEntity savedUserinfoEntity = userinfoJpaRepository.save(UserinfoEntityMapper.toEntity(userinfo));
 		return UserinfoEntityMapper.toDomain(savedUserinfoEntity);
+	}
+
+	@Override
+	public Optional<Userinfo> findOptionalUserinfoByEmail(String email) {
+		return userinfoJpaRepository.findOptionalByEmail(email)
+			.map(UserinfoEntityMapper::toDomain);
 	}
 }

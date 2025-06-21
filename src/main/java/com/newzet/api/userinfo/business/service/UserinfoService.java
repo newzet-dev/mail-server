@@ -25,4 +25,8 @@ public class UserinfoService {
 		userinfo.changeNickname(nickname);
 		userinfoRepository.save(userinfo);
 	}
+
+	public boolean isUniqueEmailInUserinfo(String email) {
+		return userinfoRepository.findOptionalUserinfoByEmail(email).isEmpty();
+	}
 }

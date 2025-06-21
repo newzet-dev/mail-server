@@ -6,12 +6,14 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
+import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.userinfo.orchestrator.UserinfoOrchestrator;
 import com.newzet.api.userinfo.presentation.dto.UserinfoUpdateRequest;
 import com.newzet.api.userinfo.presentation.dto.UserinfoWithCategoryListResponse;
@@ -43,5 +45,14 @@ public class UserinfoController {
 	public SuccessResponse<Object> updateUserinfo(@Valid @RequestBody UserinfoUpdateRequest request, UUID userId) {
 		userinfoOrchestrator.updateUserinfo(userId, request.email(), request.nickname(), request.userCategory());
 		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 수정 성공", null);
+	}
+
+	@GetMapping("/info/mail/exists")
+	@Operation(summary = "메일 중복조회",
+		description = "메일이 사용 가능한지 조회한다. 휴면유저/탈퇴한 유저의 메일도 사용 불가.")
+	public SuccessResponse<UniqueMailResponse> checkEmailUniqueness(
+		@RequestParam("v") String email) {
+		UniqueMailResponse result = userinfoOrchestrator.checkEmailUniqueness(email);
+		return SuccessResponse.create(ResponseCode.SUCCESS, "메일 중복조회 성공", result);
 	}
 }

@@ -11,12 +11,4 @@ public record UniqueMailResponse(
 	public static UniqueMailResponse ofDuplicate() {
 		return new UniqueMailResponse(false, "사용 중인 이메일입니다.");
 	}
-
-	public static UniqueMailResponse ofInActive() {
-		return new UniqueMailResponse(false, "휴면 유저의 이메일입니다.");
-	}
-
-	public static UniqueMailResponse ofWithDrawn() {
-		return new UniqueMailResponse(false, "탈퇴한 사용자의 이메일입니다.");
-	}
 }

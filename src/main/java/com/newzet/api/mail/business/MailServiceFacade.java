@@ -7,7 +7,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.article.business.service.ArticleService;
 import com.newzet.api.subscription.business.service.SubscriptionService;
-import com.newzet.api.user.business.service.UserService;
 
 import lombok.RequiredArgsConstructor;
 
