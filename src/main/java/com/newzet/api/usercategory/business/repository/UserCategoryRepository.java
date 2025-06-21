@@ -9,7 +9,7 @@ public interface UserCategoryRepository {
 
 	List<UserCategory> findUserCategoryListByUserId(UUID userId);
 
-	void deleteUserCategoryByUserId(UUID userId);
+	void deleteUserCategoriesByUserId(UUID userId);
 
-	List<UserCategory> addUserCategory(UUID userId, List<UUID> categoryIds);
+	List<UserCategory> addUserCategories(List<UserCategory> userCategories);
 }

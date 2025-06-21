@@ -19,4 +19,15 @@ public class UserCategoryService {
 	public List<UserCategory> findCategoryListByUserId(UUID userId) {
 		return userCategoryRepository.findUserCategoryListByUserId(userId);
 	}
+
+	public void deleteUserCategoriesByUserId(UUID userId) {
+		userCategoryRepository.deleteUserCategoriesByUserId(userId);
+	}
+
+	public List<UserCategory> addUserCategories(UUID userId, List<UUID> categoryIdList) {
+		List<UserCategory> userCategories = categoryIdList.stream()
+			.map(categoryId -> new UserCategory(null, userId, categoryId))
+			.toList();
+		return userCategoryRepository.addUserCategories(userCategories);
+	}
 }

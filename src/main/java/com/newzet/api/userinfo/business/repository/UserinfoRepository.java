@@ -7,5 +7,5 @@ import com.newzet.api.userinfo.domain.Userinfo;
 public interface UserinfoRepository {
 	Userinfo getUserinfoById(UUID id);
 
-	void updateEmailAndNickname(UUID id, String email, String nickname);
+	Userinfo save(Userinfo userinfo);
 }

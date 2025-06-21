@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
+import com.newzet.api.userinfo.domain.UserRole;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -18,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "userinfo")
 public class UserinfoEntity {
@@ -35,7 +37,7 @@ public class UserinfoEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(nullable = false)
-	private UserinfoEntityRole role;
+	private UserRole role;
 
 	@Column(nullable = false)
 	private LocalDateTime createdAt;

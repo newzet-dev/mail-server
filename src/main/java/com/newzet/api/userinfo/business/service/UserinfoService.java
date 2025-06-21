@@ -19,11 +19,10 @@ public class UserinfoService {
 		return userinfoRepository.getUserinfoById(id);
 	}
 
-	userinfREpository.save(id, value, email);
-
-	public void updateUserinfo(UUID id, String email, String nickname) {
-		userfino.changeEmail();
-		useriinfo.change
-		userinfoRepository.updateUserinfo(userinfo);
+	public void updateUserEmailAndNickname(UUID id, String email, String nickname) {
+		Userinfo userinfo = userinfoRepository.getUserinfoById(id);
+		userinfo.changeEmail(email);
+		userinfo.changeNickname(nickname);
+		userinfoRepository.save(userinfo);
 	}
 }

@@ -3,12 +3,11 @@ package com.newzet.api.newsletter.business.repository;
 import java.util.List;
 import java.util.UUID;
 
-import com.newzet.api.newsletter.business.dto.NewsletterSaveRequest;
 import com.newzet.api.newsletter.domain.Newsletter;
 
 public interface NewsletterRepository {
 
-	Newsletter save(NewsletterSaveRequest request);
+	Newsletter save(Newsletter newsletter);
 
 	List<Newsletter> findNewsLetterListByName(String name);
 

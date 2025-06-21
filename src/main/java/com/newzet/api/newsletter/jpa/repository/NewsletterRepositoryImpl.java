@@ -5,7 +5,6 @@ import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
-import com.newzet.api.newsletter.business.dto.NewsletterSaveRequest;
 import com.newzet.api.newsletter.business.repository.NewsletterRepository;
 import com.newzet.api.newsletter.domain.Newsletter;
 import com.newzet.api.newsletter.jpa.entity.NewsletterEntity;
@@ -21,8 +20,8 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 	private final NewsletterJpaRepository jpaRepository;
 
 	@Override
-	public Newsletter save(NewsletterSaveRequest request) {
-		NewsletterEntity savedNewsletter = jpaRepository.save(NewsletterEntityMapper.toEntity(request));
+	public Newsletter save(Newsletter newsletter) {
+		NewsletterEntity savedNewsletter = jpaRepository.save(NewsletterEntityMapper.toEntity(newsletter));
 		return NewsletterEntityMapper.toDomain(savedNewsletter);
 	}
 

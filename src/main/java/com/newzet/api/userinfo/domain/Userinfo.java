@@ -6,9 +6,16 @@ import java.util.UUID;
 public record Userinfo(
 	UUID id,
 	String email,
-	LocalDateTime createdAt,
 	String nickname,
 	UserRole role,
+	LocalDateTime createdAt,
 	LocalDateTime deletedAt
 ) {
+	public void changeEmail(String email) {
+		email = email.trim();
+	}
+
+	public void changeNickname(String nickname) {
+		nickname = nickname.trim();
+	}
 }

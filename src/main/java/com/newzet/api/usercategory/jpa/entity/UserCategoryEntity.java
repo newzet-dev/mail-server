@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "user_category")
 public class UserCategoryEntity {
@@ -29,8 +29,4 @@ public class UserCategoryEntity {
 
 	@Column(name = "category_id", nullable = false)
 	private UUID categoryId;
-
-	public static UserCategoryEntity create(UUID userId, UUID categoryId) {
-		return new UserCategoryEntity(null, userId, categoryId);
-	}
 }

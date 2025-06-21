@@ -41,8 +41,7 @@ public class UserinfoController {
 	@Operation(summary = "유저정보 수정",
 		description = "유저정보를 수정한다.")
 	public SuccessResponse<Object> updateUserinfo(@Valid @RequestBody UserinfoUpdateRequest request, UUID userId) {
-		userinfoOrchestrator.updateUserinfo(UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"), request.email(),
-			request.nickname(), request.userCategory());
+		userinfoOrchestrator.updateUserinfo(userId, request.email(), request.nickname(), request.userCategory());
 		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 수정 성공", null);
 	}
 }

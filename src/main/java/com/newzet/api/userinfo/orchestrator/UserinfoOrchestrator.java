@@ -34,7 +34,10 @@ public class UserinfoOrchestrator {
 		return UserinfoResponseMapper.toWithCategoryListResponse(userinfo, categoryList);
 	}
 
-	public void updateUserinfo(UUID id, String email, String nickname, List<UUID> categories) {
-		userinfoService.updateUserinfo(id, email, nickname);
+	public void updateUserinfo(UUID userId, String email, String nickname, List<UUID> categoryIdList) {
+		userinfoService.updateUserEmailAndNickname(userId, email, nickname);
+		userCategoryService.deleteUserCategoriesByUserId(userId);
+		userCategoryService.addUserCategories(userId, categoryIdList);
+
 	}
 }

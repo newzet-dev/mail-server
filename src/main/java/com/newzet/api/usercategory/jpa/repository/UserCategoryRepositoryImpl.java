@@ -7,7 +7,6 @@ import org.springframework.stereotype.Repository;
 
 import com.newzet.api.usercategory.business.repository.UserCategoryRepository;
 import com.newzet.api.usercategory.domain.UserCategory;
-import com.newzet.api.usercategory.jpa.entity.UserCategoryEntity;
 import com.newzet.api.usercategory.jpa.mapper.UserCategoryEntityMapper;
 
 import lombok.RequiredArgsConstructor;
@@ -26,17 +25,14 @@ public class UserCategoryRepositoryImpl implements UserCategoryRepository {
 	}
 
 	@Override
-	public void deleteUserCategoryByUserId(UUID userId) {
+	public void deleteUserCategoriesByUserId(UUID userId) {
 		userCategoryJpaRepository.deleteByUserId(userId);
 	}
 
 	@Override
-	public List<UserCategory> addUserCategory(UUID userId, List<UUID> categoryIds) {
-		List<UserCategoryEntity> userCategoryEntityList = categoryIds.stream()
-			.map(categoryId -> UserCategoryEntity.create(userId, categoryId))
-			.toList();
-		return userCategoryJpaRepository.saveAll(userCategoryEntityList).stream()
-			.map(UserCategoryEntityMapper::toDomain)
-			.toList();
+	public List<UserCategory> addUserCategories(List<UserCategory> userCategories) {
+		return userCategoryJpaRepository.saveAll(
+				userCategories.stream().map(UserCategoryEntityMapper::toEntity).toList())
+			.stream().map(UserCategoryEntityMapper::toDomain).toList();
 	}
 }

@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "NEWSLETTER")
 public class NewsletterEntity {
@@ -68,11 +68,4 @@ public class NewsletterEntity {
 
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
-
-	public static NewsletterEntity create(String name, UUID categoryId, String domain, String mailingList, int priority,
-		String imageUrl, String description, String detail, String status, String dayOfWeek, String subscriptionUrl,
-		NewsletterColor color) {
-		return new NewsletterEntity(null, name, categoryId, domain, mailingList, priority, imageUrl, description,
-			detail, status, dayOfWeek, subscriptionUrl, color, null);
-	}
 }

@@ -1,6 +1,5 @@
 package com.newzet.api.userinfo.jpa.repository;
 
-import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -9,8 +8,7 @@ import com.newzet.api.userinfo.business.repository.UserinfoRepository;
 import com.newzet.api.userinfo.domain.Userinfo;
 import com.newzet.api.userinfo.exception.NoUserinfoException;
 import com.newzet.api.userinfo.jpa.entity.UserinfoEntity;
-import com.newzet.api.userinfo.jpa.entity.UserinfoEntityRole;
-import com.newzet.api.userinfo.jpa.mapper.UserinfoEntityMapper;
+import com.newzet.api.userinfo.jpa.entity.UserinfoEntityMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -28,9 +26,8 @@ public class UserinfoRepositoryImpl implements UserinfoRepository {
 	}
 
 	@Override
-	public void updateEmailAndNickname(UUID id, String email, String nickname) {
-		UserinfoEntity userinfoEntity = new UserinfoEntity(null, email, nickname, UserinfoEntityRole.MEMBER,
-			LocalDateTime.now(), null);
-		userinfoJpaRepository.save(userinfoEntity);
+	public Userinfo save(Userinfo userinfo) {
+		UserinfoEntity savedUserinfoEntity = userinfoJpaRepository.save(UserinfoEntityMapper.toEntity(userinfo));
+		return UserinfoEntityMapper.toDomain(savedUserinfoEntity);
 	}
 }
