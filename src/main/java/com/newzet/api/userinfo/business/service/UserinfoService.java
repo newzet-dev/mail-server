@@ -16,11 +16,11 @@ public class UserinfoService {
 	private final UserinfoRepository userinfoRepository;
 
 	public Userinfo getUserinfoById(UUID id) {
-		return userinfoRepository.getUserinfoById(id);
+		return userinfoRepository.findUserinfoById(id);
 	}
 
 	public void updateUserEmailAndNickname(UUID id, String email, String nickname) {
-		Userinfo userinfo = userinfoRepository.getUserinfoById(id);
+		Userinfo userinfo = userinfoRepository.findUserinfoById(id);
 		userinfo.changeEmail(email);
 		userinfo.changeNickname(nickname);
 		userinfoRepository.save(userinfo);
@@ -28,5 +28,10 @@ public class UserinfoService {
 
 	public boolean isUniqueEmailInUserinfo(String email) {
 		return userinfoRepository.findOptionalUserinfoByEmail(email).isEmpty();
+	}
+
+	public boolean isInitialized(UUID userId) {
+		Userinfo userinfo = userinfoRepository.findUserinfoById(userId);
+		return userinfo.email() != null;
 	}
 }

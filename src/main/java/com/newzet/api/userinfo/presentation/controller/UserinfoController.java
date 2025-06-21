@@ -15,6 +15,7 @@ import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
 import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.userinfo.orchestrator.UserinfoOrchestrator;
+import com.newzet.api.userinfo.presentation.dto.UserinfoInitResponse;
 import com.newzet.api.userinfo.presentation.dto.UserinfoUpdateRequest;
 import com.newzet.api.userinfo.presentation.dto.UserinfoWithCategoryListResponse;
 
@@ -37,6 +38,14 @@ public class UserinfoController {
 	public SuccessResponse<UserinfoWithCategoryListResponse> getUserinfo(@Login AuthUser authUser) {
 		UserinfoWithCategoryListResponse response = userinfoOrchestrator.getUserinfoWithCategoryList(authUser.id());
 		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 조회 성공", response);
+	}
+
+	@GetMapping("/info/init")
+	@Operation(summary = "유저정보 등록 여부 확인",
+		description = "유저정보 등록 여부를 확인한다.")
+	public SuccessResponse<UserinfoInitResponse> checkUserInitializeCompleted(@Login AuthUser authUser) {
+		UserinfoInitResponse response = userinfoOrchestrator.checkUserInitializeCompleted(authUser.id());
+		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 등록 여부 조회 성공", response);
 	}
 
 	@PatchMapping("/info")

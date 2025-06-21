@@ -13,6 +13,7 @@ import com.newzet.api.usercategory.business.service.UserCategoryService;
 import com.newzet.api.usercategory.domain.UserCategory;
 import com.newzet.api.userinfo.business.service.UserinfoService;
 import com.newzet.api.userinfo.domain.Userinfo;
+import com.newzet.api.userinfo.presentation.dto.UserinfoInitResponse;
 import com.newzet.api.userinfo.presentation.dto.UserinfoWithCategoryListResponse;
 import com.newzet.api.userinfo.presentation.mapper.UserinfoResponseMapper;
 
@@ -51,4 +52,9 @@ public class UserinfoOrchestrator {
 		return UniqueMailResponse.ofDuplicate();
 	}
 
+	@Transactional(readOnly = true)
+	public UserinfoInitResponse checkUserInitializeCompleted(UUID userId) {
+		boolean isInitialized = userinfoService.isInitialized(userId);
+		return new UserinfoInitResponse(isInitialized);
+	}
 }
