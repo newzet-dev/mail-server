@@ -20,7 +20,7 @@ public class UserinfoRepositoryImpl implements UserinfoRepository {
 	private final UserinfoJpaRepository userinfoJpaRepository;
 
 	@Override
-	public Userinfo getUserinfoById(UUID id) {
+	public Userinfo findUserinfoById(UUID id) {
 		return userinfoJpaRepository.findById(id)
 			.map(UserinfoEntityMapper::toDomain)
 			.orElseThrow(() -> new NoUserinfoException("사용자 정보를 찾을 수 없습니다."));
@@ -36,5 +36,12 @@ public class UserinfoRepositoryImpl implements UserinfoRepository {
 	public Optional<Userinfo> findOptionalUserinfoByEmail(String email) {
 		return userinfoJpaRepository.findOptionalByEmail(email)
 			.map(UserinfoEntityMapper::toDomain);
+	}
+
+	@Override
+	public Userinfo findUserinfoByEmail(String email) {
+		return userinfoJpaRepository.findOptionalByEmail(email)
+			.map(UserinfoEntityMapper::toDomain)
+			.orElseThrow(() -> new NoUserinfoException("사용자 정보를 찾을 수 없습니다."));
 	}
 }

@@ -28,7 +28,7 @@ public class UserinfoOrchestrator {
 
 	@Transactional(readOnly = true)
 	public UserinfoWithCategoryListResponse getUserinfoWithCategoryList(UUID userId) {
-		Userinfo userinfo = userinfoService.getUserinfoById(userId);
+		Userinfo userinfo = userinfoService.findUserinfoById(userId);
 		List<UUID> categoryIdList = userCategoryService.findCategoryListByUserId(userId).stream()
 			.map(UserCategory::categoryId)
 			.toList();

@@ -11,4 +11,6 @@ public interface UserinfoRepository {
 	Userinfo save(Userinfo userinfo);
 
 	Optional<Userinfo> findOptionalUserinfoByEmail(String email);
+
+	Userinfo findUserinfoByEmail(String email);
 }

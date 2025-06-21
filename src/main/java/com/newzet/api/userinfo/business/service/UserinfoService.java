@@ -15,7 +15,7 @@ public class UserinfoService {
 
 	private final UserinfoRepository userinfoRepository;
 
-	public Userinfo getUserinfoById(UUID id) {
+	public Userinfo findUserinfoById(UUID id) {
 		return userinfoRepository.findUserinfoById(id);
 	}
 
@@ -33,5 +33,9 @@ public class UserinfoService {
 	public boolean isInitialized(UUID userId) {
 		Userinfo userinfo = userinfoRepository.findUserinfoById(userId);
 		return userinfo.email() != null;
+	}
+
+	public Userinfo findUserinfoByEmail(String email) {
+		return userinfoRepository.findUserinfoByEmail(email);
 	}
 }
