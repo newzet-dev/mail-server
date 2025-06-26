@@ -26,9 +26,10 @@ import com.google.firebase.messaging.Notification;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.fcm.business.batch.FcmBatchConsumer;
+import com.newzet.api.fcm.business.repository.FcmTokenRepository;
 import com.newzet.api.fcm.domain.FcmNotification;
+import com.newzet.api.fcm.domain.FcmToken;
 import com.newzet.api.fcm.jpa.batch.dto.FcmBatchProcessingResult;
-import com.newzet.api.fcm.orchestrator.FcmTokenOrchestrator;
 
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.PreDestroy;
@@ -46,7 +47,7 @@ public class FcmRedisBatchConsumerImpl implements FcmBatchConsumer {
 
 	private final RedisTemplate<String, String> redisTemplate;
 	private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
-	private final FcmTokenOrchestrator fcmTokenOrchestrator;
+	private final FcmTokenRepository fcmTokenRepository;
 	private final BatchConfig batchConfig;
 	private final OptionalObjectMapper optionalObjectMapper;
 	private final FirebaseMessaging firebaseMessaging;
@@ -243,8 +244,9 @@ public class FcmRedisBatchConsumerImpl implements FcmBatchConsumer {
 
 		if (isInvalidTokenError(e)) {
 			try {
-				fcmTokenOrchestrator.deleteFcmToken(fcmNotification.getUserId(),
-					fcmNotification.getToken());
+				FcmToken fcmToken = fcmTokenRepository.findByUserIdAndValue(
+					fcmNotification.getUserId(), fcmNotification.getToken());
+				fcmTokenRepository.deleteFcmToken(fcmToken);
 				log.info("Deleted invalid FCM token: userId={}, token={}",
 					fcmNotification.getUserId(), fcmNotification.getToken());
 			} catch (Exception deleteError) {
