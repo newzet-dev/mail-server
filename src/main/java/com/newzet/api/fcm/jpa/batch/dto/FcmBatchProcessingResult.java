@@ -19,8 +19,4 @@ public class FcmBatchProcessingResult {
 	public void incrementInvalidTokenCount() {
 		this.invalidTokenCount++;
 	}
-
-	public void addToFailCount(int count) {
-		this.failCount += count;
-	}
 }
