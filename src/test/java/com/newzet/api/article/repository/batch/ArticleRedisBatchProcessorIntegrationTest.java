@@ -92,9 +92,9 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		consumer = new ArticleRedisBatchConsumerImpl(
 			redisTemplate,
 			reactiveRedisTemplate,
-			articleRepository,
 			mockBatchConfig,
 			optionalObjectMapper,
+			articleRepository,
 			fcmTokenOrchestrator
 		);
 
@@ -239,9 +239,9 @@ class ArticleRedisBatchProcessorIntegrationTest {
 				(ReactiveRedisConnectionFactory)redisConnectionFactory,
 				org.springframework.data.redis.serializer.RedisSerializationContext.string()
 			),
-			articleRepository,
 			mockBatchConfig,
 			optionalObjectMapper,
+			articleRepository,
 			fcmTokenOrchestrator
 		);
 
@@ -260,9 +260,9 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		ArticleRedisBatchConsumerImpl consumerWithMockRedis = new ArticleRedisBatchConsumerImpl(
 			mockRedisTemplate,
 			mock(ReactiveRedisTemplate.class),
-			mock(ArticleRepository.class),
 			mock(BatchConfig.class),
 			optionalObjectMapper,
+			mock(ArticleRepository.class),
 			fcmTokenOrchestrator
 		);
 
