@@ -132,4 +132,66 @@ class FcmTokenServiceTest {
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
 		verify(batchProducer, never()).addToBatch(any(FcmNotification.class));
 	}
+
+	@Test
+	void sendFcmWhenMailReceivedBatch_WhenTokenIsNull_ThenSkipInvalidNotification() {
+		// Given
+		String fromName = "Newsletter";
+		String title = "New Article";
+		
+		FcmToken tokenWithNullValue = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
+			null);
+		List<FcmToken> tokens = List.of(tokenWithNullValue);
+
+		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
+
+		// When
+		fcmTokenService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+
+		// Then
+		verify(fcmTokenRepository).findAllByUserId(testUserId);
+		verify(batchProducer, never()).addToBatch(any(FcmNotification.class));
+	}
+
+	@Test
+	void sendFcmWhenMailReceivedBatch_WhenTokenIsEmpty_ThenSkipInvalidNotification() {
+		// Given
+		String fromName = "Newsletter";
+		String title = "New Article";
+		
+		FcmToken tokenWithEmptyValue = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
+			"");
+		List<FcmToken> tokens = List.of(tokenWithEmptyValue);
+
+		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
+
+		// When
+		fcmTokenService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+
+		// Then
+		verify(fcmTokenRepository).findAllByUserId(testUserId);
+		verify(batchProducer, never()).addToBatch(any(FcmNotification.class));
+	}
+
+	@Test
+	void sendFcmWhenMailReceivedBatch_WhenMixedValidAndInvalidTokens_ThenProcessOnlyValidOnes() {
+		// Given
+		String fromName = "Newsletter";
+		String title = "New Article";
+		
+		FcmToken validToken = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
+			"valid-token");
+		FcmToken invalidToken = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
+			null);
+		List<FcmToken> tokens = List.of(validToken, invalidToken);
+
+		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
+
+		// When
+		fcmTokenService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+
+		// Then
+		verify(fcmTokenRepository).findAllByUserId(testUserId);
+		verify(batchProducer, times(1)).addToBatch(any(FcmNotification.class));
+	}
 }
