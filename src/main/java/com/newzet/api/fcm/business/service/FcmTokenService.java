@@ -11,7 +11,9 @@ import com.newzet.api.fcm.domain.FcmNotification;
 import com.newzet.api.fcm.domain.FcmToken;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FcmTokenService {
@@ -36,6 +38,11 @@ public class FcmTokenService {
 		for (FcmToken fcmToken : fcmTokens) {
 			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.value(),
 				fromName, title, null);
+			if (!fcmNotification.isValid()) {
+				log.warn("Invalid FCM notification, skipping: userId={}, token={}",
+					fcmNotification.getUserId(), fcmNotification.getToken());
+				return;
+			}
 			batchProducer.addToBatch(fcmNotification);
 		}
 	}
