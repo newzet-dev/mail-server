@@ -25,12 +25,6 @@ public class FcmRedisBatchProducerImpl implements FcmBatchProducer {
 
 	@Override
 	public void addToBatch(FcmNotification fcmNotification) {
-		if (!fcmNotification.isValid()) {
-			log.warn("Invalid FCM notification, skipping: userId={}, token={}",
-				fcmNotification.getUserId(), fcmNotification.getToken());
-			return;
-		}
-
 		String jsonData = optionalObjectMapper.serialize(fcmNotification);
 
 		Map<String, String> fields = new HashMap<>();
