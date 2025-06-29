@@ -1,4 +1,4 @@
-package com.newzet.api.userinfo.orchestrator;
+package com.newzet.api.welcome.orchestrator;
 
 import java.util.List;
 import java.util.UUID;
@@ -10,12 +10,12 @@ import com.newzet.api.category.business.service.CategoryService;
 import com.newzet.api.category.domain.Category;
 import com.newzet.api.usercategory.business.service.UserCategoryService;
 import com.newzet.api.usercategory.domain.UserCategory;
-import com.newzet.api.userinfo.business.service.UserinfoService;
-import com.newzet.api.userinfo.domain.Userinfo;
-import com.newzet.api.userinfo.presentation.dto.UniqueMailResponse;
-import com.newzet.api.userinfo.presentation.dto.UserinfoInitResponse;
-import com.newzet.api.userinfo.presentation.dto.UserinfoWithCategoryListResponse;
-import com.newzet.api.userinfo.presentation.mapper.UserinfoResponseMapper;
+import com.newzet.api.welcome.business.service.UserinfoService;
+import com.newzet.api.welcome.domain.Userinfo;
+import com.newzet.api.welcome.presentation.dto.UniqueMailResponse;
+import com.newzet.api.welcome.presentation.dto.UserinfoInitResponse;
+import com.newzet.api.welcome.presentation.dto.UserinfoWithCategoryListResponse;
+import com.newzet.api.welcome.presentation.mapper.UserinfoResponseMapper;
 
 import lombok.RequiredArgsConstructor;
 

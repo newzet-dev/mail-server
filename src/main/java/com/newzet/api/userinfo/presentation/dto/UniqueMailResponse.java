@@ -1,4 +1,4 @@
-package com.newzet.api.user.business.dto;
+package com.newzet.api.userinfo.presentation.dto;
 
 public record UniqueMailResponse(
 	boolean isUnique,

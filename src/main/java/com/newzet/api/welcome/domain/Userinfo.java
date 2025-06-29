@@ -1,4 +1,4 @@
-package com.newzet.api.userinfo.domain;
+package com.newzet.api.welcome.domain;
 
 import java.time.LocalDateTime;
 import java.util.UUID;

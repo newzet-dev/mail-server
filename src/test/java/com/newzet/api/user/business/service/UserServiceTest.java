@@ -12,8 +12,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.newzet.api.user.business.dto.UniqueMailResponse;
 import com.newzet.api.user.business.dto.UserEntityDto;
+import com.newzet.api.userinfo.presentation.dto.UniqueMailResponse;
 
 @ExtendWith(MockitoExtension.class)
 class UserServiceTest {

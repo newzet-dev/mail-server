@@ -1,12 +1,12 @@
-package com.newzet.api.user.exception;
+package com.newzet.api.welcome.exception;
 
 import com.newzet.api.common.exception.NewzetException;
 import com.newzet.api.common.response.ResponseCode;
 
-public class NoUserException extends NewzetException {
+public class NoUserinfoException extends NewzetException {
 	private static final ResponseCode responseCode = ResponseCode.NOT_FOUND;
 
-	public NoUserException(String message) {
+	public NoUserinfoException(String message) {
 		super(message, responseCode);
 	}
 }

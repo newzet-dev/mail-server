@@ -1,11 +1,11 @@
-package com.newzet.api.userinfo.business.service;
+package com.newzet.api.welcome.business.service;
 
 import java.util.UUID;
 
 import org.springframework.stereotype.Service;
 
-import com.newzet.api.userinfo.business.repository.UserinfoRepository;
-import com.newzet.api.userinfo.domain.Userinfo;
+import com.newzet.api.welcome.business.repository.UserinfoRepository;
+import com.newzet.api.welcome.domain.Userinfo;
 
 import lombok.RequiredArgsConstructor;
 

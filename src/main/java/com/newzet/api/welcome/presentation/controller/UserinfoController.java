@@ -1,4 +1,4 @@
-package com.newzet.api.userinfo.presentation.controller;
+package com.newzet.api.welcome.presentation.controller;
 
 import java.util.UUID;
 
@@ -13,11 +13,11 @@ import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
-import com.newzet.api.userinfo.orchestrator.UserinfoOrchestrator;
-import com.newzet.api.userinfo.presentation.dto.UniqueMailResponse;
-import com.newzet.api.userinfo.presentation.dto.UserinfoInitResponse;
-import com.newzet.api.userinfo.presentation.dto.UserinfoUpdateRequest;
-import com.newzet.api.userinfo.presentation.dto.UserinfoWithCategoryListResponse;
+import com.newzet.api.welcome.orchestrator.UserinfoOrchestrator;
+import com.newzet.api.welcome.presentation.dto.UniqueMailResponse;
+import com.newzet.api.welcome.presentation.dto.UserinfoInitResponse;
+import com.newzet.api.welcome.presentation.dto.UserinfoUpdateRequest;
+import com.newzet.api.welcome.presentation.dto.UserinfoWithCategoryListResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
