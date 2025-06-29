@@ -28,6 +28,8 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class ArticleService {
 
+	private final static String ARTICLE_SHARE_PREFIX = "https://app.newzet.me/article";
+
 	private final BatchProducer batchProducer;
 	private final ArticleRepository articleRepository;
 
@@ -105,5 +107,15 @@ public class ArticleService {
 	public Article addArticle(UUID userId, String name, String domain, String title, String url, String mailingList) {
 		Article article = Article.createNewArticle(userId, name, domain, mailingList, title, url);
 		return articleRepository.save(article);
+	}
+
+	public Article shareArticle(UUID articleId) {
+		Article article = articleRepository.getById(articleId).toDomain();
+		Article sharedArticle = article.share();
+		return articleRepository.save(sharedArticle);
+	}
+
+	public String getSharedUrl(UUID articleId) {
+		return String.format("%s/%s", ARTICLE_SHARE_PREFIX, articleId);
 	}
 }
