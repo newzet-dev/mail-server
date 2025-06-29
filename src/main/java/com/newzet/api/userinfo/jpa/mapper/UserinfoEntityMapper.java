@@ -12,7 +12,8 @@ public class UserinfoEntityMapper {
 	}
 
 	public static UserinfoEntity toEntity(Userinfo domain) {
-		return new UserinfoEntity(domain.id(), domain.email(), domain.nickname(), domain.role(), domain.createdAt(),
-			domain.deletedAt());
+		return new UserinfoEntity(domain.getId(), domain.getEmail(), domain.getNickname(), domain.getRole(),
+			domain.getCreatedAt(),
+			domain.getDeletedAt());
 	}
 }

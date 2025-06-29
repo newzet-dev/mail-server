@@ -2,7 +2,11 @@ package com.newzet.api.common.auth.domain;
 
 import java.util.UUID;
 
-public record AuthUser(
-	UUID id
-) {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public class AuthUser {
+	private final UUID id;
 }

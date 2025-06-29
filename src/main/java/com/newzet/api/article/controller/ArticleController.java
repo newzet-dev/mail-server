@@ -39,8 +39,7 @@ public class ArticleController {
 	public ResponseEntity<SuccessResponse<ArticleListResponse>> getMonthlyArticleList(
 		@RequestParam("y") int year,
 		@RequestParam("m") int month, @Login AuthUser user) {
-		UUID userId = user.id();
-		ArticleListResponse monthlyArticleList = articleService.getMonthlyArticleList(userId, year,
+		ArticleListResponse monthlyArticleList = articleService.getMonthlyArticleList(user.getId(), year,
 			month);
 
 		SuccessResponse<ArticleListResponse> response = SuccessResponse.create(

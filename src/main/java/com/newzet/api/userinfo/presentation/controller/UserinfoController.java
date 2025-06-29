@@ -36,7 +36,7 @@ public class UserinfoController {
 	@Operation(summary = "유저정보 조회",
 		description = "유저정보를 조회한다.")
 	public SuccessResponse<UserinfoWithCategoryListResponse> getUserinfo(@Login AuthUser authUser) {
-		UserinfoWithCategoryListResponse response = userinfoOrchestrator.getUserinfoWithCategoryList(authUser.id());
+		UserinfoWithCategoryListResponse response = userinfoOrchestrator.getUserinfoWithCategoryList(authUser.getId());
 		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 조회 성공", response);
 	}
 
@@ -44,7 +44,7 @@ public class UserinfoController {
 	@Operation(summary = "유저정보 등록 여부 확인",
 		description = "유저정보 등록 여부를 확인한다.")
 	public SuccessResponse<UserinfoInitResponse> checkUserInitializeCompleted(@Login AuthUser authUser) {
-		UserinfoInitResponse response = userinfoOrchestrator.checkUserInitializeCompleted(authUser.id());
+		UserinfoInitResponse response = userinfoOrchestrator.checkUserInitializeCompleted(authUser.getId());
 		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 등록 여부 조회 성공", response);
 	}
 

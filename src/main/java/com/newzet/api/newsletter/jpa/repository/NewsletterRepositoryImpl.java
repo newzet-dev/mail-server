@@ -7,9 +7,9 @@ import org.springframework.stereotype.Repository;
 
 import com.newzet.api.newsletter.business.repository.NewsletterRepository;
 import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.exception.NoNewsletterException;
 import com.newzet.api.newsletter.jpa.entity.NewsletterEntity;
 import com.newzet.api.newsletter.jpa.mapper.NewsletterEntityMapper;
-import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 
 import lombok.RequiredArgsConstructor;
 

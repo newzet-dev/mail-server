@@ -58,7 +58,7 @@ public class NewsletterController {
 			NewsletterInfoResponse response = newsletterOrchestrator.getNewsletterInfoWithoutLogin(newsletterId);
 			return SuccessResponse.create(ResponseCode.SUCCESS, "뉴스레터 상세정보 조회 성공", response);
 		}
-		NewsletterInfoResponse response = newsletterOrchestrator.getNewsLetterInfoWithLogin(authUser.id(),
+		NewsletterInfoResponse response = newsletterOrchestrator.getNewsLetterInfoWithLogin(authUser.getId(),
 			newsletterId);
 		return SuccessResponse.create(ResponseCode.SUCCESS, "뉴스레터 상세정보 조회 성공", response);
 	}
@@ -69,7 +69,7 @@ public class NewsletterController {
 		description = "유저 id로 뉴스레터 추천 리스트를 조회한다.")
 	public SuccessResponse<NewsletterRecommendResponse> recommendNewsletterList(
 		@Login AuthUser authUser) {
-		NewsletterRecommendResponse response = newsletterOrchestrator.recommendNewsletterList(authUser.id());
+		NewsletterRecommendResponse response = newsletterOrchestrator.recommendNewsletterList(authUser.getId());
 		return SuccessResponse.create(ResponseCode.SUCCESS, "뉴스레터 추천 성공", response);
 	}
 }

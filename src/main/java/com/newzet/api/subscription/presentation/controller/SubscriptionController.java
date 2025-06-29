@@ -34,7 +34,7 @@ public class SubscriptionController {
 	public ResponseEntity<SuccessResponse<SubscriptionListWithImageResponse>> getSubscriptionList(
 		@Login AuthUser authUser) {
 		SubscriptionListWithImageResponse subscriptionListWithImage = subscriptionQueryRepository.getSubscriptionWithImage(
-			authUser.id());
+			authUser.getId());
 		SuccessResponse<SubscriptionListWithImageResponse> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "뉴스레터 구독 목록 조회 성공", subscriptionListWithImage
 		);

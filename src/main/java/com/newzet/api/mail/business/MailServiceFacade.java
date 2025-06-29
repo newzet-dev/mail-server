@@ -22,7 +22,7 @@ public class MailServiceFacade {
 
 	public void processMail(String fromName, String fromDomain, String toDomain, String mailingList,
 		String htmlLink, String title) {
-		UUID userId = userinfoService.findUserinfoByEmail(toDomain).id();
+		UUID userId = userinfoService.findUserinfoByEmail(toDomain).getId();
 		subscriptionService.addSubscriptionIfUnsubscribed(userId, fromName, fromDomain,
 			mailingList);
 		articleService.saveArticleBatch(userId, fromName, fromDomain, mailingList, htmlLink, title);

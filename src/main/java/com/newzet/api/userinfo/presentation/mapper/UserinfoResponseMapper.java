@@ -15,6 +15,6 @@ public class UserinfoResponseMapper {
 		List<CategoryResponse> categoryResponses = categoryList.stream()
 			.map(CategoryResponseMapper::toResponse)
 			.toList();
-		return new UserinfoWithCategoryListResponse(userinfo.nickname(), userinfo.email(), categoryResponses);
+		return new UserinfoWithCategoryListResponse(userinfo.getNickname(), userinfo.getEmail(), categoryResponses);
 	}
 }
