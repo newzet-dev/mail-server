@@ -85,8 +85,16 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 	}
 
 	@Override
-	public ArticleWithImageProjection getArticleByUserId(UUID userId) {
-		return articleJpaRepository.findArticleWithImage(userId);
+	public List<ArticleWithImageProjection> getLikeArticleWithImage(UUID userId) {
+		return articleJpaRepository.findLikeArticleWithImage(userId);
 	}
 
+	@Override
+	public boolean updateLikeStatus(UUID articleId, boolean newLikeStatus) {
+		ArticleEntity articleEntity = articleJpaRepository.findById(articleId)
+			.orElseThrow(() -> new NoArticleException("해당 id의 아티클이 존재하지 않습니다."));
+
+		articleEntity.updateLike(newLikeStatus);
+		return articleEntity.isLike();
+	}
 }

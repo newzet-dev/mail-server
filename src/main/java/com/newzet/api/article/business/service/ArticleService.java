@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleDetailResponse;
+import com.newzet.api.article.controller.dto.ArticleLikeListResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
@@ -24,6 +25,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class ArticleService {
 
 	private final BatchProducer batchProducer;
@@ -66,8 +68,29 @@ public class ArticleService {
 			article.isLike());
 	}
 
+	public ArticleLikeListResponse getArticleLikeList(UUID userId) {
+		List<ArticleDetailResponse> articleList = articleRepository.getLikeArticleWithImage(userId)
+			.stream()
+			.map(articleWithImageProjection -> ArticleDetailResponse.of(
+				articleWithImageProjection.getId(),
+				articleWithImageProjection.getFromName(), articleWithImageProjection.getImageUrl(),
+				articleWithImageProjection.getTitle(),
+				articleWithImageProjection.getIsRead(), articleWithImageProjection.getCreatedAt()
+			))
+			.toList();
+
+		return ArticleLikeListResponse.from(articleList);
+	}
+
+	@Transactional
+	public void changeLikeStatus(String articleId, boolean newLikeStatus) {
+		UUID convertedArticleId = UuidConverter.convert(articleId);
+		articleRepository.updateLikeStatus(convertedArticleId, newLikeStatus);
+	}
+
 	// 반환된 dto의 정렬된 순서를 유지하면서, day 별로 DailyArticleResponse를 묶음
-	private List<DailyArticleResponse> getDailyArticleList(List<ArticleDetailResponse> articleDetailResponseList) {
+	private List<DailyArticleResponse> getDailyArticleList(
+		List<ArticleDetailResponse> articleDetailResponseList) {
 		return articleDetailResponseList.stream()
 			.collect(Collectors.groupingBy(
 				ArticleDetailResponse::getDay,

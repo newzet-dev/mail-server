@@ -19,10 +19,8 @@ import com.newzet.api.category.jpa.CategoryEntity;
 import com.newzet.api.category.jpa.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.exception.NoNewsletterException;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
-import com.newzet.api.newsletter.jpa.repository.NewsletterRepositoryImpl;
-import com.newzet.api.newsletter.repository.entity.NewsletterEntity;
-import com.newzet.api.newsletter.repository.exception.NoNewsletterException;
 
 @DataJpaTest
 @Import(NewsletterRepositoryImpl.class)
