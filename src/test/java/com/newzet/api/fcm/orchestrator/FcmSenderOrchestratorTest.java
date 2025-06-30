@@ -12,17 +12,17 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.newzet.api.fcm.business.service.FcmTokenService;
+import com.newzet.api.fcm.business.service.FcmSenderService;
 import com.newzet.api.fcm.domain.FcmToken;
 
 @ExtendWith(MockitoExtension.class)
-class FcmTokenOrchestratorTest {
+public class FcmSenderOrchestratorTest {
 
 	@Mock
-	private FcmTokenService fcmTokenService;
+	private FcmSenderService fcmSenderService;
 
 	@InjectMocks
-	private FcmTokenOrchestrator fcmTokenOrchestrator;
+	private FcmSenderOrchestrator fcmSenderOrchestrator;
 
 	private UUID testUserId;
 	private String testFcmTokenValue;
@@ -37,27 +37,17 @@ class FcmTokenOrchestratorTest {
 	}
 
 	@Test
-	void upsertFcmToken_WhenCalled_ThenDelegateToService() {
+	void sendFcmWhenMailReceivedBatch_WhenCalled_ThenDelegateToService() {
 		// Given
-		when(fcmTokenService.upsertFcmToken(testUserId, testFcmTokenValue)).thenReturn(
-			testFcmToken);
+		String fromName = "Newsletter";
+		String title = "New Article";
+		doNothing().when(fcmSenderService)
+			.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
 
 		// When
-		fcmTokenOrchestrator.upsertFcmToken(testUserId, testFcmTokenValue);
+		fcmSenderOrchestrator.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
 
 		// Then
-		verify(fcmTokenService).upsertFcmToken(testUserId, testFcmTokenValue);
-	}
-
-	@Test
-	void deleteFcmToken_WhenCalled_ThenDelegateToService() {
-		// Given
-		doNothing().when(fcmTokenService).deleteFcmToken(testUserId, testFcmTokenValue);
-
-		// When
-		fcmTokenOrchestrator.deleteFcmToken(testUserId, testFcmTokenValue);
-
-		// Then
-		verify(fcmTokenService).deleteFcmToken(testUserId, testFcmTokenValue);
+		verify(fcmSenderService).sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
 	}
 }
