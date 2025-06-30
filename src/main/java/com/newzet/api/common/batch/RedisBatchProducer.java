@@ -13,7 +13,7 @@ import reactor.core.scheduler.Schedulers;
 
 @Slf4j
 @RequiredArgsConstructor
-public abstract class AbstractBatchProducer<T> implements BatchProducer<T> {
+public abstract class RedisBatchProducer<T> implements BatchProducer<T> {
 
 	protected final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
 	protected final OptionalObjectMapper optionalObjectMapper;

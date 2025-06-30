@@ -17,7 +17,7 @@ import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.batch.dto.BatchProcessingResult;
 import com.newzet.api.article.repository.batch.dto.BatchSaveData;
-import com.newzet.api.common.batch.AbstractBatchConsumer;
+import com.newzet.api.common.batch.RedisBatchConsumer;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.fcm.orchestrator.FcmTokenOrchestrator;
@@ -26,7 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class ArticleRedisBatchConsumerImpl extends AbstractBatchConsumer<Article>
+public class ArticleRedisBatchConsumerImpl extends RedisBatchConsumer<Article>
 	implements ArticleBatchConsumer {
 
 	private static final String ARTICLE_STREAM_KEY = "article:stream";
