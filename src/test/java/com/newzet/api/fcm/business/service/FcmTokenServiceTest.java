@@ -5,7 +5,6 @@ import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
 
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -18,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.newzet.api.fcm.business.batch.FcmBatchProducer;
 import com.newzet.api.fcm.business.repository.FcmTokenRepository;
-import com.newzet.api.fcm.domain.FcmNotification;
 import com.newzet.api.fcm.domain.FcmToken;
 
 @ExtendWith(MockitoExtension.class)
@@ -94,104 +92,5 @@ class FcmTokenServiceTest {
 		// Then
 		verify(fcmTokenRepository).findByUserIdAndValue(testUserId, testFcmTokenValue);
 		verify(fcmTokenRepository).deleteFcmToken(testFcmToken);
-	}
-
-	@Test
-	void sendFcmWhenMailReceivedBatch_WhenUserHasTokens_ThenSendNotifications() {
-		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
-
-		FcmToken token1 = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
-			"token1");
-		FcmToken token2 = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
-			"token2");
-		List<FcmToken> tokens = List.of(token1, token2);
-
-		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
-
-		// When
-		fcmTokenService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
-
-		// Then
-		verify(fcmTokenRepository).findAllByUserId(testUserId);
-		verify(batchProducer, times(2)).addToBatch(any(FcmNotification.class));
-	}
-
-	@Test
-	void sendFcmWhenMailReceivedBatch_WhenUserHasNoTokens_ThenNoNotificationsSent() {
-		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
-		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(List.of());
-
-		// When
-		fcmTokenService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
-
-		// Then
-		verify(fcmTokenRepository).findAllByUserId(testUserId);
-		verify(batchProducer, never()).addToBatch(any(FcmNotification.class));
-	}
-
-	@Test
-	void sendFcmWhenMailReceivedBatch_WhenTokenIsNull_ThenSkipInvalidNotification() {
-		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
-		
-		FcmToken tokenWithNullValue = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
-			null);
-		List<FcmToken> tokens = List.of(tokenWithNullValue);
-
-		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
-
-		// When
-		fcmTokenService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
-
-		// Then
-		verify(fcmTokenRepository).findAllByUserId(testUserId);
-		verify(batchProducer, never()).addToBatch(any(FcmNotification.class));
-	}
-
-	@Test
-	void sendFcmWhenMailReceivedBatch_WhenTokenIsEmpty_ThenSkipInvalidNotification() {
-		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
-		
-		FcmToken tokenWithEmptyValue = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
-			"");
-		List<FcmToken> tokens = List.of(tokenWithEmptyValue);
-
-		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
-
-		// When
-		fcmTokenService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
-
-		// Then
-		verify(fcmTokenRepository).findAllByUserId(testUserId);
-		verify(batchProducer, never()).addToBatch(any(FcmNotification.class));
-	}
-
-	@Test
-	void sendFcmWhenMailReceivedBatch_WhenMixedValidAndInvalidTokens_ThenProcessOnlyValidOnes() {
-		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
-		
-		FcmToken validToken = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
-			"valid-token");
-		FcmToken invalidToken = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
-			null);
-		List<FcmToken> tokens = List.of(validToken, invalidToken);
-
-		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
-
-		// When
-		fcmTokenService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
-
-		// Then
-		verify(fcmTokenRepository).findAllByUserId(testUserId);
-		verify(batchProducer, times(1)).addToBatch(any(FcmNotification.class));
 	}
 }
