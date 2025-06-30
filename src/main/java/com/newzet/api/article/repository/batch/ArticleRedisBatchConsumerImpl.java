@@ -20,7 +20,7 @@ import com.newzet.api.article.repository.batch.dto.BatchSaveData;
 import com.newzet.api.common.batch.RedisBatchConsumer;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
-import com.newzet.api.fcm.orchestrator.FcmTokenOrchestrator;
+import com.newzet.api.fcm.orchestrator.FcmSenderOrchestrator;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,17 +36,17 @@ public class ArticleRedisBatchConsumerImpl extends RedisBatchConsumer<Article>
 	private static final long DUPLICATE_CACHE_TTL_MINUTES = 10;
 
 	private final ArticleRepository articleRepository;
-	private final FcmTokenOrchestrator fcmTokenOrchestrator;
+	private final FcmSenderOrchestrator fcmSenderOrchestrator;
 
 	public ArticleRedisBatchConsumerImpl(RedisTemplate<String, String> redisTemplate,
 		ReactiveRedisTemplate<String, String> reactiveRedisTemplate,
 		BatchConfig batchConfig,
 		OptionalObjectMapper optionalObjectMapper,
 		ArticleRepository articleRepository,
-		FcmTokenOrchestrator fcmTokenOrchestrator) {
+		FcmSenderOrchestrator fcmSenderOrchestrator) {
 		super(redisTemplate, reactiveRedisTemplate, batchConfig, optionalObjectMapper);
 		this.articleRepository = articleRepository;
-		this.fcmTokenOrchestrator = fcmTokenOrchestrator;
+		this.fcmSenderOrchestrator = fcmSenderOrchestrator;
 	}
 
 	@Override
@@ -181,7 +181,7 @@ public class ArticleRedisBatchConsumerImpl extends RedisBatchConsumer<Article>
 	private void sendFCM(List<ArticleEntityDto> saved) {
 		if (!saved.isEmpty()) {
 			for (ArticleEntityDto articleData : saved) {
-				fcmTokenOrchestrator.sendFcmWhenMailReceivedBatch(articleData.getToUserId(),
+				fcmSenderOrchestrator.sendFcmWhenMailReceivedBatch(articleData.getToUserId(),
 					articleData.getFromName(), articleData.getTitle());
 			}
 		}
