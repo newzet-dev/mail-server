@@ -85,6 +85,7 @@ public class FcmRedisBatchConsumerImpl extends RedisBatchConsumer<FcmNotificatio
 
 		try {
 			fcmSenderOrchestrator.send(fcmNotification);
+			result.incrementSuccessCount();
 		} catch (Exception e) {
 			result.incrementFailCount();
 		}
