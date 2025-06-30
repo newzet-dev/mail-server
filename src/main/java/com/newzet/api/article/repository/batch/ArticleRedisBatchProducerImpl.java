@@ -5,14 +5,14 @@ import org.springframework.stereotype.Component;
 
 import com.newzet.api.article.business.batch.ArticleBatchProducer;
 import com.newzet.api.article.domain.Article;
-import com.newzet.api.common.batch.AbstractBatchProducer;
+import com.newzet.api.common.batch.RedisBatchProducer;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class ArticleRedisBatchProducerImpl extends AbstractBatchProducer<Article>
+public class ArticleRedisBatchProducerImpl extends RedisBatchProducer<Article>
 	implements ArticleBatchProducer {
 
 	private static final String ARTICLE_STREAM_KEY = "article:stream";

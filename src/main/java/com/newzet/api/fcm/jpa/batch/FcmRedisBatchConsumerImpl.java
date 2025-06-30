@@ -9,7 +9,7 @@ import org.springframework.stereotype.Component;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.Message;
 import com.google.firebase.messaging.Notification;
-import com.newzet.api.common.batch.AbstractBatchConsumer;
+import com.newzet.api.common.batch.RedisBatchConsumer;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
 import com.newzet.api.fcm.business.batch.FcmBatchConsumer;
@@ -22,7 +22,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-public class FcmRedisBatchConsumerImpl extends AbstractBatchConsumer<FcmNotification>
+public class FcmRedisBatchConsumerImpl extends RedisBatchConsumer<FcmNotification>
 	implements FcmBatchConsumer {
 
 	private static final String FCM_STREAM_KEY = "fcm:stream";

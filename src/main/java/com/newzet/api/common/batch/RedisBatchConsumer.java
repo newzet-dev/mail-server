@@ -29,7 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @RequiredArgsConstructor
-public abstract class AbstractBatchConsumer<T> implements BatchConsumer {
+public abstract class RedisBatchConsumer<T> implements BatchConsumer {
 
 	protected final RedisTemplate<String, String> redisTemplate;
 	protected final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
