@@ -35,13 +35,14 @@ import com.newzet.api.common.batch.BatchConsumer;
 import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
+import com.newzet.api.config.FirebaseTestConfig;
 import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
 import com.newzet.api.fcm.orchestrator.FcmSenderOrchestrator;
 
 @ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class,
-	JwtTestConfig.class})
+	JwtTestConfig.class, FirebaseTestConfig.class})
 @SpringBootTest
 @ComponentScan(basePackages = {"com.newzet.api.article", "com.newzet.api.common"})
 class ArticleRedisBatchProcessorIntegrationTest {
