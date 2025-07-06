@@ -47,3 +47,5 @@ out/
 /dockercomposes/monitoring/newrelic-infra/newrelic-infra.yml
 
 push.sh
+
+firebase-service-account.json

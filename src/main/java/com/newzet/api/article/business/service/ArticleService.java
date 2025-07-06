@@ -8,6 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.newzet.api.article.business.batch.ArticleBatchProducer;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleDetailResponse;
@@ -16,7 +17,6 @@ import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
-import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.util.UuidConverter;
 
 import lombok.RequiredArgsConstructor;
@@ -28,7 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class ArticleService {
 
-	private final BatchProducer batchProducer;
+	private final ArticleBatchProducer batchProducer;
 	private final ArticleRepository articleRepository;
 
 	public void saveArticleBatch(UUID userId, String fromName, String fromDomain,

@@ -1,5 +1,6 @@
 package com.newzet.api.fcm.jpa.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -11,4 +12,6 @@ public interface FcmTokenJpaRepository extends JpaRepository<FcmTokenEntity, UUI
 	Optional<FcmTokenEntity> findByFcmToken(String value);
 
 	Optional<FcmTokenEntity> findByUserIdAndFcmToken(UUID userId, String fcmToken);
+
+	List<FcmTokenEntity> findAllByUserId(UUID userId);
 }

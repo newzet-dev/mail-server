@@ -1,5 +1,6 @@
 package com.newzet.api.fcm.business.repository;
 
+import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -13,4 +14,6 @@ public interface FcmTokenRepository {
 	FcmToken save(FcmToken fcmToken);
 
 	FcmToken findByUserIdAndValue(UUID userId, String value);
+
+	List<FcmToken> findAllByUserId(UUID userId);
 }

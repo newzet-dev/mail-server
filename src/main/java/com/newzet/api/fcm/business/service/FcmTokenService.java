@@ -8,13 +8,15 @@ import com.newzet.api.fcm.business.repository.FcmTokenRepository;
 import com.newzet.api.fcm.domain.FcmToken;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class FcmTokenService {
 
 	private final FcmTokenRepository fcmTokenRepository;
-    
+
 	public FcmToken upsertFcmToken(UUID userId, String value) {
 		FcmToken fcmToken = fcmTokenRepository.findIfExistByValue(value)
 			.map(existingToken -> existingToken.changeUserId(userId))
