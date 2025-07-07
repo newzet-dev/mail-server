@@ -16,7 +16,7 @@ import lombok.RequiredArgsConstructor;
 public class EventService {
 	private final EventRepository eventRepository;
 
-	EventListResponse getAllEvents() {
+	public EventListResponse getAllEvents() {
 		List<Event> eventList = eventRepository.findEventList();
 		return EventResponseMapper.toListResponse(eventList);
 	}
