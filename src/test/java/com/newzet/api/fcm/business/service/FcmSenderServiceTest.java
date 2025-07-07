@@ -52,8 +52,10 @@ public class FcmSenderServiceTest {
 	@Test
 	void sendFcmWhenMailReceivedBatch_WhenUserHasTokens_ThenSendNotifications() {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 
 		FcmToken token1 = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
 			"token1");
@@ -64,7 +66,8 @@ public class FcmSenderServiceTest {
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
 
 		// When
-		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -74,12 +77,15 @@ public class FcmSenderServiceTest {
 	@Test
 	void sendFcmWhenMailReceivedBatch_WhenUserHasNoTokens_ThenNoNotificationsSent() {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(List.of());
 
 		// When
-		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -89,8 +95,10 @@ public class FcmSenderServiceTest {
 	@Test
 	void sendFcmWhenMailReceivedBatch_WhenTokenIsNull_ThenSkipInvalidNotification() {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 
 		FcmToken tokenWithNullValue = new FcmToken(UUID.randomUUID(), LocalDateTime.now(),
 			testUserId,
@@ -100,7 +108,8 @@ public class FcmSenderServiceTest {
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
 
 		// When
-		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -110,8 +119,10 @@ public class FcmSenderServiceTest {
 	@Test
 	void sendFcmWhenMailReceivedBatch_WhenTokenIsEmpty_ThenSkipInvalidNotification() {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 
 		FcmToken tokenWithEmptyValue = new FcmToken(UUID.randomUUID(), LocalDateTime.now(),
 			testUserId,
@@ -121,7 +132,8 @@ public class FcmSenderServiceTest {
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
 
 		// When
-		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -131,8 +143,10 @@ public class FcmSenderServiceTest {
 	@Test
 	void sendFcmWhenMailReceivedBatch_WhenMixedValidAndInvalidTokens_ThenProcessOnlyValidOnes() {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 
 		FcmToken validToken = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
 			"valid-token");
@@ -143,7 +157,8 @@ public class FcmSenderServiceTest {
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
 
 		// When
-		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -153,8 +168,10 @@ public class FcmSenderServiceTest {
 	@Test
 	void sendFcmWhenMailReceivedBatch_WhenInvalidTokenFirst_ThenReturnEarly() {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 
 		FcmToken invalidToken = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
 			null);
@@ -165,7 +182,8 @@ public class FcmSenderServiceTest {
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
 
 		// When
-		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmWhenMailReceivedBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -175,8 +193,10 @@ public class FcmSenderServiceTest {
 	@Test
 	void sendFcmNotBatch_WhenUserHasTokens_ThenSendDirectly() throws Exception {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 
 		FcmToken token1 = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
 			"token1");
@@ -186,7 +206,8 @@ public class FcmSenderServiceTest {
 		when(firebaseMessaging.send(any(Message.class))).thenReturn("success-response");
 
 		// When
-		fcmSenderService.sendFcmNotBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmNotBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -198,12 +219,15 @@ public class FcmSenderServiceTest {
 	void sendFcmNotBatch_WhenUserHasNoTokens_ThenNoNotificationsSent() throws
 		FirebaseMessagingException {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(List.of());
 
 		// When
-		fcmSenderService.sendFcmNotBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmNotBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -214,8 +238,10 @@ public class FcmSenderServiceTest {
 	void sendFcmNotBatch_WhenTokenIsInvalid_ThenSkipInvalidNotification() throws
 		FirebaseMessagingException {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 
 		FcmToken invalidToken = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
 			null);
@@ -224,7 +250,8 @@ public class FcmSenderServiceTest {
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
 
 		// When
-		fcmSenderService.sendFcmNotBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmNotBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -234,8 +261,10 @@ public class FcmSenderServiceTest {
 	@Test
 	void sendFcmNotBatch_WhenInvalidTokenFirst_ThenReturnEarly() throws FirebaseMessagingException {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 
 		FcmToken invalidToken = new FcmToken(UUID.randomUUID(), LocalDateTime.now(), testUserId,
 			null);
@@ -246,7 +275,8 @@ public class FcmSenderServiceTest {
 		when(fcmTokenRepository.findAllByUserId(testUserId)).thenReturn(tokens);
 
 		// When
-		fcmSenderService.sendFcmNotBatch(testUserId, fromName, title);
+		fcmSenderService.sendFcmNotBatch(testUserId, articleId, 
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		verify(fcmTokenRepository).findAllByUserId(testUserId);
@@ -257,7 +287,7 @@ public class FcmSenderServiceTest {
 	void send_WhenFcmNotificationIsValid_ThenSendSuccessfully() throws Exception {
 		// Given
 		FcmNotification notification = FcmNotification.create(testUserId, testFcmTokenValue,
-			"Newsletter", "New Article", null);
+			UUID.randomUUID(), LocalDateTime.now(), "New Article", "Newsletter");
 		when(firebaseMessaging.send(any(Message.class))).thenReturn("success-response");
 
 		// When
@@ -271,7 +301,7 @@ public class FcmSenderServiceTest {
 	void send_WhenFcmNotificationWithData_ThenSendSuccessfully() throws Exception {
 		// Given
 		FcmNotification notification = FcmNotification.create(testUserId, testFcmTokenValue,
-			"Newsletter", "New Article", "custom-data");
+			UUID.randomUUID(), LocalDateTime.now(), "New Article", "Newsletter");
 		when(firebaseMessaging.send(any(Message.class))).thenReturn("success-response");
 
 		// When
@@ -285,7 +315,7 @@ public class FcmSenderServiceTest {
 	void send_WhenInvalidTokenError_ThenDeleteToken() throws Exception {
 		// Given
 		FcmNotification notification = FcmNotification.create(testUserId, testFcmTokenValue,
-			"Newsletter", "New Article", null);
+			UUID.randomUUID(), LocalDateTime.now(), "New Article", "Newsletter");
 		RuntimeException invalidTokenException = new RuntimeException("Invalid registration token");
 
 		when(firebaseMessaging.send(any(Message.class))).thenThrow(invalidTokenException);
@@ -305,7 +335,7 @@ public class FcmSenderServiceTest {
 	void send_WhenRegistrationTokenNotRegistered_ThenDeleteToken() throws Exception {
 		// Given
 		FcmNotification notification = FcmNotification.create(testUserId, testFcmTokenValue,
-			"Newsletter", "New Article", null);
+			UUID.randomUUID(), LocalDateTime.now(), "New Article", "Newsletter");
 		RuntimeException notRegisteredError = new RuntimeException(
 			"Registration token not registered");
 
@@ -325,7 +355,7 @@ public class FcmSenderServiceTest {
 	void send_WhenInvalidArgumentError_ThenDeleteToken() throws Exception {
 		// Given
 		FcmNotification notification = FcmNotification.create(testUserId, testFcmTokenValue,
-			"Newsletter", "New Article", null);
+			UUID.randomUUID(), LocalDateTime.now(), "New Article", "Newsletter");
 		RuntimeException invalidArgumentError = new RuntimeException("Invalid argument");
 
 		when(firebaseMessaging.send(any(Message.class))).thenThrow(invalidArgumentError);
@@ -344,7 +374,7 @@ public class FcmSenderServiceTest {
 	void send_WhenEntityNotFoundError_ThenDeleteToken() throws Exception {
 		// Given
 		FcmNotification notification = FcmNotification.create(testUserId, testFcmTokenValue,
-			"Newsletter", "New Article", null);
+			UUID.randomUUID(), LocalDateTime.now(), "New Article", "Newsletter");
 		RuntimeException entityNotFoundError = new RuntimeException(
 			"Requested entity was not found");
 
@@ -364,7 +394,7 @@ public class FcmSenderServiceTest {
 	void send_WhenOtherException_ThenDoNotDeleteToken() throws Exception {
 		// Given
 		FcmNotification notification = FcmNotification.create(testUserId, testFcmTokenValue,
-			"Newsletter", "New Article", null);
+			UUID.randomUUID(), LocalDateTime.now(), "New Article", "Newsletter");
 		RuntimeException otherException = new RuntimeException("Network error");
 
 		when(firebaseMessaging.send(any(Message.class))).thenThrow(otherException);
@@ -382,7 +412,7 @@ public class FcmSenderServiceTest {
 	void send_WhenDeleteTokenFails_ThenHandleGracefully() throws Exception {
 		// Given
 		FcmNotification notification = FcmNotification.create(testUserId, testFcmTokenValue,
-			"Newsletter", "New Article", null);
+			UUID.randomUUID(), LocalDateTime.now(), "New Article", "Newsletter");
 		RuntimeException invalidTokenException = new RuntimeException("Invalid registration token");
 		RuntimeException deleteException = new RuntimeException("Database error");
 
