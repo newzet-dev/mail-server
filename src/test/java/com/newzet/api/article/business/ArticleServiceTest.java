@@ -11,12 +11,14 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
@@ -27,14 +29,27 @@ import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.TestArticleWithImageProjection;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
+import com.newzet.api.article.repository.entity.ArticleEntity;
+import com.newzet.api.common.exception.InternalErrorException;
+import com.newzet.api.common.s3.S3Service;
+import com.newzet.api.common.util.UuidConverter;
 
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
 
 	@Mock
 	private ArticleRepository articleRepository;
+	@Mock
+	private S3Service s3Service;
+	private String testBucketName = "test-content-bucket";
 	@InjectMocks
 	private ArticleService articleService;
+
+	@BeforeEach
+	void setUp() {
+		// @Value로 주입되는 필드 값을 테스트 환경에서 수동으로 주입
+		ReflectionTestUtils.setField(articleService, "contentBucketName", testBucketName);
+	}
 
 	@DisplayName("월별 아티클 조회 시 날짜별 오름차순 형태로 리스트가 분리되어 저장된다.")
 	@Test
@@ -128,4 +143,35 @@ class ArticleServiceTest {
 		// Then
 		verify(articleRepository, never()).readArticle(any(UUID.class));
 	}
+
+	@Test
+	@DisplayName("S3에서 본문을 가져오는 중 예외 발생 시 InternalErrorException을 던진다")
+	void getArticle_whenS3Fails_shouldThrowInternalErrorException() {
+		// given
+		String articleIdStr = UUID.randomUUID().toString();
+		UUID articleId = UuidConverter.convert(articleIdStr);
+		String contentUrl = "s3-key-that-causes-error.html";
+
+		// 이미 읽은 상태의 Article를 가정
+		ArticleEntity readArticleEntity = ArticleEntity.builder()
+			.id(articleId)
+			.title("title")
+			.contentUrl(contentUrl)
+			.isRead(true)
+			.build();
+
+		when(articleRepository.getById(articleId))
+			.thenReturn(readArticleEntity.toEntityDto());
+		when(s3Service.getContentAsString(anyString(), anyString()))
+			.thenThrow(new InternalErrorException("아티클을 불러오는 과정에서 에러가 발생하였습니다."));
+
+		// when & then
+		assertThrows(InternalErrorException.class, () ->
+			articleService.getArticle(articleIdStr));
+
+		// verify
+		verify(articleRepository).getById(articleId);
+		verify(s3Service).getContentAsString(testBucketName, contentUrl);
+	}
+
 }
