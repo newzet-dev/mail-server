@@ -64,3 +64,6 @@ firebase:
   private-key: ${FIREBASE_PRIVATE_KEY}
   client-email: ${FIREBASE_CLIENT_EMAIL}
   client-id: ${FIREBASE_CLIENT_ID}
+
+s3:
+  content-bucket: ${S3_CONTENT_BUCKET_NAME}
