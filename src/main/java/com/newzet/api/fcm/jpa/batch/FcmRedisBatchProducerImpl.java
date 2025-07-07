@@ -35,6 +35,6 @@ public class FcmRedisBatchProducerImpl extends RedisBatchProducer<FcmNotificatio
 	@Override
 	protected String getItemIdentifier(FcmNotification fcmNotification) {
 		return String.format("userId=%s, title=%s", fcmNotification.getUserId(),
-			fcmNotification.getTitle());
+			fcmNotification.getArticleTitle());
 	}
 }
