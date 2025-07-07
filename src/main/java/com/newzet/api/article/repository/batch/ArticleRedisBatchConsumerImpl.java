@@ -182,7 +182,8 @@ public class ArticleRedisBatchConsumerImpl extends RedisBatchConsumer<Article>
 		if (!saved.isEmpty()) {
 			for (ArticleEntityDto articleData : saved) {
 				fcmSenderOrchestrator.sendFcmWhenMailReceivedBatch(articleData.getToUserId(),
-					articleData.getFromName(), articleData.getTitle());
+					articleData.getId(), articleData.getCreatedAt(),
+					articleData.getTitle(), articleData.getFromName());
 			}
 		}
 	}
