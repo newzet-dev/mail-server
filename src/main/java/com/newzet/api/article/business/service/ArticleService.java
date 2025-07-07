@@ -63,6 +63,8 @@ public class ArticleService {
 			return ArticleContentResponse.of(updatedArticle.getTitle(),
 				updatedArticle.getContentUrl(), updatedArticle.isRead());
 		}
+		// S3로부터 본문 HTML를 받아옴
+		// contentUrl.html 형태로 접근해서 가져와, content 필드에 주입
 
 		return ArticleContentResponse.of(article.getTitle(), article.getContentUrl(),
 			article.isLike());
