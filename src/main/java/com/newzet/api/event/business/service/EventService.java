@@ -3,6 +3,7 @@ package com.newzet.api.event.business.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.event.business.repository.EventRepository;
 import com.newzet.api.event.domain.Event;
@@ -13,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class EventService {
 	private final EventRepository eventRepository;
 
