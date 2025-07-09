@@ -33,7 +33,7 @@ class NewsletterRecommendationServiceTest {
 			"emoji");
 		List<Newsletter> newsletterList = new ArrayList<>();
 		List<Newsletter> advertiseNewsletterList = Collections.singletonList(
-			createNewsletterWithName("advertise_newsletter", category.id()));
+			createNewsletterWithName("advertise_newsletter", category.getId()));
 
 		// When Then
 		assertThrows(NotEnoughNewslettersException.class,
@@ -56,7 +56,7 @@ class NewsletterRecommendationServiceTest {
 		}
 
 		Newsletter advertiseNewsletter = createNewsletterWithName("advertise_newsletter",
-			userCategoryNewsletterList.get(0).categoryId());
+			userCategoryNewsletterList.get(0).getCategoryId());
 		List<Newsletter> advertiseNewsletterList = Collections.singletonList(advertiseNewsletter);
 
 		// When
@@ -66,7 +66,7 @@ class NewsletterRecommendationServiceTest {
 		// Then
 		assertThat(recommendNewsletterList).hasSize(4);
 		List<String> newsletterName = recommendNewsletterList.stream()
-			.map(Newsletter::name)
+			.map(Newsletter::getName)
 			.toList();
 		assertThat(newsletterName)
 			.filteredOn(name -> name.equals("advertise_newsletter"))
@@ -80,10 +80,10 @@ class NewsletterRecommendationServiceTest {
 	private void createNewsletterByCategoryId(List<Newsletter> newsletterList,
 		UUID categoryId) {
 		Category category = new Category(categoryId, "testCategory", "test", "test");
-		Newsletter newsletter = createNewsletterWithName("userCategory_newsletter", category.id());
+		Newsletter newsletter = createNewsletterWithName("userCategory_newsletter", category.getId());
 		newsletterList.add(newsletter);
 		Newsletter newsletter2 = createNewsletterWithName("userCategory_newsletter",
-			category.id());
+			category.getId());
 		newsletterList.add(newsletter2);
 	}
 
