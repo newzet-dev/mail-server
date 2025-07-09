@@ -12,7 +12,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import com.newzet.api.config.PostgresTestContainerConfig;
-import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
+import com.newzet.api.subscription.domain.Subscription;
 import com.newzet.api.subscription.jpa.repository.SubscriptionRepositoryImpl;
 
 @DataJpaTest
@@ -32,7 +32,7 @@ public class SubscriptionRepositoryImplTest {
 	@Test
 	public void save() {
 		//When
-		SubscriptionEntityDto savedSubscription = repositoryImpl
+		Subscription savedSubscription = repositoryImpl
 			.save(userId, name, domain, mailingList);
 
 		//Then

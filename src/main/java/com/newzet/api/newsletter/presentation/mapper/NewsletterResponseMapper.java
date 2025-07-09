@@ -19,16 +19,15 @@ public class NewsletterResponseMapper {
 	}
 
 	public static NewsletterResponse toResponse(Newsletter newsletter) {
-		return new NewsletterResponse(newsletter.id(), newsletter.name(), newsletter.imageUrl(),
-			newsletter.description(), newsletter.priority());
+		return new NewsletterResponse(newsletter.getId(), newsletter.getName(), newsletter.getImageUrl(),
+			newsletter.getDescription(), newsletter.getPriority());
 	}
 
 	public static NewsletterInfoResponse toInfoResponse(Newsletter newsletter, Category category,
 		boolean isSubscribing) {
-		return new NewsletterInfoResponse(newsletter.id(), newsletter.name(), newsletter.imageUrl(),
-			newsletter.detail(), newsletter.status(), newsletter.dayOfWeek(), newsletter.subscriptionUrl(),
-			isSubscribing,
-			category.name());
+		return new NewsletterInfoResponse(newsletter.getId(), newsletter.getName(), newsletter.getImageUrl(),
+			newsletter.getDetail(), newsletter.getStatus(), newsletter.getDayOfWeek(), newsletter.getSubscriptionUrl(),
+			isSubscribing, category.getName());
 
 	}
 

@@ -2,11 +2,11 @@ package com.newzet.api.usercategory.jpa;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,11 +14,9 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import com.newzet.api.category.jpa.CategoryEntity;
-import com.newzet.api.category.jpa.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
-import com.newzet.api.user.repository.entity.UserEntity;
-import com.newzet.api.user.repository.repository.UserJpaRepository;
+import com.newzet.api.usercategory.domain.UserCategory;
+import com.newzet.api.usercategory.jpa.repository.UserCategoryJpaRepository;
 import com.newzet.api.usercategory.jpa.repository.UserCategoryRepositoryImpl;
 
 @DataJpaTest
@@ -29,60 +27,74 @@ class UserCategoryRepositoryImplTest {
 
 	@Autowired
 	private UserCategoryRepositoryImpl userCategoryRepository;
-	@Autowired
-	private UserJpaRepository userJpaRepository;
-	@Autowired
-	private CategoryJpaRepository categoryJpaRepository;
 
-	private UserEntity user;
-	private List<CategoryEntity> categories;
+	@Autowired
+	private UserCategoryJpaRepository userCategoryJpaRepository;
+
+	private UUID testUserId;
+	private List<UUID> testCategoryIds;
+	private List<UserCategory> userCategoriesToSave;
 
 	@BeforeEach
 	void setUp() {
-		user = userJpaRepository.save(UserEntity.create("test@example.com", "test", "ACTIVE"));
-		categories = new ArrayList<>();
+		testUserId = UUID.randomUUID();
+		testCategoryIds = List.of(
+			UUID.randomUUID(),
+			UUID.randomUUID(),
+			UUID.randomUUID(),
+			UUID.randomUUID(),
+			UUID.randomUUID()
+		);
 
-		for (int i = 1; i <= 5; i++) {
-			categories.add(categoryJpaRepository.save(
-				CategoryEntity.create("testCategory" + i, "testurl", "testemoji")));
-		}
+		userCategoriesToSave = testCategoryIds.stream()
+			.map(categoryId -> new UserCategory(
+				null,
+				testUserId,
+				categoryId))
+			.toList();
 	}
 
 	@Test
-	void create_user_category_and_no_throw_any_exception() {
-		//given
-		List<UUID> categoryIds = categories.stream().map(CategoryEntity::getId).toList();
-		UserEntity userEntity = userJpaRepository.findById(user.getId()).get();
+	@DisplayName("사용자 카테고리 목록을 추가하고, 예외가 발생하지 않아야 한다.")
+	void addUserCategories_shouldAddUserCategoriesWithoutException() {
+		// When
+		List<UserCategory> savedUserCategories = userCategoryRepository.addUserCategories(userCategoriesToSave);
 
-		//when then
-		assertEquals(userEntity.getId(), user.getId());
-		assertDoesNotThrow(() -> userCategoryRepository.addUserCategory(userEntity.getId(), categoryIds));
+		// Then
+		assertNotNull(savedUserCategories);
+		assertEquals(userCategoriesToSave.size(), savedUserCategories.size());
 	}
 
 	@Test
-	void get_user_categories_exactly_have_saved_numbers() {
-		//given
-		List<UUID> categoryIds = categories.stream().map(CategoryEntity::getId).toList();
-		UserEntity userEntity = userJpaRepository.findById(user.getId()).get();
+	@DisplayName("사용자 ID로 카테고리 목록을 조회하면 저장된 개수와 일치해야 한다.")
+	void findUserCategoryListByUserId_shouldReturnCorrectNumberOfCategories() {
+		// Given
+		userCategoryRepository.addUserCategories(userCategoriesToSave);
 
-		//when
-		userCategoryRepository.addUserCategory(userEntity.getId(), categoryIds);
+		// When
+		List<UserCategory> foundUserCategories = userCategoryRepository.findUserCategoryListByUserId(testUserId);
 
-		// then
-		assertEquals(5, userCategoryRepository.getUserCategoryListByUserId(userEntity.getId()).size());
+		// Then
+		assertEquals(5, foundUserCategories.size());
+		foundUserCategories.forEach(uc -> assertEquals(testUserId, uc.getUserId()));
+		List<UUID> foundCategoryIds = foundUserCategories.stream()
+			.map(UserCategory::getCategoryId)
+			.toList();
+		assertTrue(foundCategoryIds.containsAll(testCategoryIds));
 	}
 
 	@Test
-	void delete_user_category_and_exists_nothing() {
-		//given
-		List<UUID> categoryIds = categories.stream().map(CategoryEntity::getId).toList();
-		UserEntity userEntity = userJpaRepository.findById(user.getId()).get();
-		userCategoryRepository.addUserCategory(userEntity.getId(), categoryIds);
+	@DisplayName("사용자 ID로 카테고리 목록을 삭제하면, 데이터가 존재하지 않아야 한다.")
+	void deleteUserCategoriesByUserId_shouldDeleteAllUserCategories() {
+		// Given
+		List<UserCategory> savedUserCategories = userCategoryRepository.addUserCategories(userCategoriesToSave);
+		assertEquals(5, savedUserCategories.size());
 
-		//when then
-		assertEquals(5, userCategoryRepository.getUserCategoryListByUserId(userEntity.getId()).size());
-		userCategoryRepository.deleteUserCategoryByUserId(userEntity.getId());
-		assertEquals(0, userCategoryRepository.getUserCategoryListByUserId(userEntity.getId()).size());
+		// When
+		userCategoryRepository.deleteUserCategoriesByUserId(testUserId);
+
+		// Then
+		List<UserCategory> remainingUserCategories = userCategoryRepository.findUserCategoryListByUserId(testUserId);
+		assertTrue(remainingUserCategories.isEmpty());
 	}
-
 }

@@ -25,12 +25,14 @@ import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
+import com.newzet.api.article.exception.ShareForbiddenException;
 import com.newzet.api.article.repository.TestArticleWithImageProjection;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 
 @ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
 
+	private final UUID TEST_ARTICLE_ID = UUID.randomUUID();
 	@Mock
 	private ArticleRepository articleRepository;
 	@InjectMocks
@@ -127,5 +129,39 @@ class ArticleServiceTest {
 
 		// Then
 		verify(articleRepository, never()).readArticle(any(UUID.class));
+	}
+
+	@Test
+	@DisplayName("공유가 허용된 아티클을 조회하면, 아티클 객체를 정상적으로 반환한다.")
+	void getSharedArticle_whenIsShareIsTrue_shouldReturnArticle() {
+		// Given
+		Article mockArticle = Article.create(TEST_ARTICLE_ID, UUID.randomUUID(), "test", "test.com", "test",
+			"testTitle", "test.com", false, false, true, LocalDateTime.now(), null);
+		when(articleRepository.getById(TEST_ARTICLE_ID)).thenReturn(ArticleEntityDto.fromDomain(mockArticle));
+
+		// When
+		Article resultArticle = articleService.getSharedArticle(TEST_ARTICLE_ID);
+
+		// Then
+		assertNotNull(resultArticle);
+		assertEquals(TEST_ARTICLE_ID, resultArticle.getId());
+		assertTrue(resultArticle.isShare());
+		verify(articleRepository, times(1)).getById(TEST_ARTICLE_ID);
+	}
+
+	@Test
+	@DisplayName("공유가 허용되지 않은 아티클을 조회하면, ShareForbiddenException을 던진다.")
+	void getSharedArticle_whenIsShareIsFalse_shouldThrowException() {
+		// Given
+		Article mockArticle = Article.create(TEST_ARTICLE_ID, UUID.randomUUID(), "test", "test.com", "test",
+			"testTitle", "test.com", false, false, false, LocalDateTime.now(), null);
+		when(articleRepository.getById(TEST_ARTICLE_ID)).thenReturn(ArticleEntityDto.fromDomain(mockArticle));
+
+		// When & Then
+		ShareForbiddenException exception = assertThrows(ShareForbiddenException.class, () -> {
+			articleService.getSharedArticle(TEST_ARTICLE_ID);
+		});
+		assertEquals("공유가 허용되지 않은 아티클입니다.", exception.getMessage());
+		verify(articleRepository, times(1)).getById(TEST_ARTICLE_ID);
 	}
 }

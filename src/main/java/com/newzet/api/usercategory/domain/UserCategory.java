@@ -2,9 +2,13 @@ package com.newzet.api.usercategory.domain;
 
 import java.util.UUID;
 
-public record UserCategory(
-	UUID id,
-	UUID userId,
-	UUID categoryId
-) {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public class UserCategory {
+	private final UUID id;
+	private final UUID userId;
+	private final UUID categoryId;
 }

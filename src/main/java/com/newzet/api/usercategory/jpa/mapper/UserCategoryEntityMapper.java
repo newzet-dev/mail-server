@@ -9,6 +9,6 @@ public class UserCategoryEntityMapper {
 	}
 
 	public static UserCategoryEntity toEntity(UserCategory domain) {
-		return new UserCategoryEntity(domain.id(), domain.userId(), domain.categoryId());
+		return new UserCategoryEntity(domain.getId(), domain.getUserId(), domain.getCategoryId());
 	}
 }

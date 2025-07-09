@@ -31,8 +31,9 @@ public class UserinfoService {
 	}
 
 	public boolean isInitialized(UUID userId) {
-		Userinfo userinfo = userinfoRepository.findUserinfoById(userId);
-		return userinfo.getEmail() != null;
+		return userinfoRepository.findOptionalUserinfoById(userId)
+			.map(Userinfo::getEmail)
+			.isPresent();
 	}
 
 	public Userinfo findUserinfoByEmail(String email) {

@@ -5,10 +5,10 @@ import com.newzet.api.newsletter.jpa.entity.NewsletterEntity;
 
 public class NewsletterEntityMapper {
 	public static NewsletterEntity toEntity(Newsletter domain) {
-		return new NewsletterEntity(domain.id(), domain.name(), domain.categoryId(),
-			domain.domain(), domain.mailingList(), domain.priority(), domain.imageUrl(),
-			domain.description(), domain.detail(), domain.status(), domain.dayOfWeek(), domain.subscriptionUrl(),
-			domain.color(), domain.deletedAt());
+		return new NewsletterEntity(domain.getId(), domain.getName(), domain.getCategoryId(),
+			domain.getDomain(), domain.getMailingList(), domain.getPriority(), domain.getImageUrl(),
+			domain.getDescription(), domain.getDetail(), domain.getStatus(), domain.getDayOfWeek(),
+			domain.getSubscriptionUrl(), domain.getColor(), domain.getDeletedAt());
 	}
 
 	public static Newsletter toDomain(NewsletterEntity entity) {
