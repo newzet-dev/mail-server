@@ -44,4 +44,10 @@ public class UserinfoRepositoryImpl implements UserinfoRepository {
 			.map(UserinfoEntityMapper::toDomain)
 			.orElseThrow(() -> new NoUserinfoException("사용자 정보를 찾을 수 없습니다."));
 	}
+
+	@Override
+	public Optional<Userinfo> findOptionalUserinfoById(UUID userId) {
+		return userinfoJpaRepository.findById(userId)
+			.map(UserinfoEntityMapper::toDomain);
+	}
 }

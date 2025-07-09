@@ -15,6 +15,7 @@ import com.newzet.api.article.controller.dto.ArticleLikeListResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
+import com.newzet.api.article.exception.ShareForbiddenException;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.util.UuidConverter;
@@ -117,5 +118,19 @@ public class ArticleService {
 
 	public String getSharedUrl(UUID articleId) {
 		return String.format("%s/%s", ARTICLE_SHARE_PREFIX, articleId);
+	}
+
+	public Article getSharedArticle(UUID articleId) {
+		Article article = articleRepository.getById(articleId).toDomain();
+		if (article.isShare()) {
+			return article;
+		}
+		throw new ShareForbiddenException("공유가 허용되지 않은 아티클입니다.");
+	}
+
+	public String getContentUrl() {
+		//TODO(S3에서 Article 조회)
+		//TODO(getArticle도 바꿔주야함)
+		return "";
 	}
 }

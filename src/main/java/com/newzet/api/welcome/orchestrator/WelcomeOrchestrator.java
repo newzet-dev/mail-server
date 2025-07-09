@@ -28,10 +28,11 @@ public class WelcomeOrchestrator {
 
 	public void sendWelcomeMail(UUID userId) {
 		Newsletter newsletter = newsletterService.findNewsLetterById(NEWZET_NEWSLETTER_ID);
-		Article article = articleService.addArticle(userId, newsletter.name(), newsletter.domain(), WELCOME_MAIL_TITLE,
-			WELCOME_MAIL_URL, newsletter.mailingList());
-		subscriptionService.addSubscriptionIfUnsubscribed(userId, newsletter.name(), newsletter.domain(),
-			newsletter.mailingList());
+		Article article = articleService.addArticle(userId, newsletter.getName(), newsletter.getDomain(),
+			WELCOME_MAIL_TITLE,
+			WELCOME_MAIL_URL, newsletter.getMailingList());
+		subscriptionService.addSubscriptionIfUnsubscribed(userId, newsletter.getName(), newsletter.getDomain(),
+			newsletter.getMailingList());
 
 		// TODO("FCM 알림 전송")
 		// await this.fcmNotificationRepository.addFcmNotification(

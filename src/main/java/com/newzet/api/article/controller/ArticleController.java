@@ -15,6 +15,7 @@ import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleLikeListResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.ArticleShareResponse;
+import com.newzet.api.article.orchestrator.ArticleOrchestrator;
 import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.annotation.RequireAuth;
 import com.newzet.api.common.auth.domain.AuthUser;
@@ -32,6 +33,7 @@ import lombok.RequiredArgsConstructor;
 public class ArticleController {
 
 	private final ArticleService articleService;
+	private final ArticleOrchestrator articleOrchestrator;
 
 	@GetMapping
 	@RequireAuth
@@ -105,4 +107,12 @@ public class ArticleController {
 			ResponseCode.SUCCESS, "아티클 공유 성공", new ArticleShareResponse(sharedArticleUrl));
 	}
 
+	@GetMapping("/share/{articleId}")
+	@Operation(summary = "공유 아티클 조회", description = "공유 아티클을 조회한다.")
+	public SuccessResponse<ArticleContentResponse> getSharedArticle(
+		@PathVariable("articleId") UUID articleId) {
+		ArticleContentResponse response = articleOrchestrator.getSharedArticle(articleId);
+		return SuccessResponse.create(
+			ResponseCode.SUCCESS, "아티클 공유 성공", response);
+	}
 }

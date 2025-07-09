@@ -8,7 +8,7 @@ import com.newzet.api.category.presentation.dto.CategoryResponse;
 
 public class CategoryResponseMapper {
 	public static CategoryResponse toResponse(Category category) {
-		return new CategoryResponse(category.id(), category.name(), category.imageUrl(), category.emoji());
+		return new CategoryResponse(category.getId(), category.getName(), category.getImageUrl(), category.getEmoji());
 	}
 
 	public static CategoryListResponse toListResponse(List<CategoryResponse> categoryResponseList) {

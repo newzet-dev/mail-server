@@ -46,15 +46,15 @@ public class NewsletterOrchestrator {
 
 	public NewsletterInfoResponse getNewsletterInfoWithoutLogin(UUID id) {
 		Newsletter newsletter = newsletterService.findNewsLetterById(id);
-		Category category = categoryService.getCategoryById(newsletter.categoryId());
+		Category category = categoryService.getCategoryById(newsletter.getCategoryId());
 		return NewsletterResponseMapper.toInfoResponse(newsletter, category, false);
 	}
 
 	public NewsletterInfoResponse getNewsLetterInfoWithLogin(UUID userId, UUID id) {
 		Newsletter newsletter = newsletterService.findNewsLetterById(id);
-		Category category = categoryService.getCategoryById(newsletter.categoryId());
-		boolean isSubscribing = subscriptionService.isSubscribing(userId, newsletter.domain(),
-			newsletter.mailingList());
+		Category category = categoryService.getCategoryById(newsletter.getCategoryId());
+		boolean isSubscribing = subscriptionService.isSubscribing(userId, newsletter.getDomain(),
+			newsletter.getMailingList());
 		return NewsletterResponseMapper.toInfoResponse(newsletter, category, isSubscribing);
 	}
 
@@ -68,7 +68,7 @@ public class NewsletterOrchestrator {
 
 	private List<Newsletter> prepareAdvertiseNewsletterList() {
 		List<UUID> advertiseNewsletterIdList = advertiseService.getAdvertiseList().stream()
-			.map(Advertise::newsletterId)
+			.map(Advertise::getNewsletterId)
 			.toList();
 		return newsletterService.findNewsletterListByIdList(
 			advertiseNewsletterIdList);
@@ -76,7 +76,7 @@ public class NewsletterOrchestrator {
 
 	private List<Newsletter> prepareUserCategoryNewsletterList(UUID userId) {
 		List<UUID> userCategoryIdList = userCategoryService.findCategoryListByUserId(userId).stream()
-			.map(UserCategory::id)
+			.map(UserCategory::getId)
 			.toList();
 		return newsletterService.findNewsletterListByCategoryIdList(userCategoryIdList);
 	}

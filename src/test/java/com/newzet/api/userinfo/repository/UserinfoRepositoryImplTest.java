@@ -1,4 +1,4 @@
-package com.newzet.api.user.repository;
+package com.newzet.api.userinfo.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -64,7 +64,7 @@ class UserinfoRepositoryImplTest {
 	}
 
 	private Userinfo createUserinfo() {
-		return new Userinfo(UUID.randomUUID(), "test@test.com", "test", UserRole.MEMBER, LocalDateTime.now(),
+		return new Userinfo(null, "test@test.com", "test", UserRole.MEMBER, LocalDateTime.now(),
 			LocalDateTime.now());
 	}
 

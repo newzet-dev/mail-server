@@ -29,7 +29,7 @@ public class UserinfoEntity {
 	@Column(columnDefinition = "UUID", updatable = false, nullable = false)
 	private UUID id;
 
-	@Column(nullable = false)
+	@Column
 	private String email;
 
 	@Column(nullable = false)

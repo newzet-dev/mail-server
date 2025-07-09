@@ -2,12 +2,9 @@ package com.newzet.api.newsletter.repository;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +12,11 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
-import com.newzet.api.category.jpa.CategoryEntity;
-import com.newzet.api.category.jpa.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.domain.Newsletter;
+import com.newzet.api.newsletter.domain.NewsletterColor;
 import com.newzet.api.newsletter.exception.NoNewsletterException;
-import com.newzet.api.newsletter.fixture.NewsletterFixture;
+import com.newzet.api.newsletter.jpa.repository.NewsletterRepositoryImpl;
 
 @DataJpaTest
 @Import(NewsletterRepositoryImpl.class)
@@ -30,179 +26,52 @@ class NewsletterRepositoryImplTest {
 
 	@Autowired
 	private NewsletterRepositoryImpl newsletterRepository;
-	@Autowired
-	private CategoryJpaRepository categoryJpaRepository;
-	@Autowired
-	private com.newzet.api.newsletter.repository.NewsletterJpaRepository newsletterJpaRepository;
-
-	private static void verifyFindByDomainOrMailingList(NewsletterEntityDto n1,
-		NewsletterEntityDto n2) {
-		assertEquals((n1.getId()), n2.getId());
-		assertEquals(n1.getDomain(), n2.getDomain());
-		assertEquals(n1.getName(), n2.getName());
-		assertEquals(n1.getMailingList(), n2.getMailingList());
-		assertEquals(n1.getStatus(), n2.getStatus());
-	}
 
 	@Test
-	public void save_returnNewsletterEntityDto() {
-		// Given
-		String name = "test";
-		String domain = "test@example.com";
-		String mailingList = "test123";
-		String status = "REGISTERED";
+	public void findById_whenNewsletterExists_shouldReturnNewsletter() {
+		//Given
+		Newsletter newsletter = new Newsletter(
+			null,
+			"test",
+			UUID.randomUUID(),
+			"test",
+			"test",
+			1,
+			"test",
+			"test",
+			"test",
+			"test",
+			"test",
+			"test",
+			NewsletterColor.DEFAULT,
+			LocalDateTime.now()
+		);
+		Newsletter saved = newsletterRepository.save(newsletter);
 
-		// When
-		NewsletterEntityDto savedNewsletter = newsletterRepository
-			.save(name, domain, mailingList, status);
+		//When
+		Newsletter founded = newsletterRepository.findById(saved.getId());
 
 		// Then
-		assertEquals(name, savedNewsletter.getName());
-		assertEquals(domain, savedNewsletter.getDomain());
-		assertEquals(mailingList, savedNewsletter.getMailingList());
+		assertEquals((saved.getId()), founded.getId());
+		assertEquals(saved.getName(), founded.getName());
+		assertEquals(saved.getCategoryId(), founded.getCategoryId());
+		assertEquals(saved.getDomain(), founded.getDomain());
+		assertEquals(saved.getMailingList(), founded.getMailingList());
+		assertEquals(saved.getPriority(), founded.getPriority());
+		assertEquals(saved.getImageUrl(), founded.getImageUrl());
+		assertEquals(saved.getDescription(), founded.getDescription());
+		assertEquals(saved.getDetail(), founded.getDetail());
+		assertEquals(saved.getStatus(), founded.getStatus());
+		assertEquals(saved.getDayOfWeek(), founded.getDayOfWeek());
+		assertEquals(saved.getSubscriptionUrl(), founded.getSubscriptionUrl());
+		assertEquals(saved.getColor(), founded.getColor());
+		assertEquals(saved.getDeletedAt(), founded.getDeletedAt());
+
 	}
 
 	@Test
-	public void findByDomainOrMailingList_whenNewsletterExist_returnNewsletterEntity() {
-		//Given
-		NewsletterEntityDto savedNewsletter = saveNewsletter();
-
-		//When
-		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
-			savedNewsletter.getDomain(), savedNewsletter.getMailingList());
-
-		// Then
-		assertTrue(foundNewsletter.isPresent());
-		verifyFindByDomainOrMailingList(foundNewsletter.get(), savedNewsletter);
-	}
-
-	@Test
-	public void findByDomainOrMailingList_whenNewsletterExistByDomain_returnNewsletterEntity() {
-		//Given
-		NewsletterEntityDto savedNewsletter = saveNewsletter();
-
-		//When
-		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
-			savedNewsletter.getDomain(), null);
-
-		// Then
-		assertTrue(foundNewsletter.isPresent());
-		verifyFindByDomainOrMailingList(foundNewsletter.get(), savedNewsletter);
-	}
-
-	@Test
-	public void findByDomainOrMailingList_whenNewsletterExistByMailingList_returnNewsletterEntity() {
-		//Given
-		NewsletterEntityDto savedNewsletter = saveNewsletter();
-
-		//When
-		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
-			"noexist@domain.com",
-			savedNewsletter.getMailingList());
-
-		// Then
-		assertTrue(foundNewsletter.isPresent());
-		verifyFindByDomainOrMailingList(foundNewsletter.get(), savedNewsletter);
-	}
-
-	@Test
-	public void findByDomainOrMailingList_whenNewsletterNoExist_returnEmpty() {
-		//When
-		Optional<NewsletterEntityDto> foundNewsletter = newsletterRepository.findByDomainOrMailingList(
-			"test@example.com", "test123");
-
-		// Then
-		assertEquals(Optional.empty(), foundNewsletter);
-	}
-
-	@Test
-	public void findNewsletterListByName_WithName() {
-		//Given
-		NewsletterEntityDto savedNewsletter = saveNewsletter();
-
-		//When
-		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByName(
-			savedNewsletter.getName());
-
-		//Then
-		assertEquals(1, newsletterList.size());
-		assertEquals(newsletterList.get(0).getName(), savedNewsletter.getName());
-	}
-
-	@Test
-	public void findNewsletterListByCategoryId_WithCategoryId() {
-		//Given
-		CategoryEntity category = categoryJpaRepository.save(
-			CategoryEntity.create("testCategory", "test", "test"));
-		NewsletterEntity newsletter = newsletterJpaRepository.save(
-			NewsletterFixture.createDefaultEntity(category));
-
-		//When
-		List<NewsletterEntityDto> newsletterList = newsletterRepository.findNewsLetterListByCategoryId(
-			category.getId());
-
-		//Then
-		assertEquals(1, newsletterList.size());
-		assertEquals(newsletterList.get(0).getName(), newsletter.getName());
-		assertEquals(category.getId(), newsletter.getCategory().getId());
-	}
-
-	@Test
-	public void getNewsletterById() {
-		//Given
-		NewsletterEntity newsletter = newsletterJpaRepository.save(
-			NewsletterFixture.createDefaultEntity());
-
-		//When
-		NewsletterEntityDto getNewsletterEntity = newsletterRepository.getById(newsletter.getId());
-
-		//Then
-		assertEquals(newsletter.getName(), getNewsletterEntity.getName());
-		assertEquals(newsletter.getDomain(), getNewsletterEntity.getDomain());
-		assertEquals(newsletter.getMailingList(), getNewsletterEntity.getMailingList());
-	}
-
-	@Test
-	public void getNewsletterById_With_NonExistentId() {
-		//Given
-		UUID nonExistentId = UUID.randomUUID();
-
-		//When Then
-		assertThrows(NoNewsletterException.class,
-			() -> newsletterRepository.getById(nonExistentId));
-	}
-
-	@Test
-	public void getNewsletterList_by_category_list() {
-		//Given
-		List<NewsletterEntity> newsletterEntityList = new ArrayList<>();
-		List<UUID> categoryIdList = new ArrayList<>();
-		for (int i = 0; i < 5; i++) {
-			CategoryEntity category = categoryJpaRepository.save(
-				CategoryEntity.create("testCategory" + i, "test", "test"));
-			NewsletterEntity newsletter = newsletterJpaRepository.save(
-				NewsletterFixture.createEntityUnique("domain#" + i, category));
-			newsletterEntityList.add(newsletter);
-			categoryIdList.add(category.getId());
-		}
-
-		//When
-		List<NewsletterEntityDto> newsLetterListByCategoryIdList = newsletterRepository.getNewsLetterListByCategoryIdList(
-			categoryIdList);
-
-		//Then
-		for (int i = 0; i < 5; i++) {
-			Assertions.assertThat(newsLetterListByCategoryIdList.get(i).getId())
-				.isEqualTo(newsletterEntityList.get(i).getId());
-		}
-
-	}
-
-	private NewsletterEntityDto saveNewsletter() {
-		String name = "test";
-		String domain = "test@example.com";
-		String mailingList = "test123";
-		String status = "REGISTERED";
-		return newsletterRepository.save(name, domain, mailingList, status);
+	public void findById_whenNewsletterNotExists_shouldThrowNoNewsletterException() {
+		// When + Then
+		assertThrows(NoNewsletterException.class, () -> newsletterRepository.findById(UUID.randomUUID()));
 	}
 }

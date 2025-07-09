@@ -1,108 +1,130 @@
-package com.newzet.api.user.business.service;
+package com.newzet.api.userinfo.business.service;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import java.time.LocalDateTime;
 import java.util.Optional;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.newzet.api.user.business.dto.UserEntityDto;
-import com.newzet.api.userinfo.presentation.dto.UniqueMailResponse;
+import com.newzet.api.userinfo.business.repository.UserinfoRepository;
+import com.newzet.api.userinfo.domain.UserRole;
+import com.newzet.api.userinfo.domain.Userinfo;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceTest {
+public class UserinfoServiceTest {
+
+	private final UUID TEST_USER_ID = UUID.randomUUID();
+	private final String TEST_EMAIL = "test@example.com";
+	private final String TEST_NICKNAME = "testUser";
 
 	@Mock
-	private UserRepository userRepository;
+	private UserinfoRepository userinfoRepository;
 
 	@InjectMocks
-	private UserService userService;
+	private UserinfoService userinfoService;
 
 	@Test
-	void getUserIdByEmail_WhenEmailExists_ThenReturnUser() {
-		//Given
-		String email = "test@example.com";
-		UUID userId = UUID.randomUUID();
-		UserEntityDto userEntityDto = UserEntityDto.create(
-			userId, email, "testUser", "ACTIVE"
-		);
-		when(userRepository.getByEmail(email)).thenReturn(userEntityDto);
+	@DisplayName("ID로 Userinfo를 찾을 수 있으면 해당 객체를 반환한다.")
+	public void findUserinfoById_whenUserExists_shouldReturnUserinfo() {
+		// Given
+		Userinfo userinfo = new Userinfo(TEST_USER_ID, TEST_EMAIL, TEST_NICKNAME, UserRole.MEMBER, LocalDateTime.now(),
+			null);
+		when(userinfoRepository.findUserinfoById(TEST_USER_ID)).thenReturn(userinfo);
 
-		//When
-		UUID foundedUserId = userService.getUserIdByEmail(email);
+		// When
+		Userinfo foundUserinfo = userinfoService.findUserinfoById(TEST_USER_ID);
 
-		//Then
-		assertEquals(userId, foundedUserId);
+		// Then
+		assertNotNull(foundUserinfo);
+		assertEquals(TEST_USER_ID, foundUserinfo.getId());
+		assertEquals(TEST_EMAIL, foundUserinfo.getEmail());
+		assertEquals(TEST_NICKNAME, foundUserinfo.getNickname());
+		verify(userinfoRepository, times(1)).findUserinfoById(TEST_USER_ID);
 	}
 
 	@Test
-	void checkEmailUniqueness_WhenEmailNotExists_ThenReturnUnique() {
-		//Given
-		String email = "test@example.com";
-		when(userRepository.findOptionalByEmail(email)).thenReturn(Optional.empty());
+	@DisplayName("이메일이 존재하지 않으면 true를 반환한다.")
+	public void isUniqueEmailInUserinfo_whenEmailDoesNotExist_shouldReturnTrue() {
+		// Given
+		when(userinfoRepository.findOptionalUserinfoByEmail(TEST_EMAIL)).thenReturn(Optional.empty());
 
-		//When
-		UniqueMailResponse response = userService.checkEmailUniqueness(email);
+		// When
+		boolean isUnique = userinfoService.isUniqueEmailInUserinfo(TEST_EMAIL);
 
-		//Then
-		assertTrue(response.isUnique());
-		assertEquals("사용 가능한 이메일입니다.", response.message());
+		// Then
+		assertTrue(isUnique);
+		verify(userinfoRepository, times(1)).findOptionalUserinfoByEmail(TEST_EMAIL);
 	}
 
 	@Test
-	void checkEmailUniqueness_WhenEmailWithdrawn_ThenReturnWithdrawn() {
-		//Given
-		String email = "test@example.com";
-		UserEntityDto withdrawnUser = UserEntityDto.create(
-			UUID.randomUUID(), email, "testUser", "WITHDRAWN"
-		);
-		when(userRepository.findOptionalByEmail(email)).thenReturn(Optional.of(withdrawnUser));
+	@DisplayName("이메일이 이미 존재하면 false를 반환한다.")
+	public void isUniqueEmailInUserinfo_whenEmailExists_shouldReturnFalse() {
+		// Given
+		Userinfo userinfo = new Userinfo(TEST_USER_ID, TEST_EMAIL, TEST_NICKNAME, UserRole.MEMBER, LocalDateTime.now(),
+			null);
+		when(userinfoRepository.findOptionalUserinfoByEmail(TEST_EMAIL)).thenReturn(Optional.of(userinfo));
 
-		//When
-		UniqueMailResponse response = userService.checkEmailUniqueness(email);
+		// When
+		boolean isUnique = userinfoService.isUniqueEmailInUserinfo(TEST_EMAIL);
 
-		//Then
-		assertFalse(response.isUnique());
-		assertEquals("탈퇴한 사용자의 이메일입니다.", response.message());
+		// Then
+		assertFalse(isUnique);
+		verify(userinfoRepository, times(1)).findOptionalUserinfoByEmail(TEST_EMAIL);
 	}
 
 	@Test
-	void checkEmailUniqueness_WhenEmailInactive_ThenReturnInactive() {
-		//Given
-		String email = "test@example.com";
-		UserEntityDto inactiveUser = UserEntityDto.create(
-			UUID.randomUUID(), email, "testUser", "INACTIVE"
-		);
-		when(userRepository.findOptionalByEmail(email)).thenReturn(Optional.of(inactiveUser));
+	@DisplayName("이메일이 null이 아니면 true를 반환한다.")
+	public void isInitialized_whenEmailIsNotNull_shouldReturnTrue() {
+		// Given
+		Userinfo userinfo = new Userinfo(TEST_USER_ID, TEST_EMAIL, TEST_NICKNAME, UserRole.MEMBER, LocalDateTime.now(),
+			null);
+		when(userinfoRepository.findUserinfoById(TEST_USER_ID)).thenReturn(userinfo);
 
-		//When
-		UniqueMailResponse response = userService.checkEmailUniqueness(email);
+		// When
+		boolean isInitialized = userinfoService.isInitialized(TEST_USER_ID);
 
-		//Then
-		assertFalse(response.isUnique());
-		assertEquals("휴면 유저의 이메일입니다.", response.message());
+		// Then
+		assertTrue(isInitialized);
+		verify(userinfoRepository, times(1)).findUserinfoById(TEST_USER_ID);
 	}
 
 	@Test
-	void checkEmailUniqueness_WhenEmailActive_ThenReturnDuplicate() {
-		//Given
-		String email = "test@example.com";
-		UserEntityDto activeUser = UserEntityDto.create(
-			UUID.randomUUID(), email, "testUser", "ACTIVE"
-		);
-		when(userRepository.findOptionalByEmail(email)).thenReturn(Optional.of(activeUser));
+	@DisplayName("이메일이 null이면 false를 반환한다.")
+	public void isInitialized_whenEmailIsNull_shouldReturnFalse() {
+		// Given
+		Userinfo userinfo = new Userinfo(TEST_USER_ID, null, TEST_NICKNAME, UserRole.MEMBER, LocalDateTime.now(), null);
+		when(userinfoRepository.findUserinfoById(TEST_USER_ID)).thenReturn(userinfo);
 
-		//When
-		UniqueMailResponse response = userService.checkEmailUniqueness(email);
+		// When
+		boolean isInitialized = userinfoService.isInitialized(TEST_USER_ID);
 
-		//Then
-		assertFalse(response.isUnique());
-		assertEquals("사용 중인 이메일입니다.", response.message());
+		// Then
+		assertFalse(isInitialized);
+		verify(userinfoRepository, times(1)).findUserinfoById(TEST_USER_ID);
+	}
+
+	@Test
+	@DisplayName("이메일로 Userinfo를 찾을 수 있으면 해당 객체를 반환한다.")
+	public void findUserinfoByEmail_whenUserExists_shouldReturnUserinfo() {
+		// Given
+		Userinfo userinfo = new Userinfo(TEST_USER_ID, TEST_EMAIL, TEST_NICKNAME, UserRole.MEMBER, LocalDateTime.now(),
+			null);
+		when(userinfoRepository.findUserinfoByEmail(TEST_EMAIL)).thenReturn(userinfo);
+
+		// When
+		Userinfo foundUserinfo = userinfoService.findUserinfoByEmail(TEST_EMAIL);
+
+		// Then
+		assertNotNull(foundUserinfo);
+		assertEquals(TEST_EMAIL, foundUserinfo.getEmail());
+		verify(userinfoRepository, times(1)).findUserinfoByEmail(TEST_EMAIL);
 	}
 }

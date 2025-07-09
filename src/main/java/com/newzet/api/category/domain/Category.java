@@ -2,10 +2,14 @@ package com.newzet.api.category.domain;
 
 import java.util.UUID;
 
-public record Category(
-	UUID id,
-	String name,
-	String imageUrl,
-	String emoji
-) {
+import lombok.Getter;
+import lombok.RequiredArgsConstructor;
+
+@Getter
+@RequiredArgsConstructor
+public class Category {
+	private final UUID id;
+	private final String name;
+	private final String imageUrl;
+	private final String emoji;
 }

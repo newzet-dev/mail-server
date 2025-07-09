@@ -2,6 +2,7 @@ package com.newzet.api.userinfo.presentation.controller;
 
 import java.util.UUID;
 
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -10,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.newzet.api.common.auth.annotation.Login;
+import com.newzet.api.common.auth.annotation.RequireAuth;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
@@ -33,6 +35,7 @@ public class UserinfoController {
 	private final UserinfoOrchestrator userinfoOrchestrator;
 
 	@GetMapping("/info")
+	@RequireAuth
 	@Operation(summary = "유저정보 조회",
 		description = "유저정보를 조회한다.")
 	public SuccessResponse<UserinfoWithCategoryListResponse> getUserinfo(@Login AuthUser authUser) {
@@ -49,6 +52,7 @@ public class UserinfoController {
 	}
 
 	@PatchMapping("/info")
+	@RequireAuth
 	@Operation(summary = "유저정보 수정",
 		description = "유저정보를 수정한다.")
 	public SuccessResponse<Object> updateUserinfo(@Valid @RequestBody UserinfoUpdateRequest request, UUID userId) {
@@ -63,5 +67,14 @@ public class UserinfoController {
 		@RequestParam("v") String email) {
 		UniqueMailResponse result = userinfoOrchestrator.checkEmailUniqueness(email);
 		return SuccessResponse.create(ResponseCode.SUCCESS, "메일 중복조회 성공", result);
+	}
+
+	@DeleteMapping("/info")
+	@RequireAuth
+	@Operation(summary = "유저 정보 삭제",
+		description = "유저 정보를 삭제한다.")
+	public SuccessResponse<Object> deleteUserinfo(@Login AuthUser authUser) {
+		userinfoOrchestrator.deleteUserinfo(authUser.getId());
+		return SuccessResponse.create(ResponseCode.SUCCESS, "유저 정보를 삭제한다.", null);
 	}
 }

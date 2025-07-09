@@ -13,4 +13,6 @@ public interface UserinfoRepository {
 	Optional<Userinfo> findOptionalUserinfoByEmail(String email);
 
 	Userinfo findUserinfoByEmail(String email);
+
+	Optional<Userinfo> findOptionalUserinfoById(UUID userId);
 }

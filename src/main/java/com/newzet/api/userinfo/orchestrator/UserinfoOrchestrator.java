@@ -30,7 +30,7 @@ public class UserinfoOrchestrator {
 	public UserinfoWithCategoryListResponse getUserinfoWithCategoryList(UUID userId) {
 		Userinfo userinfo = userinfoService.findUserinfoById(userId);
 		List<UUID> categoryIdList = userCategoryService.findCategoryListByUserId(userId).stream()
-			.map(UserCategory::categoryId)
+			.map(UserCategory::getCategoryId)
 			.toList();
 		List<Category> categoryList = categoryService.getCategoryListByIdList(categoryIdList);
 		return UserinfoResponseMapper.toWithCategoryListResponse(userinfo, categoryList);
@@ -46,15 +46,17 @@ public class UserinfoOrchestrator {
 	@Transactional(readOnly = true)
 	public UniqueMailResponse checkEmailUniqueness(String email) {
 		boolean uniqueness = userinfoService.isUniqueEmailInUserinfo(email);
-		if (uniqueness) {
-			return UniqueMailResponse.ofUnique();
-		}
-		return UniqueMailResponse.ofDuplicate();
+		return UniqueMailResponse.create(uniqueness);
 	}
 
 	@Transactional(readOnly = true)
 	public UserinfoInitResponse checkUserInitializeCompleted(UUID userId) {
 		boolean isInitialized = userinfoService.isInitialized(userId);
 		return new UserinfoInitResponse(isInitialized);
+	}
+
+	@Transactional
+	public void deleteUserinfo(UUID userId) {
+		userinfoService.deleteUserinfoById(userId);
 	}
 }
