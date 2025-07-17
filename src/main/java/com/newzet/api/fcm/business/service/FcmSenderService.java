@@ -28,8 +28,8 @@ public class FcmSenderService {
 	public void sendFcmWhenMailReceivedBatch(UUID userId, String fromName, String title) {
 		List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUserId(userId);
 		for (FcmToken fcmToken : fcmTokens) {
-			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.getValue(),
-				fromName, title, null);
+			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.getValue(), fromName, title,
+				null);
 			if (!fcmNotification.isValid()) {
 				log.warn("Invalid FCM notification, skipping: userId={}, token={}",
 					fcmNotification.getUserId(), fcmNotification.getToken());
