@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.common.util.UuidConverter;
 import com.newzet.api.subscription.business.repository.SubscriptionQueryRepository;
 import com.newzet.api.subscription.business.repository.SubscriptionRepository;
+import com.newzet.api.subscription.domain.Subscription;
 
 import lombok.RequiredArgsConstructor;
 
@@ -24,7 +25,7 @@ public class SubscriptionService {
 		boolean isSubscribed = subscriptionQueryRepository.isSubscribed(userId, fromDomain,
 			mailingList);
 		if (!isSubscribed) {
-			subscriptionRepository.save(userId, fromName, fromDomain, mailingList);
+			subscriptionRepository.save(Subscription.create(userId, fromName, fromDomain, mailingList));
 		}
 	}
 

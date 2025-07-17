@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@AllArgsConstructor(access = AccessLevel.PRIVATE)
+@AllArgsConstructor
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "SUBSCRIPTION")
 public class SubscriptionEntity {
@@ -42,10 +42,4 @@ public class SubscriptionEntity {
 
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private LocalDateTime deletedAt;
-
-	public static SubscriptionEntity create(UUID userId, String newsletterName, String newsletterDomain,
-		String newsletterMailingList) {
-		return new SubscriptionEntity(null, userId, newsletterName, newsletterDomain, newsletterMailingList,
-			LocalDateTime.now(), null);
-	}
 }

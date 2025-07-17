@@ -21,10 +21,10 @@ public class CategoryService {
 	}
 
 	public List<Category> getCategoryListByIdList(List<UUID> idList) {
-		return categoryRepository.getCategoryListByIdList(idList);
+		return categoryRepository.findCategoryListByIdList(idList);
 	}
 
 	public Category getCategoryById(UUID id) {
-		return categoryRepository.getById(id);
+		return categoryRepository.findById(id);
 	}
 }

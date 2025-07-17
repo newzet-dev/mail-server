@@ -26,7 +26,7 @@ public class UserCategoryService {
 
 	public List<UserCategory> addUserCategories(UUID userId, List<UUID> categoryIdList) {
 		List<UserCategory> userCategories = categoryIdList.stream()
-			.map(categoryId -> new UserCategory(null, userId, categoryId))
+			.map(categoryId -> UserCategory.create(userId, categoryId))
 			.toList();
 		return userCategoryRepository.addUserCategories(userCategories);
 	}

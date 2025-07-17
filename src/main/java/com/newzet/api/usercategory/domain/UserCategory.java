@@ -11,4 +11,8 @@ public class UserCategory {
 	private final UUID id;
 	private final UUID userId;
 	private final UUID categoryId;
+
+	public static UserCategory create(UUID userId, UUID categoryId) {
+		return new UserCategory(null, userId, categoryId);
+	}
 }

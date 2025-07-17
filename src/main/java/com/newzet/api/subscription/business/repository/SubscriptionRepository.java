@@ -5,7 +5,7 @@ import java.util.UUID;
 import com.newzet.api.subscription.domain.Subscription;
 
 public interface SubscriptionRepository {
-	Subscription save(UUID userId, String newsletterName, String newsletterDomain, String newsletterMailingList);
+	Subscription save(Subscription subscription);
 
 	void delete(UUID subscriptionId);
 }

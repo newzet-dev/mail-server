@@ -9,7 +9,7 @@ public interface CategoryRepository {
 
 	List<Category> findAll();
 
-	List<Category> getCategoryListByIdList(List<UUID> idList);
+	List<Category> findCategoryListByIdList(List<UUID> idList);
 
-	Category getById(UUID id);
+	Category findById(UUID id);
 }

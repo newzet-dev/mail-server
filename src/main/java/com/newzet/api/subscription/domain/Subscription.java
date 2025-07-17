@@ -16,4 +16,17 @@ public class Subscription {
 	private final String newsletterMailingList;
 	private final LocalDateTime createdAt;
 	private final LocalDateTime deletedAt;
+
+	public static Subscription create(UUID userId, String newsletterName, String newsletterDomain,
+		String newsletterMailingList) {
+		return new Subscription(
+			null,
+			userId,
+			newsletterName,
+			newsletterDomain,
+			newsletterMailingList,
+			LocalDateTime.now(),
+			null
+		);
+	}
 }

@@ -9,4 +9,10 @@ public class SubscriptionEntityMapper {
 			entity.getNewsletterDomain(), entity.getNewsletterMailingList(), entity.getCreatedAt(),
 			entity.getDeletedAt());
 	}
+
+	public static SubscriptionEntity toEntity(Subscription domain) {
+		return new SubscriptionEntity(domain.getId(), domain.getUserId(), domain.getNewsletterName(),
+			domain.getNewsletterDomain(), domain.getNewsletterMailingList(), domain.getCreatedAt(),
+			domain.getDeletedAt());
+	}
 }

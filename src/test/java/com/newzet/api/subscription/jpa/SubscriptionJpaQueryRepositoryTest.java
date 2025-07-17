@@ -13,6 +13,7 @@ import org.springframework.context.annotation.Import;
 
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.db.QuerydslConfig;
+import com.newzet.api.subscription.domain.Subscription;
 import com.newzet.api.subscription.jpa.repository.SubscriptionJpaQueryRepository;
 import com.newzet.api.subscription.jpa.repository.SubscriptionRepositoryImpl;
 
@@ -38,7 +39,8 @@ public class SubscriptionJpaQueryRepositoryTest {
 		UUID fakeUserId = UUID.fromString("a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a12");
 		String fakeDomain = "fakeDomain";
 		String fakeMailingList = "fakeMailingList";
-		subscriptionRepositoryImpl.save(userId, name, domain, mailingList);
+		Subscription subscription = Subscription.create(userId, name, domain, mailingList);
+		subscriptionRepositoryImpl.save(subscription);
 
 		//When& Then
 		assertFalse(jpaQueryRepository.isSubscribed(fakeUserId, domain, mailingList));

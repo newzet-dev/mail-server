@@ -32,8 +32,8 @@ public class SubscriptionRepositoryImplTest {
 	@Test
 	public void save() {
 		//When
-		Subscription savedSubscription = repositoryImpl
-			.save(userId, name, domain, mailingList);
+		Subscription subscription = Subscription.create(userId, name, domain, mailingList);
+		Subscription savedSubscription = repositoryImpl.save(subscription);
 
 		//Then
 		assertEquals(userId, savedSubscription.getUserId());

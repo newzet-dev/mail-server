@@ -37,7 +37,7 @@ public class SubscriptionServiceTest {
 		subscriptionService.addSubscriptionIfUnsubscribed(userId, fromName, fromDomain, mailingList);
 
 		//Then
-		verify(subscriptionRepository, times(1)).save(userId, fromName, fromDomain, mailingList);
+		verify(subscriptionRepository, times(1)).save(any());
 	}
 
 	@Test
@@ -50,6 +50,6 @@ public class SubscriptionServiceTest {
 			"testMailingList");
 
 		//Then
-		verify(subscriptionRepository, never()).save(any(), any(), any(), any());
+		verify(subscriptionRepository, never()).save(any());
 	}
 }

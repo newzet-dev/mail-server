@@ -26,14 +26,14 @@ public class CategoryRepositoryImpl implements CategoryRepository {
 	}
 
 	@Override
-	public List<Category> getCategoryListByIdList(List<UUID> idList) {
+	public List<Category> findCategoryListByIdList(List<UUID> idList) {
 		return jpaRepository.findAllById(idList).stream()
 			.map(CategoryEntityMapper::toDomain)
 			.toList();
 	}
 
 	@Override
-	public Category getById(UUID id) {
+	public Category findById(UUID id) {
 		return jpaRepository.findById(id)
 			.map(CategoryEntityMapper::toDomain)
 			.orElseThrow(() -> new NoCategoryException("No category found with id: " + id));
