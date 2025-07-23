@@ -16,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.JsonNode;
 import org.testcontainers.shaded.com.fasterxml.jackson.databind.ObjectMapper;
@@ -24,18 +25,21 @@ import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.article.repository.entity.ArticleEntity;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
+import com.newzet.api.config.db.QuerydslConfig;
 import com.newzet.api.newsletter.repository.NewsletterEntity;
 import com.newzet.api.newsletter.repository.NewsletterEntityStatus;
 import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 
 @DataJpaTest
-
+@Import({QuerydslConfig.class, ArticleJpaQueryRepository.class})
 @ExtendWith({PostgresTestContainerConfig.class, RedisTestContainerConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class ArticleJpaRepositoryTest {
 
 	@Autowired
 	private ArticleJpaRepository articleJpaRepository;
+	@Autowired
+	private ArticleJpaQueryRepository articleJpaQueryRepository;
 	@Autowired
 	private NewsletterJpaRepository newsletterJpaRepository;
 	@Autowired
@@ -82,14 +86,14 @@ public class ArticleJpaRepositoryTest {
 		}
 
 		// When
-		List<ArticleWithImageProjection> monthlyArticlesWithImage = articleJpaRepository.findMonthlyArticlesWithImage(
+		List<ArticleWithImageProjection> monthlyArticlesWithImage = articleJpaQueryRepository.findMonthlyArticlesWithImage(
 			userId, year, month);
 
 		// Then
 		boolean isSorted = IntStream.range(0, monthlyArticlesWithImage.size() - 1)
 			.noneMatch(i -> monthlyArticlesWithImage.get(i)
-				.getCreatedAt()
-				.isAfter(monthlyArticlesWithImage.get(i + 1).getCreatedAt()));
+				.createdAt()
+				.isAfter(monthlyArticlesWithImage.get(i + 1).createdAt()));
 
 		assertTrue(isSorted, "createdAt 필드는 오름차순으로 정렬되어야 합니다.");
 
@@ -128,14 +132,14 @@ public class ArticleJpaRepositoryTest {
 		}
 
 		// When
-		List<ArticleWithImageProjection> monthlyArticlesWithImage = articleJpaRepository.findMonthlyArticlesWithImage(
+		List<ArticleWithImageProjection> monthlyArticlesWithImage = articleJpaQueryRepository.findMonthlyArticlesWithImage(
 			userId, year, month);
 
 		// Then
 		boolean isSorted = IntStream.range(0, monthlyArticlesWithImage.size() - 1)
 			.noneMatch(i -> monthlyArticlesWithImage.get(i)
-				.getCreatedAt()
-				.isAfter(monthlyArticlesWithImage.get(i + 1).getCreatedAt()));
+				.createdAt()
+				.isAfter(monthlyArticlesWithImage.get(i + 1).createdAt()));
 
 		assertTrue(isSorted, "createdAt 필드는 오름차순으로 정렬되어야 합니다.");
 

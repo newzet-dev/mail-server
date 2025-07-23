@@ -16,12 +16,13 @@ class ArticleTest {
 		String fromName = "Newsletter";
 		String fromDomain = "example.com";
 		String mailingList = "daily-news";
+		String imageUrl = "imageUrl@a.com";
 		String title = "Today's News";
 		String contentUrl = "https://example.com/news/1";
 
 		// When
 		Article article = Article.createNewArticle(
-			toUserId, fromName, fromDomain, mailingList, title, contentUrl);
+			toUserId, fromName, fromDomain, mailingList, imageUrl, title, contentUrl);
 
 		// Then
 		assertThat(article.getId()).isNull();
@@ -47,6 +48,7 @@ class ArticleTest {
 		String fromDomain = "example.com";
 		String mailingList = "weekly-digest";
 		String title = "This Week's Digest";
+		String imageUrl = "https://example.com/image.jpg";
 		String contentUrl = "https://example.com/digest/1";
 		boolean isRead = true;
 		boolean isLike = true;
@@ -57,7 +59,7 @@ class ArticleTest {
 		// When
 		Article article = Article.create(
 			id, toUserId, fromName, fromDomain, mailingList,
-			title, contentUrl, isRead, isLike, isShare, createdAt, deletedAt);
+			title, imageUrl, contentUrl, isRead, isLike, isShare, createdAt, deletedAt);
 
 		// Then
 		assertThat(article.getId()).isEqualTo(id);
@@ -83,7 +85,7 @@ class ArticleTest {
 		// When
 		Article article = Article.create(
 			id, toUserId, "Newsletter", "example.com", "daily",
-			"Title", "url", false, false, false, null, null);
+			"Title", "url", "url", false, false, false, null, null);
 
 		// Then
 		assertThat(article.getCreatedAt()).isNotNull();
