@@ -35,12 +35,14 @@ import com.newzet.api.common.batch.BatchConsumer;
 import com.newzet.api.common.batch.BatchProducer;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
+import com.newzet.api.config.FirebaseTestConfig;
 import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
+import com.newzet.api.fcm.orchestrator.FcmSenderOrchestrator;
 
 @ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class,
-	JwtTestConfig.class})
+	JwtTestConfig.class, FirebaseTestConfig.class})
 @SpringBootTest
 @ComponentScan(basePackages = {"com.newzet.api.article", "com.newzet.api.common"})
 class ArticleRedisBatchProcessorIntegrationTest {
@@ -56,6 +58,9 @@ class ArticleRedisBatchProcessorIntegrationTest {
 
 	@Autowired
 	private OptionalObjectMapper optionalObjectMapper;
+
+	@Autowired
+	private FcmSenderOrchestrator fcmSenderOrchestrator;
 
 	@MockitoBean
 	private ArticleRepository articleRepository;
@@ -88,9 +93,10 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		consumer = new ArticleRedisBatchConsumerImpl(
 			redisTemplate,
 			reactiveRedisTemplate,
-			articleRepository,
 			mockBatchConfig,
-			optionalObjectMapper
+			optionalObjectMapper,
+			articleRepository,
+			fcmSenderOrchestrator
 		);
 
 		initializeStream();
@@ -234,9 +240,10 @@ class ArticleRedisBatchProcessorIntegrationTest {
 				(ReactiveRedisConnectionFactory)redisConnectionFactory,
 				org.springframework.data.redis.serializer.RedisSerializationContext.string()
 			),
-			articleRepository,
 			mockBatchConfig,
-			optionalObjectMapper
+			optionalObjectMapper,
+			articleRepository,
+			fcmSenderOrchestrator
 		);
 
 		consumerWithMockRedis.init();
@@ -254,9 +261,10 @@ class ArticleRedisBatchProcessorIntegrationTest {
 		ArticleRedisBatchConsumerImpl consumerWithMockRedis = new ArticleRedisBatchConsumerImpl(
 			mockRedisTemplate,
 			mock(ReactiveRedisTemplate.class),
-			mock(ArticleRepository.class),
 			mock(BatchConfig.class),
-			optionalObjectMapper
+			optionalObjectMapper,
+			mock(ArticleRepository.class),
+			fcmSenderOrchestrator
 		);
 
 		Map<String, Object> status = consumerWithMockRedis.getBatchStatus();

@@ -5,40 +5,29 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicBoolean;
 
-import org.springframework.data.redis.connection.stream.Consumer;
-import org.springframework.data.redis.connection.stream.MapRecord;
-import org.springframework.data.redis.connection.stream.ReadOffset;
-import org.springframework.data.redis.connection.stream.StreamOffset;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.stream.StreamReceiver;
 import org.springframework.stereotype.Component;
 
+import com.newzet.api.article.business.batch.ArticleBatchConsumer;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.batch.dto.BatchProcessingResult;
 import com.newzet.api.article.repository.batch.dto.BatchSaveData;
-import com.newzet.api.common.batch.BatchConsumer;
+import com.newzet.api.common.batch.RedisBatchConsumer;
 import com.newzet.api.common.batch.config.BatchConfig;
 import com.newzet.api.common.objectMapper.OptionalObjectMapper;
+import com.newzet.api.fcm.orchestrator.FcmSenderOrchestrator;
 
-import jakarta.annotation.PostConstruct;
-import jakarta.annotation.PreDestroy;
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Component
-@RequiredArgsConstructor
-public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
+public class ArticleRedisBatchConsumerImpl extends RedisBatchConsumer<Article>
+	implements ArticleBatchConsumer {
 
 	private static final String ARTICLE_STREAM_KEY = "article:stream";
 	private static final String CONSUMER_GROUP = "article-processor-group";
@@ -46,150 +35,47 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 	private static final String ARTICLE_DUPLICATE_CACHE_PREFIX = "article:dup:";
 	private static final long DUPLICATE_CACHE_TTL_MINUTES = 10;
 
-	private final RedisTemplate<String, String> redisTemplate;
-	private final ReactiveRedisTemplate<String, String> reactiveRedisTemplate;
 	private final ArticleRepository articleRepository;
-	private final BatchConfig batchConfig;
-	private final OptionalObjectMapper optionalObjectMapper;
-	private ExecutorService executorService;
-	private ExecutorService ackExecutorService;
-	private final AtomicBoolean isProcessing = new AtomicBoolean(false);
+	private final FcmSenderOrchestrator fcmSenderOrchestrator;
 
-	@PostConstruct
-	public void init() {
-		try {
-			Boolean exists = redisTemplate.hasKey(ARTICLE_STREAM_KEY);
-			if (Boolean.FALSE.equals(exists)) {
-				Map<String, String> dummy = new HashMap<>();
-				dummy.put("init", "init");
-				redisTemplate.opsForStream().add(ARTICLE_STREAM_KEY, dummy);
-				log.info("Created new Redis Stream: {}", ARTICLE_STREAM_KEY);
-			}
-
-			try {
-				redisTemplate.opsForStream().createGroup(ARTICLE_STREAM_KEY, CONSUMER_GROUP);
-				log.info("Created new consumer group: {} for stream: {}", CONSUMER_GROUP,
-					ARTICLE_STREAM_KEY);
-			} catch (Exception e) {
-				log.debug("Consumer group may already exist: {}", e.getMessage());
-			}
-		} catch (Exception e) {
-			log.error("Failed to initialize Redis Stream: {}", e.getMessage(), e);
-		}
+	public ArticleRedisBatchConsumerImpl(RedisTemplate<String, String> redisTemplate,
+		ReactiveRedisTemplate<String, String> reactiveRedisTemplate,
+		BatchConfig batchConfig,
+		OptionalObjectMapper optionalObjectMapper,
+		ArticleRepository articleRepository,
+		FcmSenderOrchestrator fcmSenderOrchestrator) {
+		super(redisTemplate, reactiveRedisTemplate, batchConfig, optionalObjectMapper);
+		this.articleRepository = articleRepository;
+		this.fcmSenderOrchestrator = fcmSenderOrchestrator;
 	}
 
 	@Override
-	public Map<String, Object> getBatchStatus() {
-		Map<String, Object> status = new HashMap<>();
-		status.put("isProcessing", isProcessing.get());
-		status.put("batchSize", batchConfig.getBatchSize());
-
-		Long pendingCount = redisTemplate.opsForStream().size(ARTICLE_STREAM_KEY);
-		pendingCount = (pendingCount != null && pendingCount > 0) ? pendingCount - 1 : 0;
-		status.put("pendingMessages", pendingCount != null ? pendingCount : 0);
-
-		return status;
+	protected String getStreamKey() {
+		return ARTICLE_STREAM_KEY;
 	}
 
 	@Override
-	public void startProcessing() {
-		if (isProcessing.compareAndSet(false, true)) {
-			executorService = Executors.newSingleThreadExecutor();
-			ackExecutorService = Executors.newSingleThreadExecutor();
-			executorService.submit(this::processBatchesAsync);
-			log.info("Article batch processor started with configuration: size={}, timeout={}s",
-				batchConfig.getBatchSize(), batchConfig.getTimeoutSeconds());
-		}
+	protected String getConsumerGroup() {
+		return CONSUMER_GROUP;
 	}
 
 	@Override
-	public void stopProcessing() {
-		if (isProcessing.compareAndSet(true, false)) {
-			if (executorService != null) {
-				executorService.shutdownNow();
-				log.info("Article batch processor stopped");
-			}
-			if (ackExecutorService != null) {
-				ackExecutorService.shutdownNow();
-			}
-		}
+	protected String getConsumerName() {
+		return CONSUMER_NAME;
 	}
 
-	private void processBatchesAsync() {
-		log.info("Article batch processing thread initialized");
-
-		try {
-			StreamReceiver.StreamReceiverOptions<String, MapRecord<String, String, String>> options =
-				StreamReceiver.StreamReceiverOptions.builder()
-					.pollTimeout(Duration.ofSeconds(1))
-					.build();
-
-			StreamReceiver<String, MapRecord<String, String, String>> receiver =
-				StreamReceiver.create(reactiveRedisTemplate.getConnectionFactory(), options);
-
-			receiver.receive(
-					Consumer.from(CONSUMER_GROUP,
-						CONSUMER_NAME),
-					StreamOffset.create(ARTICLE_STREAM_KEY, ReadOffset.lastConsumed())
-				)
-				.bufferTimeout(batchConfig.getBatchSize(),
-					Duration.ofSeconds(batchConfig.getTimeoutSeconds()))
-				.doOnNext(records -> {
-					if (!records.isEmpty()) {
-						log.info("Processing article batch: count={}", records.size());
-						processBatchWithAck(records);
-					}
-				})
-				.doOnError(
-					error -> log.error("Stream processing error: {}", error.getMessage(), error))
-				.subscribe();
-
-			log.info("Subscribed to Redis Stream with consumer group: {}, consumer: {}",
-				CONSUMER_GROUP, CONSUMER_NAME);
-		} catch (Exception e) {
-			log.error("Failed to initialize batch processor: {}", e.getMessage(), e);
-			isProcessing.set(false);
-		}
+	@Override
+	protected String getProcessorTypeName() {
+		return "Article";
 	}
 
-	private void processBatchWithAck(List<MapRecord<String, String, String>> records) {
-		List<Article> articles = new ArrayList<>();
-
-		for (MapRecord<String, String, String> record : records) {
-			String data = record.getValue().get("data");
-			Optional<Article> article = optionalObjectMapper.deserialize(data, Article.class);
-			article.ifPresent(articles::add);
-		}
-
-		processBatchItems(articles);
-
-		CompletableFuture.runAsync(() -> {
-			List<String> ackedMessageIds = new ArrayList<>();
-
-			for (MapRecord<String, String, String> record : records) {
-				String messageId = record.getId().getValue();
-				try {
-					redisTemplate.opsForStream()
-						.acknowledge(ARTICLE_STREAM_KEY, CONSUMER_GROUP, messageId);
-					ackedMessageIds.add(messageId);
-				} catch (Exception e) {
-					log.warn("Ack failed for message {}, skipping for now: {}", messageId,
-						e.getMessage());
-				}
-			}
-
-			if (!ackedMessageIds.isEmpty()) {
-				try {
-					redisTemplate.opsForStream()
-						.delete(ARTICLE_STREAM_KEY, ackedMessageIds.toArray(new String[0]));
-				} catch (Exception e) {
-					log.error("Failed to delete acked messages: {}", e.getMessage(), e);
-				}
-			}
-		}, ackExecutorService);
+	@Override
+	protected Class<Article> getItemClass() {
+		return Article.class;
 	}
 
-	private void processBatchItems(List<Article> articles) {
+	@Override
+	protected void processBatchItems(List<Article> articles) {
 		long startTime = System.currentTimeMillis();
 		BatchProcessingResult result = new BatchProcessingResult();
 
@@ -226,7 +112,8 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 					entityDto.getToUserId()
 				);
 
-				keyToArticlesMap.computeIfAbsent(cacheKey, k -> new ArrayList<>()).add(entityDto);
+				keyToArticlesMap.computeIfAbsent(cacheKey, k -> new ArrayList<>())
+					.add(entityDto);
 			} catch (Exception e) {
 				result.incrementFailCount();
 				log.error("Failed to process article: {}, error: {}", article.getTitle(),
@@ -260,7 +147,8 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 			if (cachedValue != null) {
 				result.incrementDuplicateCount();
 				result.incrementCacheHitCount();
-				log.info("REDIS DUPLICATE: '{}' with key '{}', counters: duplicate={}, cacheHit={}",
+				log.info(
+					"REDIS DUPLICATE: '{}' with key '{}', counters: duplicate={}, cacheHit={}",
 					entityDto.getTitle(), cacheKey, result.getDuplicateCount(),
 					result.getCacheHitCount());
 			} else {
@@ -280,12 +168,22 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 			try {
 				List<ArticleEntityDto> saved = articleRepository.saveAll(toSave);
 				result.setSuccessCount(saved.size());
+				sendFCM(saved); // fcm 메시지 전송 배치처리
 			} catch (Exception e) {
 				result.incrementFailCount(toSave.size());
 				log.error("SAVE FAILED for {} articles: {}", toSave.size(), e.getMessage(), e);
 			}
 		} else {
 			log.info("No new articles to save (all are duplicates or failed)");
+		}
+	}
+
+	private void sendFCM(List<ArticleEntityDto> saved) {
+		if (!saved.isEmpty()) {
+			for (ArticleEntityDto articleData : saved) {
+				fcmSenderOrchestrator.sendFcmWhenMailReceivedBatch(articleData.getToUserId(),
+					articleData.getFromName(), articleData.getTitle());
+			}
 		}
 	}
 
@@ -306,7 +204,7 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 
 	private void logBatchSummary(int totalArticles, BatchProcessingResult result, long duration) {
 		log.info(
-			"BATCH SUMMARY: total={}, success={}, duplicate={}, cacheHit={}, failed={}, elapsed={}ms",
+			"ARTICLE BATCH SUMMARY: total={}, success={}, duplicate={}, cacheHit={}, failed={}, elapsed={}ms",
 			totalArticles, result.getSuccessCount(), result.getDuplicateCount(),
 			result.getCacheHitCount(), result.getFailCount(), duration);
 	}
@@ -327,10 +225,5 @@ public class ArticleRedisBatchConsumerImpl implements BatchConsumer {
 			fromDomain + "_" +
 			userIdStr.substring(0, Math.min(8, userIdStr.length())) + "_" +
 			Math.abs(normalizedTitle.hashCode());
-	}
-
-	@PreDestroy
-	public void onShutdown() {
-		stopProcessing();
 	}
 }
