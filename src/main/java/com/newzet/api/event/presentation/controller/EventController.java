@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
 import com.newzet.api.event.api.EventApi;
-import com.newzet.api.event.business.service.EventService;
+import com.newzet.api.event.orchestrator.EventOrchestrator;
 import com.newzet.api.event.presentation.dto.EventListResponse;
 
 import lombok.RequiredArgsConstructor;
@@ -14,11 +14,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EventController implements EventApi {
 
-	private final EventService eventService;
+	private final EventOrchestrator eventOrchestrator;
 
 	@Override
 	public SuccessResponse<EventListResponse> getEventList() {
-		EventListResponse eventList = eventService.getAllEvents();
+		EventListResponse eventList = eventOrchestrator.getAllEvents();
 		return SuccessResponse.create(ResponseCode.SUCCESS, "이벤트 리스트 조회 성공",
 			eventList);
 	}
