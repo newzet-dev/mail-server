@@ -10,7 +10,7 @@ public class EventResponseMapper {
 
 	public static EventListResponse toListResponse(List<Event> events) {
 		return new EventListResponse(events.stream()
-			.map(event -> new EventResponse(event.imageUrl(), event.eventUrl() ))
+			.map(event -> new EventResponse(event.getImageUrl(), event.getEventUrl() ))
 			.toList());
 	}
 }

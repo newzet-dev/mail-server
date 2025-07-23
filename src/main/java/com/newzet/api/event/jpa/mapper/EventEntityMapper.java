@@ -6,7 +6,7 @@ import com.newzet.api.event.jpa.entity.EventEntity;
 public class EventEntityMapper {
 
 	public static Event toDomain(EventEntity eventEntity) {
-		return new Event(eventEntity.getId(), eventEntity.getEventUrl(), eventEntity.getImageUrl());
+		return Event.create(eventEntity.getId(), eventEntity.getEventUrl(), eventEntity.getImageUrl());
 	}
 
 }

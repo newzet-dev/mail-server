@@ -95,7 +95,7 @@ class EventRepositoryImplTest {
 
 		// 2. 우선순위(priority)가 낮은 순서(오름차순)로 정렬되었는지 확인
 		assertThat(foundEvents)
-			.extracting(Event::eventUrl)
+			.extracting(Event::getEventUrl)
 			.containsExactly("https://event.com/active2", "https://event.com/active1");
 	}
 
