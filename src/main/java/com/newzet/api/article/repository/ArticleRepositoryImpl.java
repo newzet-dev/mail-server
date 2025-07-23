@@ -25,13 +25,14 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
 	private static final int BATCH_SIZE = 100;
 	private final ArticleJpaRepository articleJpaRepository;
+	private final ArticleJpaQueryRepository articleJpaQueryRepository;
 	@PersistenceContext
 	private EntityManager entityManager;
 
 	@Override
 	public List<ArticleWithImageProjection> getMonthlyArticleWithImage(UUID userId, int year,
 		int month) {
-		return articleJpaRepository.findMonthlyArticlesWithImage(
+		return articleJpaQueryRepository.findMonthlyArticlesWithImage(
 			userId, year, month);
 	}
 
@@ -85,8 +86,8 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 	}
 
 	@Override
-	public List<ArticleWithImageProjection> getLikeArticleWithImage(UUID userId) {
-		return articleJpaRepository.findLikeArticleWithImage(userId);
+	public List<ArticleWithImageProjection> findLikeArticleWithImage(UUID userId) {
+		return articleJpaQueryRepository.findLikeArticleWithImage(userId);
 	}
 
 	@Override

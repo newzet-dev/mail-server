@@ -47,7 +47,8 @@ public class SubscriptionEntity {
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private LocalDateTime deletedAt;
 
-	public static SubscriptionEntity create(UUID userId, String newsletterName, String newsletterDomain, String newsletterMailingList) {
+	public static SubscriptionEntity create(UUID userId, String newsletterName,
+		String newsletterDomain, String newsletterMailingList) {
 		return SubscriptionEntity.builder()
 			.userId(userId)
 			.newsletterName(newsletterName)
@@ -58,6 +59,7 @@ public class SubscriptionEntity {
 	}
 
 	public SubscriptionEntityDto toEntityDto() {
-		return SubscriptionEntityDto.create(id, userId, newsletterName, newsletterDomain, newsletterMailingList);
+		return SubscriptionEntityDto.create(id, userId, newsletterName, newsletterDomain,
+			newsletterMailingList);
 	}
 }

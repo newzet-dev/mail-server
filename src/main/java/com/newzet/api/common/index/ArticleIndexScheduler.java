@@ -17,10 +17,10 @@ public class ArticleIndexScheduler {
 	// 매월 마지막 날 04:00 실행
 	@Scheduled(cron = "4 0 0 L * *")
 	public void recreatePartialIndexInFilteringArticle() {
-		jdbcTemplate.execute("DROP INDEX IF EXISTS idx_article_recent_user_createdat");
+		jdbcTemplate.execute("DROP INDEX IF EXISTS idx_article_recent_user_created_at");
 
 		String sql = String.format("""
-			    CREATE INDEX idx_article_recent_user_createdat
+			    CREATE INDEX idx_article_recent_user_created_at
 			    ON article(to_user_id, created_at)
 			    WHERE created_at >= '%s';
 			""", LocalDate.now().minusMonths(1).withDayOfMonth(1)); // ex: 2025-05-01

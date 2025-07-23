@@ -5,6 +5,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.dto.NewsletterImageUrlCacheDto;
 
 public interface NewsletterRepository {
 
@@ -19,4 +20,6 @@ public interface NewsletterRepository {
 	NewsletterEntityDto getById(UUID id);
 
 	List<NewsletterEntityDto> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList);
+
+	NewsletterImageUrlCacheDto findNewsLetterImageUrlByDomainAndMailingList(String domain, String mailingList);
 }
