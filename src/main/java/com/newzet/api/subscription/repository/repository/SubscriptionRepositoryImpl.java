@@ -1,5 +1,6 @@
 package com.newzet.api.subscription.repository.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
@@ -8,6 +9,7 @@ import com.newzet.api.subscription.business.dto.SubscriptionEntityDto;
 import com.newzet.api.subscription.business.service.SubscriptionRepository;
 import com.newzet.api.subscription.repository.entity.SubscriptionEntity;
 import com.newzet.api.subscription.repository.exception.NoSubscriptionException;
+import com.newzet.api.subscription.repository.repository.dto.SubscriptionListWithImageProjection;
 
 import lombok.RequiredArgsConstructor;
 
@@ -23,6 +25,12 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 		SubscriptionEntity subscriptionEntity = SubscriptionEntity.
 			create(userId, newsletterName, newsletterDomain, newsletterMailingList);
 		return subscriptionJpaRepository.save(subscriptionEntity).toEntityDto();
+	}
+
+	@Override
+	public List<SubscriptionListWithImageProjection> getSubscriptionWithImage(UUID userId) {
+		return subscriptionJpaRepository.getSubscriptionWithImage(
+			userId);
 	}
 
 	@Override

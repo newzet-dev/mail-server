@@ -7,6 +7,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Repository;
 
 import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
+import com.newzet.api.newsletter.business.dto.NewsletterImageUrlCacheDto;
 import com.newzet.api.newsletter.business.repository.NewsletterRepository;
 import com.newzet.api.newsletter.exception.NoNewsletterException;
 
@@ -58,5 +59,17 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 		return newsletterJpaRepository.findByCategoryIdList(categoryIdList).stream()
 			.map(NewsletterEntity::toEntityDto)
 			.toList();
+	}
+
+	@Override
+	public NewsletterImageUrlCacheDto findNewsLetterImageUrlByDomainAndMailingList(String domain,
+		String mailingList) {
+		String imageUrl = newsletterJpaRepository.findImageUrlByDomainOrMailingList(
+			domain, mailingList);
+		if (imageUrl == null) {
+			throw new NoNewsletterException("domain: " + domain + " mailingList: " + mailingList
+				+ ": 해당 domain/mailingList의 뉴스레터가 존재하지 않습니다.");
+		}
+		return NewsletterImageUrlCacheDto.create(imageUrl);
 	}
 }
