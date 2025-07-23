@@ -12,25 +12,25 @@ import lombok.Getter;
 public class FcmNotification {
 	private UUID userId;
 	private String token;
-	private String title;
-	private String body;
-	private String data;
-	private LocalDateTime createdAt;
+	private UUID articleId;
+	private LocalDateTime articleCreatedAt;
+	private String articleTitle;
+	private String newsletterName;
 
-	public static FcmNotification create(UUID userId, String token, String title, String body,
-		String data) {
+	public static FcmNotification create(UUID userId, String token, UUID articleId,
+		LocalDateTime articleCreatedAt,
+		String articleTitle, String newsletterName) {
 		return new FcmNotification(
 			userId,
 			token,
-			title,
-			body,
-			data,
-			LocalDateTime.now()
-		);
+			articleId,
+			articleCreatedAt,
+			articleTitle,
+			newsletterName);
 	}
 
 	public boolean isValid() {
 		return token != null && !token.trim().isEmpty()
-			&& title != null && !title.trim().isEmpty();
+			&& articleTitle != null && !articleTitle.trim().isEmpty();
 	}
 }
