@@ -273,7 +273,7 @@ class ArticleRedisBatchProcessorIntegrationTest {
 	}
 
 	private Article createArticleDto(UUID userId, String title) {
-		return Article.createNewArticle(userId, "Newsletter", "example.com", "daily", title,
+		return Article.createNewArticle(userId, "Newsletter", "example.com", "daily", "imageUrl@a.com", title,
 			"https://example.com/" + title.toLowerCase().replace(' ', '-'));
 	}
 }
