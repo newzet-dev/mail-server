@@ -1,5 +1,6 @@
 package com.newzet.api.fcm.business.service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,11 +26,12 @@ public class FcmSenderService {
 	private final FcmTokenRepository fcmTokenRepository;
 	private final FcmBatchProducer batchProducer;
 
-	public void sendFcmWhenMailReceivedBatch(UUID userId, String fromName, String title) {
+	public void sendFcmWhenMailReceivedBatch(UUID userId, UUID articleId,
+		LocalDateTime articleCreatedAt, String articleTitle, String newsletterName) {
 		List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUserId(userId);
 		for (FcmToken fcmToken : fcmTokens) {
 			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.value(),
-				fromName, title, null);
+				articleId, articleCreatedAt, articleTitle, newsletterName);
 			if (!fcmNotification.isValid()) {
 				log.warn("Invalid FCM notification, skipping: userId={}, token={}",
 					fcmNotification.getUserId(), fcmNotification.getToken());
@@ -39,11 +41,12 @@ public class FcmSenderService {
 		}
 	}
 
-	public void sendFcmNotBatch(UUID userId, String fromName, String title) {
+	public void sendFcmNotBatch(UUID userId, UUID articleId,
+		LocalDateTime articleCreatedAt, String articleTitle, String newsletterName) {
 		List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUserId(userId);
 		for (FcmToken fcmToken : fcmTokens) {
 			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.value(),
-				fromName, title, null);
+				articleId, articleCreatedAt, articleTitle, newsletterName);
 			if (!fcmNotification.isValid()) {
 				log.warn("Invalid FCM notification, skipping: userId={}, token={}",
 					fcmNotification.getUserId(), fcmNotification.getToken());
@@ -66,10 +69,11 @@ public class FcmSenderService {
 		return Message.builder()
 			.setToken(fcmNotification.getToken())
 			.setNotification(Notification.builder()
-				.setTitle(fcmNotification.getTitle())
-				.setBody(fcmNotification.getBody())
+				.setTitle(fcmNotification.getNewsletterName())
+				.setBody(fcmNotification.getArticleTitle())
 				.build())
-			.putData("data", fcmNotification.getData() != null ? fcmNotification.getData() : "")
+			.putData("articleId", fcmNotification.getArticleId().toString())
+			.putData("articleCreatedAt", fcmNotification.getArticleCreatedAt().toString())
 			.build();
 	}
 
