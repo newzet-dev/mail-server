@@ -27,8 +27,9 @@ public class S3Service {
 			.key(key)
 			.build();
 
-		try (ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(
-			getObjectRequest)) {
+		try {
+			ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(
+				getObjectRequest);
 			byte[] contentBytes = s3Object.readAllBytes(); // InputStream의 모든 byte를 읽어와 UTF-8 문자열로 변환
 			return new String(contentBytes, StandardCharsets.UTF_8);
 		} catch (NoSuchKeyException e) { // 파일이 존재하지 않을 경우 예외 처리

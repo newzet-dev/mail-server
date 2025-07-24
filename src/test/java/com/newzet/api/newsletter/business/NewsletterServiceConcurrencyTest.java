@@ -21,6 +21,7 @@ import com.newzet.api.config.FirebaseTestConfig;
 import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
+import com.newzet.api.config.S3TestConfig;
 import com.newzet.api.newsletter.business.repository.NewsletterRepository;
 import com.newzet.api.newsletter.business.service.NewsletterService;
 import com.newzet.api.newsletter.fixture.NewsletterFixture;
@@ -32,7 +33,7 @@ import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
 @Transactional
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class,
-	JwtTestConfig.class, FirebaseTestConfig.class})
+	JwtTestConfig.class, FirebaseTestConfig.class, S3TestConfig.class})
 public class NewsletterServiceConcurrencyTest {
 
 	private final String name = "test";

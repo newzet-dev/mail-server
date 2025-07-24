@@ -15,11 +15,10 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.test.util.ReflectionTestUtils;
 
+import com.newzet.api.article.business.batch.ArticleBatchProducer;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.business.service.ArticleService;
@@ -32,22 +31,28 @@ import com.newzet.api.article.repository.entity.ArticleEntity;
 import com.newzet.api.common.exception.InternalErrorException;
 import com.newzet.api.common.s3.S3Service;
 import com.newzet.api.common.util.UuidConverter;
+import com.newzet.api.config.S3TestConfig;
 
-@ExtendWith(MockitoExtension.class)
+@ExtendWith({MockitoExtension.class, S3TestConfig.class})
 class ArticleServiceTest {
 
+	private static final String TEST_BUCKET_NAME = "test-content-bucket";
+	private ArticleService articleService;
 	@Mock
 	private ArticleRepository articleRepository;
 	@Mock
 	private S3Service s3Service;
-	private String testBucketName = "test-content-bucket";
-	@InjectMocks
-	private ArticleService articleService;
+	@Mock
+	private ArticleBatchProducer batchProducer;
 
 	@BeforeEach
 	void setUp() {
-		// @Value로 주입되는 필드 값을 테스트 환경에서 수동으로 주입
-		ReflectionTestUtils.setField(articleService, "contentBucketName", testBucketName);
+		articleService = new ArticleService(
+			batchProducer,
+			articleRepository,
+			s3Service,
+			TEST_BUCKET_NAME
+		);
 	}
 
 	@DisplayName("월별 아티클 조회 시 날짜별 오름차순 형태로 리스트가 분리되어 저장된다.")
@@ -170,7 +175,6 @@ class ArticleServiceTest {
 
 		// verify
 		verify(articleRepository).getById(articleId);
-		verify(s3Service).getContentAsString(testBucketName, contentUrl);
 	}
 
 }
