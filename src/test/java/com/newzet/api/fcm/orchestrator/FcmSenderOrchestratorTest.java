@@ -39,15 +39,20 @@ public class FcmSenderOrchestratorTest {
 	@Test
 	void sendFcmWhenMailReceivedBatch_WhenCalled_ThenDelegateToService() {
 		// Given
-		String fromName = "Newsletter";
-		String title = "New Article";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Newsletter";
 		doNothing().when(fcmSenderService)
-			.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+			.sendFcmWhenMailReceivedBatch(testUserId, articleId, articleCreatedAt, articleTitle,
+				newsletterName);
 
 		// When
-		fcmSenderOrchestrator.sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+		fcmSenderOrchestrator.sendFcmWhenMailReceivedBatch(testUserId, articleId, articleCreatedAt,
+			articleTitle, newsletterName);
 
 		// Then
-		verify(fcmSenderService).sendFcmWhenMailReceivedBatch(testUserId, fromName, title);
+		verify(fcmSenderService).sendFcmWhenMailReceivedBatch(testUserId, articleId,
+			articleCreatedAt, articleTitle, newsletterName);
 	}
 }

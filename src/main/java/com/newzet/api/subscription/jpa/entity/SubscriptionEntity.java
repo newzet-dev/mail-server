@@ -11,12 +11,14 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
 @AllArgsConstructor
+@Builder
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(name = "SUBSCRIPTION")
 public class SubscriptionEntity {
@@ -42,4 +44,15 @@ public class SubscriptionEntity {
 
 	@Column(columnDefinition = "TIMESTAMP WITH TIME ZONE")
 	private LocalDateTime deletedAt;
+
+	public static SubscriptionEntity create(UUID userId, String newsletterName,
+		String newsletterDomain, String newsletterMailingList) {
+		return SubscriptionEntity.builder()
+			.userId(userId)
+			.newsletterName(newsletterName)
+			.newsletterDomain(newsletterDomain)
+			.newsletterMailingList(newsletterMailingList)
+			.createdAt(LocalDateTime.now())
+			.build();
+	}
 }

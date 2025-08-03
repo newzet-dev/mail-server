@@ -3,6 +3,7 @@ package com.newzet.api.newsletter.business.repository;
 import java.util.List;
 import java.util.UUID;
 
+import com.newzet.api.newsletter.business.dto.NewsletterImageUrlCacheDto;
 import com.newzet.api.newsletter.domain.Newsletter;
 
 public interface NewsletterRepository {
@@ -18,4 +19,6 @@ public interface NewsletterRepository {
 	List<Newsletter> findNewsletterListByCategoryIdList(List<UUID> categoryIdList);
 
 	List<Newsletter> findNewsletterListByIdList(List<UUID> idList);
+
+	NewsletterImageUrlCacheDto findNewsLetterImageUrlByDomainAndMailingList(String domain, String mailingList);
 }

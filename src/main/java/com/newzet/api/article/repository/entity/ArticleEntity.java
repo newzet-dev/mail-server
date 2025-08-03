@@ -45,6 +45,9 @@ public class ArticleEntity {
 	@Column(name = "title")
 	private String title;
 
+	@Column(name = "image_url")
+	private String imageUrl;
+
 	@Column(name = "content_url")
 	private String contentUrl;
 
@@ -95,6 +98,10 @@ public class ArticleEntity {
 			.createdAt(createdAt)
 			.deletedAt(deletedAt)
 			.build();
+	}
+
+	public void addImageUrlForSave(String imageUrl) {
+		this.imageUrl = imageUrl;
 	}
 
 	public void readArticle() {

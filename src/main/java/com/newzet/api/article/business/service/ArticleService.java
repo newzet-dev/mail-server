@@ -34,9 +34,9 @@ public class ArticleService {
 	private final ArticleRepository articleRepository;
 
 	public void saveArticleBatch(UUID userId, String fromName, String fromDomain,
-		String mailingList, String htmlLink, String title) {
-		Article article = Article.createNewArticle(userId, fromName, fromDomain, mailingList, title,
-			htmlLink);
+		String mailingList, String imageUrl, String htmlLink, String title) {
+		Article article = Article.createNewArticle(userId, fromName, fromDomain, mailingList,
+			imageUrl, title, htmlLink);
 		batchProducer.addToBatch(article);
 	}
 
@@ -46,10 +46,10 @@ public class ArticleService {
 
 		List<ArticleDetailResponse> articleList = articleListAtYearAndMonth.stream()
 			.map(articleWithImageProjection -> ArticleDetailResponse.of(
-				articleWithImageProjection.getId(),
-				articleWithImageProjection.getFromName(), articleWithImageProjection.getImageUrl(),
-				articleWithImageProjection.getTitle(),
-				articleWithImageProjection.getIsRead(), articleWithImageProjection.getCreatedAt()))
+				articleWithImageProjection.id(),
+				articleWithImageProjection.fromName(), articleWithImageProjection.imageUrl(),
+				articleWithImageProjection.title(),
+				articleWithImageProjection.isRead(), articleWithImageProjection.createdAt()))
 			.toList();
 
 		return ArticleListResponse.from(getDailyArticleList(articleList));
@@ -71,13 +71,13 @@ public class ArticleService {
 	}
 
 	public ArticleLikeListResponse getArticleLikeList(UUID userId) {
-		List<ArticleDetailResponse> articleList = articleRepository.getLikeArticleWithImage(userId)
+		List<ArticleDetailResponse> articleList = articleRepository.findLikeArticleWithImage(userId)
 			.stream()
 			.map(articleWithImageProjection -> ArticleDetailResponse.of(
-				articleWithImageProjection.getId(),
-				articleWithImageProjection.getFromName(), articleWithImageProjection.getImageUrl(),
-				articleWithImageProjection.getTitle(),
-				articleWithImageProjection.getIsRead(), articleWithImageProjection.getCreatedAt()
+				articleWithImageProjection.id(),
+				articleWithImageProjection.fromName(), articleWithImageProjection.imageUrl(),
+				articleWithImageProjection.title(),
+				articleWithImageProjection.isRead(), articleWithImageProjection.createdAt()
 			))
 			.toList();
 
