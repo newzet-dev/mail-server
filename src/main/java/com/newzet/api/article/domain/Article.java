@@ -93,6 +93,7 @@ public class Article {
 			this.mailingList,
 			this.title,
 			this.contentUrl,
+			this.imageUrl,
 			this.isRead,
 			this.isLike,
 			true,

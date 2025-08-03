@@ -104,8 +104,9 @@ public class ArticleService {
 			.toList();
 	}
 
-	public Article addArticle(UUID userId, String name, String domain, String title, String url, String mailingList) {
-		Article article = Article.createNewArticle(userId, name, domain, mailingList, title, url);
+	public Article addArticle(UUID userId, String name, String domain, String title, String url, String imageUrl,
+		String mailingList) {
+		Article article = Article.createNewArticle(userId, name, domain, mailingList, title, url, imageUrl);
 		return articleRepository.save(article);
 	}
 

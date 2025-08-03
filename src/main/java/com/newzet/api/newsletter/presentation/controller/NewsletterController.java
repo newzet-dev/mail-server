@@ -24,7 +24,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/newsletter")
+@RequestMapping("api/v1/newsletter")
 @Tag(name = "뉴스레터", description = "뉴스레터 관련 API")
 public class NewsletterController {
 

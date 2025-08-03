@@ -18,6 +18,9 @@ public interface NewsletterJpaRepository extends JpaRepository<NewsletterEntity,
 	@Query("select n from NewsletterEntity n where n.categoryId in :categoryIdList")
 	List<NewsletterEntity> findByCategoryIdList(List<UUID> categoryIdList);
 
+	@Query("select n from NewsletterEntity n where n.id in :idList")
+	List<NewsletterEntity> findByIdList(List<UUID> idList);
+
 	@Query("select n.imageUrl from NewsletterEntity n"
 		+ " where n.domain in :domain or n.mailingList in :mailingList")
 	String findImageUrlByDomainOrMailingList(@Param("domain") String domain,

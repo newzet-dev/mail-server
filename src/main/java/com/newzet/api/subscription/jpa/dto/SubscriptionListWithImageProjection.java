@@ -1,4 +1,4 @@
-package com.newzet.api.subscription.repository.repository.dto;
+package com.newzet.api.subscription.jpa.dto;
 
 import java.util.UUID;
 

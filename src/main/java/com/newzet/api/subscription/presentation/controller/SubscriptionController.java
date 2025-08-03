@@ -20,7 +20,7 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/subscription")
+@RequestMapping("/api/v1/subscription")
 @Tag(name = "구독", description = "구독 관련 API")
 public class SubscriptionController {
 

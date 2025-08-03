@@ -1,10 +1,34 @@
 package com.newzet.api.subscription.jpa.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 
+import com.newzet.api.subscription.jpa.dto.SubscriptionListWithImageProjection;
 import com.newzet.api.subscription.jpa.entity.SubscriptionEntity;
 
+import io.lettuce.core.dynamic.annotation.Param;
+
 public interface SubscriptionJpaRepository extends JpaRepository<SubscriptionEntity, UUID> {
+	@Query(value = """
+			SELECT
+			  fs.id,
+			  fs.newsletter_name,
+			  n.domain,
+			  n.image_url,
+			  n.status,
+			  n.day_of_week
+			FROM
+			  (SELECT *
+			  FROM subscriptions s
+			  WHERE s.user_id = :userId
+			  ) fs
+			INNER JOIN
+			  newsletters n
+			ON
+			  fs.newsletter_domain = n.domain
+		""", nativeQuery = true)
+	List<SubscriptionListWithImageProjection> getSubscriptionWithImage(@Param("userId") UUID userId);
 }

@@ -10,9 +10,9 @@ import com.newzet.api.common.util.UuidConverter;
 import com.newzet.api.subscription.business.repository.SubscriptionQueryRepository;
 import com.newzet.api.subscription.business.repository.SubscriptionRepository;
 import com.newzet.api.subscription.domain.Subscription;
+import com.newzet.api.subscription.jpa.dto.SubscriptionListWithImageProjection;
 import com.newzet.api.subscription.presentation.dto.SubscriptionListWithImageResponse;
 import com.newzet.api.subscription.presentation.dto.SubscriptionWithImageResponse;
-import com.newzet.api.subscription.repository.repository.dto.SubscriptionListWithImageProjection;
 
 import lombok.RequiredArgsConstructor;
 
