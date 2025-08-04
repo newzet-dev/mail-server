@@ -16,6 +16,8 @@ import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.SocketOptions;
+import io.lettuce.core.resource.ClientResources;
+import io.lettuce.core.resource.DefaultClientResources;
 
 @Configuration
 public class RedisConfig {
@@ -35,16 +37,29 @@ public class RedisConfig {
 		serverConfig.setPassword(RedisPassword.of(password));
 
 		LettuceClientConfiguration clientConfig = LettuceClientConfiguration.builder()
-			.commandTimeout(Duration.ofMillis(500))
+			.commandTimeout(Duration.ofMillis(1000))
 			.clientOptions(ClientOptions.builder()
 				.autoReconnect(true)
 				.socketOptions(
-					SocketOptions.builder().connectTimeout(Duration.ofMillis(1000)).build())
+					SocketOptions.builder()
+						.connectTimeout(Duration.ofMillis(1000))
+						.keepAlive(true)
+						.tcpNoDelay(true)
+						.build())
 				.disconnectedBehavior(ClientOptions.DisconnectedBehavior.REJECT_COMMANDS)
 				.build())
+			.clientResources(clientResources())
 			.build();
 
 		return new LettuceConnectionFactory(serverConfig, clientConfig);
+	}
+
+	@Bean(destroyMethod = "shutdown")
+	public ClientResources clientResources() {
+		return DefaultClientResources.builder()
+			.ioThreadPoolSize(8)
+			.computationThreadPoolSize(8)
+			.build();
 	}
 
 	@Bean
