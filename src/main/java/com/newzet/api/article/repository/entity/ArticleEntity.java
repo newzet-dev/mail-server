@@ -74,6 +74,7 @@ public class ArticleEntity {
 			.fromDomain(dto.getFromDomain())
 			.mailingList(dto.getMailingList())
 			.title(dto.getTitle())
+			.imageUrl(dto.getImageUrl())
 			.contentUrl(dto.getContentUrl())
 			.isRead(dto.isRead())
 			.isLike(dto.isLike())
