@@ -2,6 +2,7 @@ package com.newzet.api.newsletter.presentation.controller;
 
 import static org.mockito.Mockito.*;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.junit.jupiter.api.DisplayName;
@@ -35,7 +36,7 @@ class NewsletterControllerTest {
 			.thenReturn(response);
 
 		// When
-		newsletterController.getNewsletterInfoById(null, TEST_NEWSLETTER_ID);
+		newsletterController.getNewsletterInfoById(Optional.empty(), TEST_NEWSLETTER_ID);
 
 		// Then
 		verify(newsletterOrchestrator, times(1)).getNewsletterInfoWithoutLogin(TEST_NEWSLETTER_ID);
@@ -51,7 +52,7 @@ class NewsletterControllerTest {
 			.thenReturn(response);
 
 		// When
-		newsletterController.getNewsletterInfoById(authUser, TEST_NEWSLETTER_ID);
+		newsletterController.getNewsletterInfoById(Optional.of(authUser), TEST_NEWSLETTER_ID);
 
 		// Then
 		verify(newsletterOrchestrator, times(1)).getNewsLetterInfoWithLogin(TEST_USER_ID, TEST_NEWSLETTER_ID);

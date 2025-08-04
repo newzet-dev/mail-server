@@ -1,5 +1,6 @@
 package com.newzet.api.newsletter.presentation.controller;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.web.bind.annotation.GetMapping;
@@ -9,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.newzet.api.common.auth.annotation.Login;
+import com.newzet.api.common.auth.annotation.OptionalLogin;
 import com.newzet.api.common.auth.annotation.RequireAuth;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.response.ResponseCode;
@@ -53,13 +55,13 @@ public class NewsletterController {
 	@Operation(summary = "뉴스레터 상세정보 조회",
 		description = "뉴스레터 id로 뉴스테러를 조회한다.")
 	public SuccessResponse<NewsletterInfoResponse> getNewsletterInfoById(
-		@Login AuthUser authUser, @PathVariable("newsletterId") UUID newsletterId) {
-		if (authUser == null) {
-			NewsletterInfoResponse response = newsletterOrchestrator.getNewsletterInfoWithoutLogin(newsletterId);
-			return SuccessResponse.create(ResponseCode.SUCCESS, "뉴스레터 상세정보 조회 성공", response);
-		}
-		NewsletterInfoResponse response = newsletterOrchestrator.getNewsLetterInfoWithLogin(authUser.getId(),
-			newsletterId);
+		@OptionalLogin Optional<AuthUser> authUser,
+		@PathVariable("newsletterId") UUID newsletterId) {
+		NewsletterInfoResponse response = authUser
+			.map(user -> newsletterOrchestrator.getNewsLetterInfoWithLogin(user.getId(),
+				newsletterId)) // 로그인 유저 로직
+			.orElseGet(() -> newsletterOrchestrator.getNewsletterInfoWithoutLogin(
+				newsletterId)); // 비로그인 유저 로직
 		return SuccessResponse.create(ResponseCode.SUCCESS, "뉴스레터 상세정보 조회 성공", response);
 	}
 
@@ -69,7 +71,8 @@ public class NewsletterController {
 		description = "유저 id로 뉴스레터 추천 리스트를 조회한다.")
 	public SuccessResponse<NewsletterRecommendResponse> recommendNewsletterList(
 		@Login AuthUser authUser) {
-		NewsletterRecommendResponse response = newsletterOrchestrator.recommendNewsletterList(authUser.getId());
+		NewsletterRecommendResponse response = newsletterOrchestrator.recommendNewsletterList(
+			authUser.getId());
 		return SuccessResponse.create(ResponseCode.SUCCESS, "뉴스레터 추천 성공", response);
 	}
 }
