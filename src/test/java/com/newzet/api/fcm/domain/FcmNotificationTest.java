@@ -2,6 +2,7 @@ package com.newzet.api.fcm.domain;
 
 import static org.assertj.core.api.Assertions.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.junit.jupiter.api.Test;
@@ -13,20 +14,22 @@ class FcmNotificationTest {
 		// Given
 		UUID userId = UUID.randomUUID();
 		String token = "test-fcm-token";
-		String title = "New Article";
-		String body = "You have a new article";
-		String data = "test-data";
+		UUID articleId = UUID.randomUUID();
+		LocalDateTime articleCreatedAt = LocalDateTime.now();
+		String articleTitle = "New Article";
+		String newsletterName = "Test Newsletter";
 
 		// When
-		FcmNotification notification = FcmNotification.create(userId, token, title, body, data);
+		FcmNotification notification = FcmNotification.create(userId, token, articleId,
+			articleCreatedAt, articleTitle, newsletterName);
 
 		// Then
 		assertThat(notification.getUserId()).isEqualTo(userId);
 		assertThat(notification.getToken()).isEqualTo(token);
-		assertThat(notification.getTitle()).isEqualTo(title);
-		assertThat(notification.getBody()).isEqualTo(body);
-		assertThat(notification.getData()).isEqualTo(data);
-		assertThat(notification.getCreatedAt()).isNotNull();
+		assertThat(notification.getArticleId()).isEqualTo(articleId);
+		assertThat(notification.getArticleCreatedAt()).isEqualTo(articleCreatedAt);
+		assertThat(notification.getArticleTitle()).isEqualTo(articleTitle);
+		assertThat(notification.getNewsletterName()).isEqualTo(newsletterName);
 	}
 
 	@Test
@@ -35,9 +38,10 @@ class FcmNotificationTest {
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			"test-token",
+			UUID.randomUUID(),
+			LocalDateTime.now(),
 			"Test Title",
-			"Test Body",
-			null
+			"Test Newsletter"
 		);
 
 		// When
@@ -53,9 +57,10 @@ class FcmNotificationTest {
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			null,
+			UUID.randomUUID(),
+			LocalDateTime.now(),
 			"Test Title",
-			"Test Body",
-			null
+			"Test Newsletter"
 		);
 
 		// When
@@ -71,9 +76,10 @@ class FcmNotificationTest {
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			"",
+			UUID.randomUUID(),
+			LocalDateTime.now(),
 			"Test Title",
-			"Test Body",
-			null
+			"Test Newsletter"
 		);
 
 		// When
@@ -89,9 +95,10 @@ class FcmNotificationTest {
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			"   ",
+			UUID.randomUUID(),
+			LocalDateTime.now(),
 			"Test Title",
-			"Test Body",
-			null
+			"Test Newsletter"
 		);
 
 		// When
@@ -107,9 +114,10 @@ class FcmNotificationTest {
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			"test-token",
+			UUID.randomUUID(),
+			LocalDateTime.now(),
 			null,
-			"Test Body",
-			null
+			"Test Newsletter"
 		);
 
 		// When
@@ -125,9 +133,10 @@ class FcmNotificationTest {
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			"test-token",
+			UUID.randomUUID(),
+			LocalDateTime.now(),
 			"",
-			"Test Body",
-			null
+			"Test Newsletter"
 		);
 
 		// When
@@ -143,9 +152,10 @@ class FcmNotificationTest {
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			"test-token",
+			UUID.randomUUID(),
+			LocalDateTime.now(),
 			"   ",
-			"Test Body",
-			null
+			"Test Newsletter"
 		);
 
 		// When
@@ -156,13 +166,14 @@ class FcmNotificationTest {
 	}
 
 	@Test
-	void isValid_WhenBodyIsNull_ThenReturnTrue() {
+	void isValid_WhenNewsletterNameIsNull_ThenReturnTrue() {
 		// Given
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			"test-token",
+			UUID.randomUUID(),
+			LocalDateTime.now(),
 			"Test Title",
-			null,
 			null
 		);
 
@@ -174,14 +185,15 @@ class FcmNotificationTest {
 	}
 
 	@Test
-	void isValid_WhenDataIsNull_ThenReturnTrue() {
+	void isValid_WhenArticleIdIsNull_ThenReturnTrue() {
 		// Given
 		FcmNotification notification = FcmNotification.create(
 			UUID.randomUUID(),
 			"test-token",
+			null,
+			LocalDateTime.now(),
 			"Test Title",
-			"Test Body",
-			null
+			"Test Newsletter"
 		);
 
 		// When

@@ -17,6 +17,7 @@ public class ArticleEntityDto {
 	private final String fromDomain;
 	private final String mailingList;
 	private final String title;
+	private final String imageUrl;
 	private final String contentUrl;
 	private final boolean isRead;
 	private final boolean isLike;
@@ -32,6 +33,7 @@ public class ArticleEntityDto {
 			.fromDomain(article.getFromDomain())
 			.mailingList(article.getMailingList())
 			.title(article.getTitle())
+			.imageUrl(article.getImageUrl())
 			.contentUrl(article.getContentUrl())
 			.isRead(article.isRead())
 			.isLike(article.isLike())
@@ -49,6 +51,7 @@ public class ArticleEntityDto {
 			fromDomain,
 			mailingList,
 			title,
+			imageUrl,
 			contentUrl,
 			isRead,
 			isLike,

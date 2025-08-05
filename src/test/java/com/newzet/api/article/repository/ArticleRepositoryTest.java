@@ -22,6 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.entity.ArticleEntity;
+import com.newzet.api.newsletter.jpa.repository.NewsletterJpaRepository;
 
 import jakarta.persistence.EntityManager;
 
@@ -30,6 +31,8 @@ class ArticleRepositoryTest {
 
 	@Mock
 	private EntityManager entityManager;
+	@Mock
+	private NewsletterJpaRepository newsletterJpaRepository;
 	@InjectMocks
 	private ArticleRepositoryImpl articleRepository;
 
@@ -207,6 +210,7 @@ class ArticleRepositoryTest {
 				"Newsletter" + i,
 				"example.com",
 				"weekly",
+				"imageUrl@a.com",
 				"Weekly News " + i,
 				"https://example.com/news/" + i
 			))
@@ -222,6 +226,7 @@ class ArticleRepositoryTest {
 					"Newsletter" + i,
 					"example.com",
 					"weekly",
+					"imageUrl@a.com",
 					"Weekly News " + i,
 					"https://example.com/news/" + i
 				);

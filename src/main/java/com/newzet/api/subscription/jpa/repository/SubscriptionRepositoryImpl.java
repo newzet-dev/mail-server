@@ -1,11 +1,13 @@
 package com.newzet.api.subscription.jpa.repository;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.stereotype.Repository;
 
 import com.newzet.api.subscription.business.repository.SubscriptionRepository;
 import com.newzet.api.subscription.domain.Subscription;
+import com.newzet.api.subscription.jpa.dto.SubscriptionListWithImageProjection;
 import com.newzet.api.subscription.jpa.entity.SubscriptionEntity;
 import com.newzet.api.subscription.jpa.exception.NoSubscriptionException;
 import com.newzet.api.subscription.jpa.mapper.SubscriptionEntityMapper;
@@ -22,6 +24,11 @@ public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 	public Subscription save(Subscription subscription) {
 		SubscriptionEntity subscriptionEntity = SubscriptionEntityMapper.toEntity(subscription);
 		return SubscriptionEntityMapper.toDomain(subscriptionJpaRepository.save(subscriptionEntity));
+	}
+
+	@Override
+	public List<SubscriptionListWithImageProjection> getSubscriptionWithImage(UUID userId) {
+		return subscriptionJpaRepository.getSubscriptionWithImage(userId);
 	}
 
 	@Override

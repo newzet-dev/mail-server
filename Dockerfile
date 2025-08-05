@@ -1,4 +1,4 @@
-FROM openjdk:17
+FROM eclipse-temurin:21
 RUN mkdir -p /usr/local/newrelic
 
 ARG JAR_FILE=build/libs/*.jar

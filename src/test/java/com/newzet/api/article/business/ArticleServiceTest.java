@@ -26,7 +26,6 @@ import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.exception.ShareForbiddenException;
-import com.newzet.api.article.repository.TestArticleWithImageProjection;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 
 @ExtendWith(MockitoExtension.class)
@@ -48,7 +47,7 @@ class ArticleServiceTest {
 		for (int i = 0; i < 100; i++) {
 			int day = random.nextInt(31) + 1;
 			LocalDateTime date = LocalDateTime.of(2025, 1, day, 1, 1);
-			TestArticleWithImageProjection projection = new TestArticleWithImageProjection(
+			ArticleWithImageProjection projection = new ArticleWithImageProjection(
 				UUID.randomUUID(), "fromName",
 				"title", false, date, "imageUrl");
 			articleListAtYearAndMonth.add(projection);
@@ -56,7 +55,7 @@ class ArticleServiceTest {
 
 		// Repository에서 이미 정렬된 형태로 데이터가 넘어옴을 가정하므로, 정렬된 형태여야 한다.
 		articleListAtYearAndMonth.sort(
-			Comparator.comparing(ArticleWithImageProjection::getCreatedAt));
+			Comparator.comparing(ArticleWithImageProjection::createdAt));
 
 		when(articleRepository.getMonthlyArticleWithImage(any(UUID.class), any(Integer.class),
 			any(Integer.class)))
@@ -90,7 +89,7 @@ class ArticleServiceTest {
 		// Given
 		Article article = Article.create(UUID.randomUUID(), UUID.randomUUID(), "newsletter name",
 			"domain",
-			"mail-list", "title", "https://", false, false, false, LocalDateTime.now(),
+			"mail-list", "title", "https://", "https://", false, false, false, LocalDateTime.now(),
 			LocalDateTime.now());
 		ArticleEntityDto updatedArticle = ArticleEntityDto.builder()
 			.title("title")
@@ -117,7 +116,7 @@ class ArticleServiceTest {
 		// Given
 		Article article = Article.create(UUID.randomUUID(), UUID.randomUUID(), "newsletter name",
 			"domain",
-			"mail-list", "title", "https://", true, false, false, LocalDateTime.now(),
+			"mail-list", "title", "https://", "https://", true, false, false, LocalDateTime.now(),
 			LocalDateTime.now());
 		String articleId = article.getId().toString();
 		when(articleRepository.getById(any(UUID.class)))
@@ -136,7 +135,7 @@ class ArticleServiceTest {
 	void getSharedArticle_whenIsShareIsTrue_shouldReturnArticle() {
 		// Given
 		Article mockArticle = Article.create(TEST_ARTICLE_ID, UUID.randomUUID(), "test", "test.com", "test",
-			"testTitle", "test.com", false, false, true, LocalDateTime.now(), null);
+			"testTitle", "test.com", "test.com", false, false, true, LocalDateTime.now(), null);
 		when(articleRepository.getById(TEST_ARTICLE_ID)).thenReturn(ArticleEntityDto.fromDomain(mockArticle));
 
 		// When
@@ -154,7 +153,7 @@ class ArticleServiceTest {
 	void getSharedArticle_whenIsShareIsFalse_shouldThrowException() {
 		// Given
 		Article mockArticle = Article.create(TEST_ARTICLE_ID, UUID.randomUUID(), "test", "test.com", "test",
-			"testTitle", "test.com", false, false, false, LocalDateTime.now(), null);
+			"testTitle", "test.com", "test.com", false, false, false, LocalDateTime.now(), null);
 		when(articleRepository.getById(TEST_ARTICLE_ID)).thenReturn(ArticleEntityDto.fromDomain(mockArticle));
 
 		// When & Then
