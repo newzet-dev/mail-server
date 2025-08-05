@@ -164,6 +164,21 @@ class AuthUserArgumentResolverTest {
 	}
 
 	@Test
+	@DisplayName("Optional 타입이 아니면 false를 반환한다")
+	void supportsParameter_whenNoOptionalAuthUserType_returnsFalse() {
+		// Given
+		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false);
+		when(parameter.hasParameterAnnotation(OptionalLogin.class)).thenReturn(true);
+		when(parameter.getParameterType()).thenReturn((Class)AuthUser.class);
+
+		// When
+		boolean result = resolver.supportsParameter(parameter);
+
+		// Then
+		assertThat(result).isFalse();
+	}
+
+	@Test
 	@DisplayName("@OptionalLogin, 유효한 토큰이 헤더에 있으면 Optional<AuthUser>를 반환한다")
 	void resolveArgument_whenOptionalLoginAndTokenExists_returnsOptionalOfAuthUser() {
 		// Given

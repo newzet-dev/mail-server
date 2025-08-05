@@ -30,12 +30,14 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
+		Class<?> parameterType = parameter.getParameterType();
+
 		boolean hasAuthenticatedUserAnnotation = parameter.hasParameterAnnotation(Login.class);
-		boolean hasAuthUserParameterType = parameter.getParameterType().equals(AuthUser.class);
+		boolean hasAuthUserParameterType = parameterType.equals(AuthUser.class);
 
 		boolean hasOptionalAuthenticatedUserAnnotation = parameter.hasParameterAnnotation(
 			OptionalLogin.class);
-		boolean hasOptionalParameterType = parameter.getParameterType().equals(Optional.class);
+		boolean hasOptionalParameterType = parameterType.equals(Optional.class);
 
 		return (hasAuthenticatedUserAnnotation && hasAuthUserParameterType) || (
 			hasOptionalAuthenticatedUserAnnotation && hasOptionalParameterType);
