@@ -123,7 +123,6 @@ class UserTokenResolverTest {
 	void withoutHeader_for_optional_auth_thenReturnsGracefully() {
 		// Given
 		when(request.getHeader("Authorization")).thenReturn(null);
-		when(authorizationHeaderParser.extractAuthHeader(null)).thenReturn(null);
 
 		// When & Then
 		// 예외가 발생하지 않는 것을 검증

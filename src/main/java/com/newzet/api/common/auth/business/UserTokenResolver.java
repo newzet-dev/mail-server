@@ -22,10 +22,10 @@ public class UserTokenResolver {
 	}
 
 	public void setTokenInHeaderOptional(HttpServletRequest request) {
-		String headerValue = getAuthorizationHeader(request);
-		if (headerValue == null) {
+		if (!isExistsAuthorizationHeader(request)) {
 			return;
 		}
+		String headerValue = getAuthorizationHeader(request);
 		Token token = convertAndValidateToken(headerValue);
 		request.setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
 	}
@@ -41,4 +41,7 @@ public class UserTokenResolver {
 		return token;
 	}
 
+	private boolean isExistsAuthorizationHeader(HttpServletRequest request) {
+		return request.getHeader("Authorization") != null;
+	}
 }
