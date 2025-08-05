@@ -56,8 +56,8 @@ public class ArticleController {
 	@Operation(summary = "아티클 단건 조회",
 		description = "유저가 구독한 뉴스레터의 아티클을 조회한다.")
 	public ResponseEntity<SuccessResponse<ArticleContentResponse>> getArticle(
-		@PathVariable("articleId") String articleId) {
-		ArticleContentResponse articleContentResponse = articleService.getArticle(articleId);
+		@PathVariable("articleId") UUID articleId) {
+		ArticleContentResponse articleContentResponse = articleOrchestrator.getArticle(articleId);
 
 		SuccessResponse<ArticleContentResponse> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "아티클 단건 조회 성공", articleContentResponse);
