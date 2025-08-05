@@ -23,14 +23,25 @@ public class AuthInterceptor implements HandlerInterceptor {
 			return true;
 		}
 
-		boolean requiresAuth = handlerMethod.hasMethodAnnotation(RequireAuth.class) ||
-			handlerMethod.getBeanType().isAnnotationPresent(RequireAuth.class);
+		RequireAuth requireAuth = handlerMethod.getMethodAnnotation(RequireAuth.class);
+		if (requireAuth == null) {
+			requireAuth = handlerMethod.getBeanType().getAnnotation(RequireAuth.class);
+		}
 
-		if (!requiresAuth) {
+		// @RequireAuth가 기재되지 않음을 최종 확인
+		if (requireAuth == null) {
 			return true;
 		}
 
-		userTokenResolver.setTokenInHeader(request);
+		// @RequireAuth optional 속성값 확인
+		boolean isOptional = requireAuth.optional();
+
+		if (!isOptional) {
+			userTokenResolver.setTokenInHeader(request); // 로그인만
+		} else {
+			userTokenResolver.setTokenInHeaderOptional(request); // 로그인&비로그인 혼용
+		}
+
 		return true;
 	}
 }

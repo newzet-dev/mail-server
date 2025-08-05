@@ -1,6 +1,8 @@
 package com.newzet.api.common.auth.business;
 
 import static org.junit.Assert.*;
+import static org.junit.Assert.assertThrows;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Date;
@@ -68,6 +70,35 @@ class UserTokenResolverTest {
 	}
 
 	@Test
+	@DisplayName("유효한 Authorization 헤더가 있으면 토큰을 생성해 request attribute에 저장한다. (Optional 메서드 호출)")
+	void withValidHeader_thenSetsTokenAttribute_for_optional_auth() {
+		// Given
+		String fullHeader = "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+		String extractedTokenValue = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
+
+		UUID userId = UUID.randomUUID();
+		Token mockToken = Token.of(String.valueOf(userId), "testUser", new Date(), new Date());
+
+		when(request.getHeader("Authorization")).thenReturn(fullHeader);
+		when(authorizationHeaderParser.extractAuthHeader(fullHeader)).thenReturn(
+			extractedTokenValue);
+		when(tokenConverter.toToken(extractedTokenValue)).thenReturn(mockToken);
+		doNothing().when(tokenValidator).validate(mockToken);
+
+		// When
+		userTokenResolver.setTokenInHeaderOptional(request);
+
+		// Then
+		// 1. request.setAttribute가 올바른 이름과 토큰으로 호출되었는지 검증
+		verify(request, times(1)).setAttribute(AUTH_TOKEN_ATTRIBUTE, mockToken);
+
+		// 2. 모든 의존성 메서드가 정확히 1번씩 호출되었는지 검증
+		verify(authorizationHeaderParser, times(1)).extractAuthHeader(fullHeader);
+		verify(tokenConverter, times(1)).toToken(extractedTokenValue);
+		verify(tokenValidator, times(1)).validate(mockToken);
+	}
+
+	@Test
 	@DisplayName("Authorization 헤더가 없으면 NullPointerException이 발생한다.")
 	void withoutHeader_thenThrowsException() {
 		// Given
@@ -84,6 +115,23 @@ class UserTokenResolverTest {
 		});
 
 		// setAttribute는 절대 호출되면 안 됨
+		verify(request, never()).setAttribute(anyString(), any());
+	}
+
+	@Test
+	@DisplayName("헤더가 없어도 Optional 대상은 예외 없이 정상 종료된다")
+	void withoutHeader_for_optional_auth_thenReturnsGracefully() {
+		// Given
+		when(request.getHeader("Authorization")).thenReturn(null);
+		when(authorizationHeaderParser.extractAuthHeader(null)).thenReturn(null);
+
+		// When & Then
+		// 예외가 발생하지 않는 것을 검증
+		assertDoesNotThrow(() -> userTokenResolver.setTokenInHeaderOptional(request));
+
+		// 다른 메서드들이 호출되지 않았는지 검증
+		verify(tokenConverter, never()).toToken(any());
+		verify(tokenValidator, never()).validate(any());
 		verify(request, never()).setAttribute(anyString(), any());
 	}
 
@@ -112,5 +160,5 @@ class UserTokenResolverTest {
 		// setAttribute는 절대 호출되면 안 됨
 		verify(request, never()).setAttribute(anyString(), any());
 	}
-	
+
 }

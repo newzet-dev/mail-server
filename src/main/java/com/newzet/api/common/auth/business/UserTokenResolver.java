@@ -21,6 +21,15 @@ public class UserTokenResolver {
 		request.setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
 	}
 
+	public void setTokenInHeaderOptional(HttpServletRequest request) {
+		String headerValue = getAuthorizationHeader(request);
+		if (headerValue == null) {
+			return;
+		}
+		Token token = convertAndValidateToken(headerValue);
+		request.setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
+	}
+
 	private String getAuthorizationHeader(HttpServletRequest request) {
 		return authorizationHeaderParser.extractAuthHeader(
 			request.getHeader("Authorization"));

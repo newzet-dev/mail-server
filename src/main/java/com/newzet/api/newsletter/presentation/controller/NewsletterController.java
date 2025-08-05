@@ -52,6 +52,7 @@ public class NewsletterController {
 	}
 
 	@GetMapping("/{newsletterId}")
+	@RequireAuth(optional = true)
 	@Operation(summary = "뉴스레터 상세정보 조회",
 		description = "뉴스레터 id로 뉴스테러를 조회한다.")
 	public SuccessResponse<NewsletterInfoResponse> getNewsletterInfoById(
