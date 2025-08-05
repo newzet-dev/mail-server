@@ -19,10 +19,10 @@ class FcmTokenTest {
 		FcmToken fcmToken = FcmToken.create(userId, value);
 
 		// Then
-		assertThat(fcmToken.id()).isNull();
-		assertThat(fcmToken.userId()).isEqualTo(userId);
-		assertThat(fcmToken.value()).isEqualTo(value);
-		assertThat(fcmToken.createdAt()).isNotNull();
+		assertThat(fcmToken.getId()).isNull();
+		assertThat(fcmToken.getUserId()).isEqualTo(userId);
+		assertThat(fcmToken.getValue()).isEqualTo(value);
+		assertThat(fcmToken.getCreatedAt()).isNotNull();
 	}
 
 	@Test
@@ -37,10 +37,10 @@ class FcmTokenTest {
 		FcmToken fcmToken = new FcmToken(id, createdAt, userId, value);
 
 		// Then
-		assertThat(fcmToken.id()).isEqualTo(id);
-		assertThat(fcmToken.userId()).isEqualTo(userId);
-		assertThat(fcmToken.value()).isEqualTo(value);
-		assertThat(fcmToken.createdAt()).isEqualTo(createdAt);
+		assertThat(fcmToken.getId()).isEqualTo(id);
+		assertThat(fcmToken.getUserId()).isEqualTo(userId);
+		assertThat(fcmToken.getValue()).isEqualTo(value);
+		assertThat(fcmToken.getCreatedAt()).isEqualTo(createdAt);
 	}
 
 	@Test
@@ -58,12 +58,12 @@ class FcmTokenTest {
 		FcmToken updatedToken = originalToken.changeUserId(newUserId);
 
 		// Then
-		assertThat(updatedToken.id()).isEqualTo(id);
-		assertThat(updatedToken.userId()).isEqualTo(newUserId);
-		assertThat(updatedToken.value()).isEqualTo(value);
-		assertThat(updatedToken.createdAt()).isEqualTo(createdAt);
+		assertThat(updatedToken.getId()).isEqualTo(id);
+		assertThat(updatedToken.getUserId()).isEqualTo(newUserId);
+		assertThat(updatedToken.getValue()).isEqualTo(value);
+		assertThat(updatedToken.getCreatedAt()).isEqualTo(createdAt);
 
 		// Original token should remain unchanged
-		assertThat(originalToken.userId()).isEqualTo(originalUserId);
+		assertThat(originalToken.getUserId()).isEqualTo(originalUserId);
 	}
 }

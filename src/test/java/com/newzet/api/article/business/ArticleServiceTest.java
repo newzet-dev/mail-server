@@ -11,14 +11,13 @@ import java.util.List;
 import java.util.Random;
 import java.util.UUID;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.newzet.api.article.business.batch.ArticleBatchProducer;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.business.service.ArticleService;
@@ -26,34 +25,17 @@ import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
+import com.newzet.api.article.exception.ShareForbiddenException;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
-import com.newzet.api.article.repository.entity.ArticleEntity;
-import com.newzet.api.common.exception.InternalErrorException;
-import com.newzet.api.common.s3.S3Service;
-import com.newzet.api.common.util.UuidConverter;
-import com.newzet.api.config.S3TestConfig;
 
-@ExtendWith({MockitoExtension.class, S3TestConfig.class})
+@ExtendWith(MockitoExtension.class)
 class ArticleServiceTest {
 
-	private static final String TEST_BUCKET_NAME = "test-content-bucket";
-	private ArticleService articleService;
+	private final UUID TEST_ARTICLE_ID = UUID.randomUUID();
 	@Mock
 	private ArticleRepository articleRepository;
-	@Mock
-	private S3Service s3Service;
-	@Mock
-	private ArticleBatchProducer batchProducer;
-
-	@BeforeEach
-	void setUp() {
-		articleService = new ArticleService(
-			batchProducer,
-			articleRepository,
-			s3Service,
-			TEST_BUCKET_NAME
-		);
-	}
+	@InjectMocks
+	private ArticleService articleService;
 
 	@DisplayName("월별 아티클 조회 시 날짜별 오름차순 형태로 리스트가 분리되어 저장된다.")
 	@Test
@@ -149,32 +131,36 @@ class ArticleServiceTest {
 	}
 
 	@Test
-	@DisplayName("S3에서 본문을 가져오는 중 예외 발생 시 InternalErrorException을 던진다")
-	void getArticle_whenS3Fails_shouldThrowInternalErrorException() {
-		// given
-		String articleIdStr = UUID.randomUUID().toString();
-		UUID articleId = UuidConverter.convert(articleIdStr);
-		String contentUrl = "s3-key-that-causes-error.html";
+	@DisplayName("공유가 허용된 아티클을 조회하면, 아티클 객체를 정상적으로 반환한다.")
+	void getSharedArticle_whenIsShareIsTrue_shouldReturnArticle() {
+		// Given
+		Article mockArticle = Article.create(TEST_ARTICLE_ID, UUID.randomUUID(), "test", "test.com", "test",
+			"testTitle", "test.com", "test.com", false, false, true, LocalDateTime.now(), null);
+		when(articleRepository.getById(TEST_ARTICLE_ID)).thenReturn(ArticleEntityDto.fromDomain(mockArticle));
 
-		// 이미 읽은 상태의 Article를 가정
-		ArticleEntity readArticleEntity = ArticleEntity.builder()
-			.id(articleId)
-			.title("title")
-			.contentUrl(contentUrl)
-			.isRead(true)
-			.build();
+		// When
+		Article resultArticle = articleService.getSharedArticle(TEST_ARTICLE_ID);
 
-		when(articleRepository.getById(articleId))
-			.thenReturn(readArticleEntity.toEntityDto());
-		when(s3Service.getContentAsString(anyString(), anyString()))
-			.thenThrow(new InternalErrorException("아티클을 불러오는 과정에서 에러가 발생하였습니다."));
-
-		// when & then
-		assertThrows(InternalErrorException.class, () ->
-			articleService.getArticle(articleIdStr));
-
-		// verify
-		verify(articleRepository).getById(articleId);
+		// Then
+		assertNotNull(resultArticle);
+		assertEquals(TEST_ARTICLE_ID, resultArticle.getId());
+		assertTrue(resultArticle.isShare());
+		verify(articleRepository, times(1)).getById(TEST_ARTICLE_ID);
 	}
 
+	@Test
+	@DisplayName("공유가 허용되지 않은 아티클을 조회하면, ShareForbiddenException을 던진다.")
+	void getSharedArticle_whenIsShareIsFalse_shouldThrowException() {
+		// Given
+		Article mockArticle = Article.create(TEST_ARTICLE_ID, UUID.randomUUID(), "test", "test.com", "test",
+			"testTitle", "test.com", "test.com", false, false, false, LocalDateTime.now(), null);
+		when(articleRepository.getById(TEST_ARTICLE_ID)).thenReturn(ArticleEntityDto.fromDomain(mockArticle));
+
+		// When & Then
+		ShareForbiddenException exception = assertThrows(ShareForbiddenException.class, () -> {
+			articleService.getSharedArticle(TEST_ARTICLE_ID);
+		});
+		assertEquals("공유가 허용되지 않은 아티클입니다.", exception.getMessage());
+		verify(articleRepository, times(1)).getById(TEST_ARTICLE_ID);
+	}
 }

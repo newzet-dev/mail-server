@@ -7,9 +7,12 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.common.util.UuidConverter;
-import com.newzet.api.subscription.controller.dto.SubscriptionListWithImageResponse;
-import com.newzet.api.subscription.controller.dto.SubscriptionWithImageResponse;
-import com.newzet.api.subscription.repository.repository.dto.SubscriptionListWithImageProjection;
+import com.newzet.api.subscription.business.repository.SubscriptionQueryRepository;
+import com.newzet.api.subscription.business.repository.SubscriptionRepository;
+import com.newzet.api.subscription.domain.Subscription;
+import com.newzet.api.subscription.jpa.dto.SubscriptionListWithImageProjection;
+import com.newzet.api.subscription.presentation.dto.SubscriptionListWithImageResponse;
+import com.newzet.api.subscription.presentation.dto.SubscriptionWithImageResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -26,7 +29,7 @@ public class SubscriptionService {
 		boolean isSubscribed = subscriptionQueryRepository.isSubscribed(userId, fromDomain,
 			mailingList);
 		if (!isSubscribed) {
-			subscriptionRepository.save(userId, fromName, fromDomain, mailingList);
+			subscriptionRepository.save(Subscription.create(userId, fromName, fromDomain, mailingList));
 		}
 	}
 
@@ -46,5 +49,9 @@ public class SubscriptionService {
 	public void deleteSubscription(String subscriptionId) {
 		UUID convertedSubscriptionId = UuidConverter.convert(subscriptionId);
 		subscriptionRepository.delete(convertedSubscriptionId);
+	}
+
+	public boolean isSubscribing(UUID userId, String domain, String mailingList) {
+		return subscriptionQueryRepository.isSubscribed(userId, domain, mailingList);
 	}
 }

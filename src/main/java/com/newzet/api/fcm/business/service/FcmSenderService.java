@@ -30,7 +30,7 @@ public class FcmSenderService {
 		LocalDateTime articleCreatedAt, String articleTitle, String newsletterName) {
 		List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUserId(userId);
 		for (FcmToken fcmToken : fcmTokens) {
-			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.value(),
+			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.getValue(),
 				articleId, articleCreatedAt, articleTitle, newsletterName);
 			if (!fcmNotification.isValid()) {
 				log.warn("Invalid FCM notification, skipping: userId={}, token={}",
@@ -45,7 +45,7 @@ public class FcmSenderService {
 		LocalDateTime articleCreatedAt, String articleTitle, String newsletterName) {
 		List<FcmToken> fcmTokens = fcmTokenRepository.findAllByUserId(userId);
 		for (FcmToken fcmToken : fcmTokens) {
-			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.value(),
+			FcmNotification fcmNotification = FcmNotification.create(userId, fcmToken.getValue(),
 				articleId, articleCreatedAt, articleTitle, newsletterName);
 			if (!fcmNotification.isValid()) {
 				log.warn("Invalid FCM notification, skipping: userId={}, token={}",

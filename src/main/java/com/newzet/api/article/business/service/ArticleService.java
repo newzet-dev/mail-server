@@ -17,6 +17,7 @@ import com.newzet.api.article.controller.dto.ArticleLikeListResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
+import com.newzet.api.article.exception.ShareForbiddenException;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.common.s3.S3Service;
 import com.newzet.api.common.util.UuidConverter;
@@ -28,6 +29,7 @@ import lombok.extern.slf4j.Slf4j;
 @Transactional(readOnly = true)
 public class ArticleService {
 
+	private final static String ARTICLE_SHARE_PREFIX = "https://app.newzet.me/article";
 	private final ArticleBatchProducer batchProducer;
 	private final ArticleRepository articleRepository;
 	private final S3Service s3Service;
@@ -117,5 +119,35 @@ public class ArticleService {
 			.entrySet().stream()
 			.map(entry -> DailyArticleResponse.of(entry.getKey(), entry.getValue()))
 			.toList();
+	}
+
+	public Article addArticle(UUID userId, String name, String domain, String title, String url, String imageUrl,
+		String mailingList) {
+		Article article = Article.createNewArticle(userId, name, domain, mailingList, title, url, imageUrl);
+		return articleRepository.save(article);
+	}
+
+	public Article shareArticle(UUID articleId) {
+		Article article = articleRepository.getById(articleId).toDomain();
+		Article sharedArticle = article.share();
+		return articleRepository.save(sharedArticle);
+	}
+
+	public String getSharedUrl(UUID articleId) {
+		return String.format("%s/%s", ARTICLE_SHARE_PREFIX, articleId);
+	}
+
+	public Article getSharedArticle(UUID articleId) {
+		Article article = articleRepository.getById(articleId).toDomain();
+		if (article.isShare()) {
+			return article;
+		}
+		throw new ShareForbiddenException("공유가 허용되지 않은 아티클입니다.");
+	}
+
+	public String getContentUrl() {
+		//TODO(S3에서 Article 조회)
+		//TODO(getArticle도 바꿔주야함)
+		return "";
 	}
 }

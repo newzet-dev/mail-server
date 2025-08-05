@@ -55,8 +55,8 @@ class FcmTokenRepositoryTest {
 
 		// Then
 		assertThat(result).isPresent();
-		assertThat(result.get().value()).isEqualTo(testFcmToken);
-		assertThat(result.get().userId()).isEqualTo(testUserId);
+		assertThat(result.get().getValue()).isEqualTo(testFcmToken);
+		assertThat(result.get().getUserId()).isEqualTo(testUserId);
 	}
 
 	@Test
@@ -93,8 +93,8 @@ class FcmTokenRepositoryTest {
 		FcmToken result = fcmTokenRepository.save(testDomain);
 
 		// Then
-		assertThat(result.value()).isEqualTo(testFcmToken);
-		assertThat(result.userId()).isEqualTo(testUserId);
+		assertThat(result.getValue()).isEqualTo(testFcmToken);
+		assertThat(result.getUserId()).isEqualTo(testUserId);
 		verify(fcmTokenJpaRepository).save(any(FcmTokenEntity.class));
 	}
 
@@ -108,8 +108,8 @@ class FcmTokenRepositoryTest {
 		FcmToken result = fcmTokenRepository.findByUserIdAndValue(testUserId, testFcmToken);
 
 		// Then
-		assertThat(result.value()).isEqualTo(testFcmToken);
-		assertThat(result.userId()).isEqualTo(testUserId);
+		assertThat(result.getValue()).isEqualTo(testFcmToken);
+		assertThat(result.getUserId()).isEqualTo(testUserId);
 	}
 
 	@Test
@@ -139,9 +139,9 @@ class FcmTokenRepositoryTest {
 
 		// Then
 		assertThat(result).hasSize(2);
-		assertThat(result.get(0).value()).isEqualTo("token1");
-		assertThat(result.get(1).value()).isEqualTo("token2");
-		assertThat(result).allMatch(token -> token.userId().equals(testUserId));
+		assertThat(result.get(0).getValue()).isEqualTo("token1");
+		assertThat(result.get(1).getValue()).isEqualTo("token2");
+		assertThat(result).allMatch(token -> token.getUserId().equals(testUserId));
 	}
 
 	@Test

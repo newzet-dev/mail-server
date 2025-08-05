@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.UUID;
 
 import com.newzet.api.article.business.dto.ArticleEntityDto;
+import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 
 public interface ArticleRepository {
@@ -18,4 +19,6 @@ public interface ArticleRepository {
 	List<ArticleWithImageProjection> findLikeArticleWithImage(UUID userId);
 
 	boolean updateLikeStatus(UUID articleId, boolean newLikeStatus);
+
+	Article save(Article article);
 }
