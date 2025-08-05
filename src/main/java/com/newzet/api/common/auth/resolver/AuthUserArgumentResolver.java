@@ -11,9 +11,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.annotation.OptionalLogin;
-import com.newzet.api.common.auth.business.AuthorizationHeaderParser;
-import com.newzet.api.common.auth.business.TokenConverter;
-import com.newzet.api.common.auth.business.TokenValidator;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.auth.domain.Token;
 
@@ -24,9 +21,6 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 	private static final String AUTH_TOKEN_ATTRIBUTE = "AUTH_TOKEN";
-	private final AuthorizationHeaderParser authorizationHeaderParser;
-	private final TokenValidator tokenValidator;
-	private final TokenConverter tokenConverter;
 
 	@Override
 	public boolean supportsParameter(MethodParameter parameter) {
@@ -48,21 +42,16 @@ public class AuthUserArgumentResolver implements HandlerMethodArgumentResolver {
 		NativeWebRequest webRequest, WebDataBinderFactory binderFactory) {
 		HttpServletRequest request = (HttpServletRequest)webRequest.getNativeRequest();
 
+		Token token = (Token)request.getAttribute(AUTH_TOKEN_ATTRIBUTE);
 		if (parameter.hasParameterAnnotation(Login.class)) {
-			Token token = (Token)request.getAttribute(AUTH_TOKEN_ATTRIBUTE);
 			if (token == null) {
 				return null;
 			}
 			return new AuthUser(token.getSubject());
 		} else {
-			String headerValue = authorizationHeaderParser.extractAuthHeader(
-				request.getHeader("Authorization"));
-			if (headerValue == null) {
+			if (token == null) {
 				return Optional.empty();
 			}
-
-			Token token = tokenConverter.toToken(headerValue);
-			tokenValidator.validate(token);
 			return Optional.of(new AuthUser(token.getSubject()));
 		}
 	}

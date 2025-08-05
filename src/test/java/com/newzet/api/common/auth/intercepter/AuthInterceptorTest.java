@@ -15,9 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.method.HandlerMethod;
 
 import com.newzet.api.common.auth.annotation.RequireAuth;
-import com.newzet.api.common.auth.business.AuthorizationHeaderParser;
-import com.newzet.api.common.auth.business.TokenConverter;
-import com.newzet.api.common.auth.business.TokenValidator;
+import com.newzet.api.common.auth.business.UserTokenResolver;
 import com.newzet.api.common.auth.domain.Token;
 import com.newzet.api.common.auth.interceptor.AuthInterceptor;
 
@@ -38,13 +36,7 @@ class AuthInterceptorTest {
 	private AuthInterceptor interceptor;
 
 	@Mock
-	private AuthorizationHeaderParser authorizationHeaderParser;
-
-	@Mock
-	private TokenConverter tokenConverter;
-
-	@Mock
-	private TokenValidator tokenValidator;
+	private UserTokenResolver userTokenResolver;
 
 	@Mock
 	private HttpServletRequest request;
@@ -65,7 +57,7 @@ class AuthInterceptorTest {
 
 		// Then
 		Assertions.assertTrue(result);
-		verifyNoInteractions(authorizationHeaderParser, tokenValidator, tokenConverter);
+		verifyNoInteractions(userTokenResolver);
 	}
 
 	@Test
@@ -79,7 +71,7 @@ class AuthInterceptorTest {
 
 		// Then
 		assertThat(result).isTrue();
-		verifyNoInteractions(tokenConverter, tokenValidator);
+		verifyNoInteractions(userTokenResolver);
 	}
 
 	@Test
@@ -88,18 +80,13 @@ class AuthInterceptorTest {
 		Token token = Token.of(SUBJECT, NAME, PAST, FUTURE);
 		when(handlerMethod.hasMethodAnnotation(RequireAuth.class)).thenReturn(false);
 		when(handlerMethod.getBeanType()).thenReturn((Class)SecuredController.class);
-		when(authorizationHeaderParser.extractAuthHeader(any())).thenReturn("test");
-		when(tokenConverter.toToken(anyString())).thenReturn(token);
-		doNothing().when(tokenValidator).validate(token);
+		doNothing().when(userTokenResolver).setTokenInHeader(any());
 
 		// When
 		boolean result = interceptor.preHandle(request, response, handlerMethod);
 
 		// Then
-		verify(authorizationHeaderParser, times(1)).extractAuthHeader(any());
-		verify(tokenConverter, times(1)).toToken(anyString());
-		verify(tokenValidator, times(1)).validate(token);
-		verify(request, times(1)).setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
+		verify(userTokenResolver, times(1)).setTokenInHeader(any());
 		assertThat(result).isTrue();
 	}
 
@@ -108,18 +95,13 @@ class AuthInterceptorTest {
 		// Given
 		Token token = Token.of(SUBJECT, NAME, PAST, FUTURE);
 		when(handlerMethod.hasMethodAnnotation(RequireAuth.class)).thenReturn(true);
-		when(authorizationHeaderParser.extractAuthHeader(any())).thenReturn("test");
-		when(tokenConverter.toToken(anyString())).thenReturn(token);
-		doNothing().when(tokenValidator).validate(token);
+		doNothing().when(userTokenResolver).setTokenInHeader(any());
 
 		// When
 		boolean result = interceptor.preHandle(request, response, handlerMethod);
 
 		// Then
-		verify(authorizationHeaderParser, times(1)).extractAuthHeader(any());
-		verify(tokenConverter, times(1)).toToken(anyString());
-		verify(tokenValidator, times(1)).validate(token);
-		verify(request, times(1)).setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
+		verify(userTokenResolver, times(1)).setTokenInHeader(any());
 		assertThat(result).isTrue();
 	}
 

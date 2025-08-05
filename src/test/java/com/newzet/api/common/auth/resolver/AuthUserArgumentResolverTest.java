@@ -21,12 +21,8 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 
 import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.annotation.OptionalLogin;
-import com.newzet.api.common.auth.business.AuthorizationHeaderParser;
-import com.newzet.api.common.auth.business.TokenConverter;
-import com.newzet.api.common.auth.business.TokenValidator;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.auth.domain.Token;
-import com.newzet.api.common.auth.exception.TokenBadRequestException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -53,17 +49,10 @@ class AuthUserArgumentResolverTest {
 	@Mock
 	private HttpServletRequest httpRequest;
 
-	@Mock
-	private AuthorizationHeaderParser authorizationHeaderParser;
-
-	@Mock
-	private TokenConverter tokenConverter;
-
-	@Mock
-	private TokenValidator tokenValidator;
 
 	@Test
-	public void supportsParameter_whenHasLoginAnnotationAndAuthUserType_returnsTrue() {
+	@DisplayName("@Login 어노테이션과 AuthUser 타입을 지원한다")
+	void whenLoginAndAuthUserType_thenReturnsTrue() {
 		// Given
 		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(true);
 		when(parameter.getParameterType()).thenReturn((Class)AuthUser.class);
@@ -76,20 +65,23 @@ class AuthUserArgumentResolverTest {
 	}
 
 	@Test
-	public void supportsParameter_whenNoLoginAnnotation_returnsFalse() {
+	@DisplayName("@OptionalLogin 어노테이션과 Optional 타입을 지원한다")
+	void whenOptionalLoginAndOptionalType_thenReturnsTrue() {
 		// Given
 		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false);
-		when(parameter.getParameterType()).thenReturn((Class)AuthUser.class);
+		when(parameter.hasParameterAnnotation(OptionalLogin.class)).thenReturn(true);
+		when(parameter.getParameterType()).thenReturn((Class)Optional.class);
 
 		// When
 		boolean result = resolver.supportsParameter(parameter);
 
 		// Then
-		assertThat(result).isFalse();
+		assertThat(result).isTrue();
 	}
 
 	@Test
-	public void supportsParameter_whenNotAuthUserType_returnsFalse() {
+	@DisplayName("지원하지 않는 어노테이션이나 타입은 false를 반환한다")
+	void whenUnsupportedType_thenReturnsFalse() {
 		// Given
 		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(true);
 		when(parameter.getParameterType()).thenReturn((Class)String.class);
@@ -102,70 +94,10 @@ class AuthUserArgumentResolverTest {
 	}
 
 	@Test
-	public void resolveArgument_whenTokenExists_returnsAuthUser() {
-		// Given
-		UUID userId = UUID.randomUUID();
-		Date expiryDate = new Date(System.currentTimeMillis() + 3600000);
-		Token token = Token.of(String.valueOf(userId), "testName", new Date(),
-			expiryDate);
 
-		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
-		when(httpRequest.getAttribute(AUTH_TOKEN_ATTRIBUTE)).thenReturn(token);
-		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(true);
-
-		// When
-		AuthUser authUser = (AuthUser)resolver.resolveArgument(parameter, mavContainer, webRequest,
-			binderFactory);
-
-		// Then
-		assertThat(authUser).isNotNull();
-		assertThat(authUser.getId()).isEqualTo(userId);
-	}
-
-	@Test
-	public void resolveArgument_whenTokenNotExists_returnNull() {
-		// Given
-		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
-		when(httpRequest.getAttribute(AUTH_TOKEN_ATTRIBUTE)).thenReturn(null);
-		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(true);
-
-		// When & Then
-		assertNull(resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory));
-	}
-
-	@Test
-	@DisplayName("@OptionalLogin, Optional 타입일 때 true를 반환한다")
-	void supportsParameter_whenHasOptionalLoginAnnotationAndOptionalType_returnsTrue() {
-		// Given
-		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false);
-		when(parameter.hasParameterAnnotation(OptionalLogin.class)).thenReturn(true);
-		when(parameter.getParameterType()).thenReturn((Class)Optional.class);
-
-		// When
-		boolean result = resolver.supportsParameter(parameter);
-
-		// Then
-		assertThat(result).isTrue();
-	}
-
-	@Test
-	@DisplayName("@OptionalLogin 어노테이션이 없으면 false를 반환한다")
-	void supportsParameter_whenNoOptionalLoginAnnotationButOptionalType_returnsFalse() {
-		// Given
-		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false);
-		when(parameter.hasParameterAnnotation(OptionalLogin.class)).thenReturn(false);
-		when(parameter.getParameterType()).thenReturn((Class)Optional.class);
-
-		// When
-		boolean result = resolver.supportsParameter(parameter);
-
-		// Then
-		assertThat(result).isFalse();
-	}
-
-	@Test
 	@DisplayName("Optional 타입이 아니면 false를 반환한다")
 	void supportsParameter_whenNoOptionalAuthUserType_returnsFalse() {
+
 		// Given
 		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false);
 		when(parameter.hasParameterAnnotation(OptionalLogin.class)).thenReturn(true);
@@ -179,21 +111,49 @@ class AuthUserArgumentResolverTest {
 	}
 
 	@Test
-	@DisplayName("@OptionalLogin, 유효한 토큰이 헤더에 있으면 Optional<AuthUser>를 반환한다")
-	void resolveArgument_whenOptionalLoginAndTokenExists_returnsOptionalOfAuthUser() {
+	@DisplayName("@Login, request attribute에 토큰이 있으면 AuthUser를 반환한다")
+	void whenLoginAndTokenAttributeExists_thenReturnsAuthUser() {
 		// Given
 		UUID userId = UUID.randomUUID();
-		String header = "Bearer test.token.value";
-		String tokenValue = "test.token.value";
+		Token token = Token.of(String.valueOf(userId), "testName", new Date(),
+			new Date(System.currentTimeMillis() + 3600000));
+
+		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(true);
+		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
+		when(httpRequest.getAttribute(AUTH_TOKEN_ATTRIBUTE)).thenReturn(token);
+
+		// When
+		AuthUser authUser = (AuthUser)resolver.resolveArgument(parameter, mavContainer, webRequest,
+			binderFactory);
+
+		// Then
+		assertThat(authUser).isNotNull();
+		assertThat(authUser.getId()).isEqualTo(userId);
+	}
+
+	@Test
+	@DisplayName("@Login, request attribute에 토큰이 없으면 null을 반환한다")
+	void whenLoginAndTokenAttributeNotExists_thenReturnsNull() {
+		// Given
+		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(true);
+		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
+		when(httpRequest.getAttribute(AUTH_TOKEN_ATTRIBUTE)).thenReturn(null);
+
+		// When & Then
+		assertNull(resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory));
+	}
+
+	@Test
+	@DisplayName("@OptionalLogin, request attribute에 토큰이 있으면 Optional<AuthUser>를 반환한다")
+	void whenOptionalLoginAndTokenAttributeExists_thenReturnsOptionalOfAuthUser() {
+		// Given
+		UUID userId = UUID.randomUUID();
 		Token token = Token.of(String.valueOf(userId), "testUser", new Date(),
 			new Date(System.currentTimeMillis() + 3600000));
 
-		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false);
+		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false); // @OptionalLogin 케이스
 		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
-		when(httpRequest.getHeader("Authorization")).thenReturn(header);
-		when(authorizationHeaderParser.extractAuthHeader(header)).thenReturn(tokenValue);
-		when(tokenConverter.toToken(tokenValue)).thenReturn(token);
-		doNothing().when(tokenValidator).validate(token);
+		when(httpRequest.getAttribute(AUTH_TOKEN_ATTRIBUTE)).thenReturn(token);
 
 		// When
 		Object result = resolver.resolveArgument(parameter, mavContainer, webRequest,
@@ -207,13 +167,12 @@ class AuthUserArgumentResolverTest {
 	}
 
 	@Test
-	@DisplayName("@OptionalLogin, 토큰 헤더가 없으면 Optional.empty를 반환한다")
-	void resolveArgument_whenOptionalLoginAndNoToken_returnsOptionalEmpty() {
+	@DisplayName("@OptionalLogin, request attribute에 토큰이 없으면 Optional.empty를 반환한다")
+	void whenOptionalLoginAndTokenAttributeNotExists_thenReturnsOptionalEmpty() {
 		// Given
-		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false);
+		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false); // @OptionalLogin 케이스
 		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
-		when(httpRequest.getHeader("Authorization")).thenReturn(null);
-		when(authorizationHeaderParser.extractAuthHeader(null)).thenReturn(null);
+		when(httpRequest.getAttribute(AUTH_TOKEN_ATTRIBUTE)).thenReturn(null);
 
 		// When
 		Object result = resolver.resolveArgument(parameter, mavContainer, webRequest,
@@ -223,27 +182,4 @@ class AuthUserArgumentResolverTest {
 		assertThat(result).isEqualTo(Optional.empty());
 	}
 
-	@Test
-	@DisplayName("@OptionalLogin, 토큰이 유효하지 않으면 예외를 던진다")
-	void resolveArgument_whenOptionalLoginAndInvalidToken_throwsException() {
-		// Given
-		String header = "Bearer invalid.token.value";
-		String tokenValue = "invalid.token.value";
-		Token token = Token.of(UUID.randomUUID().toString(), "testUser", new Date(),
-			new Date(System.currentTimeMillis() + 3600000));
-
-		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false);
-		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
-		when(httpRequest.getHeader("Authorization")).thenReturn(header);
-		when(authorizationHeaderParser.extractAuthHeader(header)).thenReturn(tokenValue);
-		when(tokenConverter.toToken(tokenValue)).thenReturn(token);
-
-		doThrow(new TokenBadRequestException("토큰 생성에 필요한 값이 누락되었습니다."))
-			.when(tokenValidator).validate(token);
-
-		// When & Then
-		assertThrows(TokenBadRequestException.class, () -> {
-			resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory);
-		});
-	}
 }

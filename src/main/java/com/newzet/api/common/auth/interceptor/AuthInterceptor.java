@@ -5,10 +5,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.newzet.api.common.auth.annotation.RequireAuth;
-import com.newzet.api.common.auth.business.AuthorizationHeaderParser;
-import com.newzet.api.common.auth.business.TokenConverter;
-import com.newzet.api.common.auth.business.TokenValidator;
-import com.newzet.api.common.auth.domain.Token;
+import com.newzet.api.common.auth.business.UserTokenResolver;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -17,11 +14,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
-	private static final String AUTH_TOKEN_ATTRIBUTE = "AUTH_TOKEN";
-
-	private final AuthorizationHeaderParser authorizationHeaderParser;
-	private final TokenValidator tokenValidator;
-	private final TokenConverter tokenConverter;
+	private final UserTokenResolver userTokenResolver;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
@@ -37,11 +30,7 @@ public class AuthInterceptor implements HandlerInterceptor {
 			return true;
 		}
 
-		String headerValue = authorizationHeaderParser.extractAuthHeader(
-			request.getHeader("Authorization"));
-		Token token = tokenConverter.toToken(headerValue);
-		tokenValidator.validate(token);
-		request.setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
+		userTokenResolver.setTokenInHeader(request);
 		return true;
 	}
 }
