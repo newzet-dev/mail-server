@@ -22,7 +22,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.entity.ArticleEntity;
-import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
+import com.newzet.api.newsletter.jpa.repository.NewsletterJpaRepository;
 
 import jakarta.persistence.EntityManager;
 

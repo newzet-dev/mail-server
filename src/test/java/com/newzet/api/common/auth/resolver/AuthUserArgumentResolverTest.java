@@ -1,6 +1,7 @@
 package com.newzet.api.common.auth.resolver;
 
 import static org.assertj.core.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.util.Date;
@@ -19,7 +20,6 @@ import org.springframework.web.method.support.ModelAndViewContainer;
 import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.auth.domain.Token;
-import com.newzet.api.common.auth.exception.TokenBadRequestException;
 
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -106,14 +106,12 @@ class AuthUserArgumentResolverTest {
 	}
 
 	@Test
-	public void resolveArgument_whenTokenNotExists_throwsJWTBadRequestException() {
+	public void resolveArgument_whenTokenNotExists_returnNull() {
 		// Given
 		when(webRequest.getNativeRequest()).thenReturn(httpRequest);
 		when(httpRequest.getAttribute(AUTH_TOKEN_ATTRIBUTE)).thenReturn(null);
 
 		// When & Then
-		assertThatThrownBy(() ->
-			resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory))
-			.isInstanceOf(TokenBadRequestException.class);
+		assertNull(resolver.resolveArgument(parameter, mavContainer, webRequest, binderFactory));
 	}
 }

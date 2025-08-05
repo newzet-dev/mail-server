@@ -4,9 +4,9 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
-import com.newzet.api.advertise.business.AdvertiseRepository;
-import com.newzet.api.advertise.business.dto.AdvertiseEntityDto;
-import com.newzet.api.advertise.repository.entity.AdvertiseEntity;
+import com.newzet.api.advertise.business.repository.AdvertiseRepository;
+import com.newzet.api.advertise.domain.Advertise;
+import com.newzet.api.advertise.repository.mapper.AdvertiseEntityMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -17,9 +17,9 @@ public class AdvertiseRepositoryImpl implements AdvertiseRepository {
 	private final AdvertiseJpaRepository advertiseJpaRepository;
 
 	@Override
-	public List<AdvertiseEntityDto> getAllAdvertise() {
+	public List<Advertise> getAllAdvertise() {
 		return advertiseJpaRepository.findAll().stream()
-			.map(AdvertiseEntity::toEntityDto)
+			.map(AdvertiseEntityMapper::toDomain)
 			.toList();
 	}
 }

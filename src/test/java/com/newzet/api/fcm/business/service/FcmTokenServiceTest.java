@@ -59,8 +59,8 @@ class FcmTokenServiceTest {
 		FcmToken result = fcmTokenService.upsertFcmToken(testUserId, testFcmTokenValue);
 
 		// Then
-		assertThat(result.userId()).isEqualTo(testUserId);
-		assertThat(result.value()).isEqualTo(testFcmTokenValue);
+		assertThat(result.getUserId()).isEqualTo(testUserId);
+		assertThat(result.getValue()).isEqualTo(testFcmTokenValue);
 		verify(fcmTokenRepository).save(any(FcmToken.class));
 	}
 
@@ -74,8 +74,8 @@ class FcmTokenServiceTest {
 		FcmToken result = fcmTokenService.upsertFcmToken(testUserId, testFcmTokenValue);
 
 		// Then
-		assertThat(result.userId()).isEqualTo(testUserId);
-		assertThat(result.value()).isEqualTo(testFcmTokenValue);
+		assertThat(result.getUserId()).isEqualTo(testUserId);
+		assertThat(result.getValue()).isEqualTo(testFcmTokenValue);
 		verify(fcmTokenRepository).save(any(FcmToken.class));
 	}
 

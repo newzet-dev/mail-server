@@ -15,10 +15,10 @@ public class FcmTokenMapper {
 
 	public static FcmTokenEntity toEntity(FcmToken domain) {
 		return new FcmTokenEntity(
-			domain.id(),
-			domain.userId(),
-			domain.value(),
-			domain.createdAt()
+			domain.getId(),
+			domain.getUserId(),
+			domain.getValue(),
+			domain.getCreatedAt()
 		);
 	}
 }

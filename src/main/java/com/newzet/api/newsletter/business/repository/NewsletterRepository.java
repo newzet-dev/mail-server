@@ -1,25 +1,24 @@
 package com.newzet.api.newsletter.business.repository;
 
 import java.util.List;
-import java.util.Optional;
 import java.util.UUID;
 
-import com.newzet.api.newsletter.business.dto.NewsletterEntityDto;
 import com.newzet.api.newsletter.business.dto.NewsletterImageUrlCacheDto;
+import com.newzet.api.newsletter.domain.Newsletter;
 
 public interface NewsletterRepository {
 
-	NewsletterEntityDto save(String name, String domain, String mailingList, String status);
+	Newsletter save(Newsletter newsletter);
 
-	Optional<NewsletterEntityDto> findByDomainOrMailingList(String domain, String mailingList);
+	List<Newsletter> findNewsLetterListByName(String name);
 
-	List<NewsletterEntityDto> findNewsLetterListByName(String name);
+	List<Newsletter> findNewsLetterListByCategoryId(UUID categoryId);
 
-	List<NewsletterEntityDto> findNewsLetterListByCategoryId(UUID categoryId);
+	Newsletter findById(UUID id);
 
-	NewsletterEntityDto getById(UUID id);
+	List<Newsletter> findNewsletterListByCategoryIdList(List<UUID> categoryIdList);
 
-	List<NewsletterEntityDto> getNewsLetterListByCategoryIdList(List<UUID> categoryIdList);
+	List<Newsletter> findNewsletterListByIdList(List<UUID> idList);
 
 	NewsletterImageUrlCacheDto findNewsLetterImageUrlByDomainAndMailingList(String domain, String mailingList);
 }
