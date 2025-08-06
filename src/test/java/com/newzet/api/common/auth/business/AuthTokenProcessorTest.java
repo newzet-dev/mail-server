@@ -21,12 +21,12 @@ import com.newzet.api.common.auth.exception.TokenBadRequestException;
 import jakarta.servlet.http.HttpServletRequest;
 
 @ExtendWith(MockitoExtension.class)
-class UserTokenResolverTest {
+class AuthTokenProcessorTest {
 
 	private static final String AUTH_TOKEN_ATTRIBUTE = "AUTH_TOKEN";
 
 	@InjectMocks
-	private UserTokenResolver userTokenResolver;
+	private AuthTokenProcessor authTokenProcessor;
 
 	@Mock
 	private AuthorizationHeaderParser authorizationHeaderParser;
@@ -57,7 +57,7 @@ class UserTokenResolverTest {
 		doNothing().when(tokenValidator).validate(mockToken);
 
 		// When
-		userTokenResolver.setTokenInHeader(request);
+		authTokenProcessor.setTokenInHeader(request);
 
 		// Then
 		// 1. request.setAttribute가 올바른 이름과 토큰으로 호출되었는지 검증
@@ -86,7 +86,7 @@ class UserTokenResolverTest {
 		doNothing().when(tokenValidator).validate(mockToken);
 
 		// When
-		userTokenResolver.setTokenInHeaderOptional(request);
+		authTokenProcessor.setTokenInHeaderOptional(request);
 
 		// Then
 		// 1. request.setAttribute가 올바른 이름과 토큰으로 호출되었는지 검증
@@ -111,7 +111,7 @@ class UserTokenResolverTest {
 
 		// When & Then
 		assertThrows(IllegalArgumentException.class, () -> {
-			userTokenResolver.setTokenInHeader(request);
+			authTokenProcessor.setTokenInHeader(request);
 		});
 
 		// setAttribute는 절대 호출되면 안 됨
@@ -126,7 +126,7 @@ class UserTokenResolverTest {
 
 		// When & Then
 		// 예외가 발생하지 않는 것을 검증
-		assertDoesNotThrow(() -> userTokenResolver.setTokenInHeaderOptional(request));
+		assertDoesNotThrow(() -> authTokenProcessor.setTokenInHeaderOptional(request));
 
 		// 다른 메서드들이 호출되지 않았는지 검증
 		verify(tokenConverter, never()).toToken(any());
@@ -154,7 +154,7 @@ class UserTokenResolverTest {
 
 		// When & Then
 		assertThrows(TokenBadRequestException.class, () ->
-			userTokenResolver.setTokenInHeader(request));
+			authTokenProcessor.setTokenInHeader(request));
 
 		// setAttribute는 절대 호출되면 안 됨
 		verify(request, never()).setAttribute(anyString(), any());

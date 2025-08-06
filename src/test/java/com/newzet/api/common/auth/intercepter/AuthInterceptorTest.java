@@ -15,7 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.method.HandlerMethod;
 
 import com.newzet.api.common.auth.annotation.RequireAuth;
-import com.newzet.api.common.auth.business.UserTokenResolver;
+import com.newzet.api.common.auth.business.AuthTokenProcessor;
 import com.newzet.api.common.auth.interceptor.AuthInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -33,7 +33,7 @@ class AuthInterceptorTest {
 	private AuthInterceptor interceptor;
 
 	@Mock
-	private UserTokenResolver userTokenResolver;
+	private AuthTokenProcessor authTokenProcessor;
 
 	@Mock
 	private HttpServletRequest request;
@@ -58,7 +58,7 @@ class AuthInterceptorTest {
 
 		// Then
 		assertThat(result).isTrue();
-		verifyNoInteractions(userTokenResolver);
+		verifyNoInteractions(authTokenProcessor);
 	}
 
 	@Test
@@ -73,7 +73,7 @@ class AuthInterceptorTest {
 
 		// Then
 		assertThat(result).isTrue();
-		verifyNoInteractions(userTokenResolver);
+		verifyNoInteractions(authTokenProcessor);
 	}
 
 	@Test
@@ -84,15 +84,15 @@ class AuthInterceptorTest {
 		when(requireAuthAnnotation.optional()).thenReturn(false);
 		when(handlerMethod.getMethodAnnotation(RequireAuth.class)).thenReturn(
 			requireAuthAnnotation);
-		doNothing().when(userTokenResolver).setTokenInHeader(request);
+		doNothing().when(authTokenProcessor).setTokenInHeader(request);
 
 		// When
 		boolean result = interceptor.preHandle(request, response, handlerMethod);
 
 		// Then
 		assertThat(result).isTrue();
-		verify(userTokenResolver, times(1)).setTokenInHeader(request);
-		verify(userTokenResolver, never()).setTokenInHeaderOptional(any());
+		verify(authTokenProcessor, times(1)).setTokenInHeader(request);
+		verify(authTokenProcessor, never()).setTokenInHeaderOptional(any());
 	}
 
 	@Test
@@ -103,15 +103,15 @@ class AuthInterceptorTest {
 		when(requireAuthAnnotation.optional()).thenReturn(true);
 		when(handlerMethod.getMethodAnnotation(RequireAuth.class)).thenReturn(
 			requireAuthAnnotation);
-		doNothing().when(userTokenResolver).setTokenInHeaderOptional(request);
+		doNothing().when(authTokenProcessor).setTokenInHeaderOptional(request);
 
 		// When
 		boolean result = interceptor.preHandle(request, response, handlerMethod);
 
 		// Then
 		assertThat(result).isTrue();
-		verify(userTokenResolver, times(1)).setTokenInHeaderOptional(request);
-		verify(userTokenResolver, never()).setTokenInHeader(any());
+		verify(authTokenProcessor, times(1)).setTokenInHeaderOptional(request);
+		verify(authTokenProcessor, never()).setTokenInHeader(any());
 	}
 
 	private static class TestController {

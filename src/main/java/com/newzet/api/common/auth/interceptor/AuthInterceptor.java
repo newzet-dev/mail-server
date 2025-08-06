@@ -5,7 +5,7 @@ import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 import com.newzet.api.common.auth.annotation.RequireAuth;
-import com.newzet.api.common.auth.business.UserTokenResolver;
+import com.newzet.api.common.auth.business.AuthTokenProcessor;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class AuthInterceptor implements HandlerInterceptor {
-	private final UserTokenResolver userTokenResolver;
+	private final AuthTokenProcessor authTokenProcessor;
 
 	@Override
 	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
@@ -37,9 +37,9 @@ public class AuthInterceptor implements HandlerInterceptor {
 		boolean isOptional = requireAuth.optional();
 
 		if (!isOptional) {
-			userTokenResolver.setTokenInHeader(request); // 로그인만
+			authTokenProcessor.setTokenInHeader(request); // 로그인만
 		} else {
-			userTokenResolver.setTokenInHeaderOptional(request); // 로그인&비로그인 혼용
+			authTokenProcessor.setTokenInHeaderOptional(request); // 로그인&비로그인 혼용
 		}
 
 		return true;

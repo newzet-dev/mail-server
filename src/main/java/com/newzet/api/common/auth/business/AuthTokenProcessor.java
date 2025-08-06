@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class UserTokenResolver {
+public class AuthTokenProcessor {
 	private static final String AUTH_TOKEN_ATTRIBUTE = "AUTH_TOKEN";
 	private final AuthorizationHeaderParser authorizationHeaderParser;
 	private final TokenValidator tokenValidator;
