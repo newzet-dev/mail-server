@@ -128,6 +128,8 @@ public class FcmRedisBatchConsumerImpl extends RedisBatchConsumer<FcmNotificatio
 		AtomicInteger successCount, AtomicInteger failCount, AtomicInteger invalidTokenCount) {
 
 		if (!fcmNotification.isValid()) {
+			log.warn("Invalid FCM notification: userId={}, token={}",
+			fcmNotification.getUserId(), fcmNotification.getToken());
 			invalidTokenCount.incrementAndGet();
 			return;
 		}
