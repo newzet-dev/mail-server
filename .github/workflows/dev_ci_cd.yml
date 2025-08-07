@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-latest
 
     env:
-      IMAGE_NAME: easyho3/newzet-spring-server
+      IMAGE_NAME: ${{ secrets.DEV_DOCKERHUB_USERNAME }}/newzet-spring-server
 
     steps:
       - name: Checkout code
