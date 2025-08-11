@@ -1,6 +1,5 @@
 package com.newzet.api.common.auth.business;
 
-import static org.junit.Assert.*;
 import static org.junit.Assert.assertThrows;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
@@ -48,7 +47,7 @@ class AuthTokenProcessorTest {
 		String extractedTokenValue = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
 
 		UUID userId = UUID.randomUUID();
-		Token mockToken = Token.of(String.valueOf(userId), "testUser", new Date(), new Date());
+		Token mockToken = Token.of(String.valueOf(userId), new Date(), new Date());
 
 		when(request.getHeader("Authorization")).thenReturn(fullHeader);
 		when(authorizationHeaderParser.extractAuthHeader(fullHeader)).thenReturn(
@@ -77,7 +76,7 @@ class AuthTokenProcessorTest {
 		String extractedTokenValue = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
 
 		UUID userId = UUID.randomUUID();
-		Token mockToken = Token.of(String.valueOf(userId), "testUser", new Date(), new Date());
+		Token mockToken = Token.of(String.valueOf(userId), new Date(), new Date());
 
 		when(request.getHeader("Authorization")).thenReturn(fullHeader);
 		when(authorizationHeaderParser.extractAuthHeader(fullHeader)).thenReturn(
@@ -141,7 +140,7 @@ class AuthTokenProcessorTest {
 		String fullHeader = "Bearer invalid.token.string";
 		String extractedTokenValue = "invalid.token.string";
 		UUID userId = UUID.randomUUID();
-		Token invalidMockToken = Token.of(String.valueOf(userId), "testUser", new Date(),
+		Token invalidMockToken = Token.of(String.valueOf(userId), new Date(),
 			new Date());
 
 		when(request.getHeader("Authorization")).thenReturn(fullHeader);

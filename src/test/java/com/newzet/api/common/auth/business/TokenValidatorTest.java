@@ -21,7 +21,7 @@ class TokenValidatorTest {
 	@Test
 	public void validate_whenToken_doNothing() {
 		//Given
-		Token token = Token.of(SUBJECT, NAME, PAST, FUTURE);
+		Token token = Token.of(SUBJECT, PAST, FUTURE);
 
 		//When, Then
 		assertDoesNotThrow(() -> tokenValidator.validate(token));
@@ -30,7 +30,7 @@ class TokenValidatorTest {
 	@Test
 	public void validate_whenTokenExpired_throwTokenExpiredException() {
 		//Given
-		Token token = Token.of(SUBJECT, NAME, PAST, PAST);
+		Token token = Token.of(SUBJECT, PAST, PAST);
 
 		//When, Then
 		assertThrows(TokenExpiredException.class, () -> tokenValidator.validate(token));

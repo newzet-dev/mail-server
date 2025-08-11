@@ -20,11 +20,10 @@ class TokenTest {
 	@Test
 	void of_whenAllValuesValid_returnsToken() {
 		//When
-		Token token = Token.of(SUBJECT, NAME, PAST, FUTURE);
+		Token token = Token.of(SUBJECT, PAST, FUTURE);
 
 		//Then
 		assertEquals(SUBJECT_UUID, token.getSubject());
-		assertEquals(NAME, token.getName());
 		assertEquals(PAST, token.getIssuedAt());
 		assertEquals(FUTURE, token.getExpiredAt());
 	}
@@ -32,31 +31,25 @@ class TokenTest {
 	@Test
 	void of_whenSubjectIsNull_throwsException() {
 		assertThrows(TokenBadRequestException.class,
-			() -> Token.of(null, NAME, PAST, FUTURE));
-	}
-
-	@Test
-	void of_whenNameIsNull_throwsException() {
-		assertThrows(TokenBadRequestException.class,
-			() -> Token.of(SUBJECT, null, PAST, FUTURE));
+			() -> Token.of(null, PAST, FUTURE));
 	}
 
 	@Test
 	void of_whenIssuedAtIsNull_throwsException() {
 		assertThrows(TokenBadRequestException.class,
-			() -> Token.of(SUBJECT, NAME, null, FUTURE));
+			() -> Token.of(SUBJECT, null, FUTURE));
 	}
 
 	@Test
 	void of_whenExpiredAtIsNull_throwsException() {
 		assertThrows(TokenBadRequestException.class,
-			() -> Token.of(SUBJECT, NAME, PAST, null));
+			() -> Token.of(SUBJECT, PAST, null));
 	}
 
 	@Test
 	void isExpired_whenExpirationInPast_returnsTrue() {
 		// given
-		Token token = Token.of(SUBJECT, NAME, PAST, PAST);
+		Token token = Token.of(SUBJECT, PAST, PAST);
 
 		// when + then
 		assertThat(token.isExpired()).isTrue();
@@ -66,7 +59,7 @@ class TokenTest {
 	void isExpired_whenExpirationInFuture_returnsFalse() {
 		// given
 		Date expiredAt = new Date(System.currentTimeMillis() + 60 * 60 * 1000);
-		Token token = Token.of(SUBJECT, NAME, PAST, FUTURE);
+		Token token = Token.of(SUBJECT, PAST, FUTURE);
 
 		// when + then
 		assertThat(token.isExpired()).isFalse();

@@ -49,7 +49,6 @@ class AuthUserArgumentResolverTest {
 	@Mock
 	private HttpServletRequest httpRequest;
 
-
 	@Test
 	@DisplayName("@Login 어노테이션과 AuthUser 타입을 지원한다")
 	void whenLoginAndAuthUserType_thenReturnsTrue() {
@@ -115,7 +114,7 @@ class AuthUserArgumentResolverTest {
 	void whenLoginAndTokenAttributeExists_thenReturnsAuthUser() {
 		// Given
 		UUID userId = UUID.randomUUID();
-		Token token = Token.of(String.valueOf(userId), "testName", new Date(),
+		Token token = Token.of(String.valueOf(userId), new Date(),
 			new Date(System.currentTimeMillis() + 3600000));
 
 		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(true);
@@ -148,7 +147,7 @@ class AuthUserArgumentResolverTest {
 	void whenOptionalLoginAndTokenAttributeExists_thenReturnsOptionalOfAuthUser() {
 		// Given
 		UUID userId = UUID.randomUUID();
-		Token token = Token.of(String.valueOf(userId), "testUser", new Date(),
+		Token token = Token.of(String.valueOf(userId), new Date(),
 			new Date(System.currentTimeMillis() + 3600000));
 
 		when(parameter.hasParameterAnnotation(Login.class)).thenReturn(false); // @OptionalLogin 케이스
