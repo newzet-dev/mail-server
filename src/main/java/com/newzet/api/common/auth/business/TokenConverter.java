@@ -1,5 +1,6 @@
 package com.newzet.api.common.auth.business;
 
+import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -19,7 +20,8 @@ public class TokenConverter {
 	private final SecretKey secretKey;
 
 	public TokenConverter(@Value("${jwt.secret}") String secret) {
-		this.secretKey = Keys.hmacShaKeyFor(secret.getBytes());
+		byte[] keyBytes = Base64.getDecoder().decode(secret);
+		this.secretKey = Keys.hmacShaKeyFor(keyBytes);
 	}
 
 	public Token toToken(String tokenValue) {
@@ -33,9 +35,8 @@ public class TokenConverter {
 			String subject = claims.getSubject();
 			Date issuedAt = claims.getIssuedAt();
 			Date expiredAt = claims.getExpiration();
-			String name = claims.get("name", String.class);
 
-			return Token.of(subject, name, issuedAt, expiredAt);
+			return Token.of(subject, issuedAt, expiredAt);
 		} catch (Exception e) {
 			throw new TokenBadRequestException("유효하지 않은 토큰입니다.");
 		}

@@ -3,6 +3,7 @@ package com.newzet.api.common.auth.business;
 import static com.newzet.api.common.auth.business.TokenConverterTest.TestFixture.*;
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.Base64;
 import java.util.Date;
 import java.util.UUID;
 
@@ -33,7 +34,6 @@ class TokenConverterTest {
 
 		//Then
 		assertEquals(USER_ID, token.getSubject());
-		assertEquals(NAME, token.getName());
 		assertEquals(PAST.getTime(), token.getIssuedAt().getTime());
 		assertEquals(FUTURE.getTime(), token.getExpiredAt().getTime());
 	}
@@ -49,9 +49,9 @@ class TokenConverterTest {
 
 	static class TestFixture {
 		static final UUID USER_ID = UUID.randomUUID();
-		static final String SECRET = "testsecretkeymustbelongerthan256bitstomakeitwork00000";
-		static final String NAME = "test";
-		static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
+		static final String RAW_SECRET = "testsecretkeymustbelongerthan256bitstomakeitwork00000";
+		static final String SECRET = Base64.getEncoder().encodeToString(RAW_SECRET.getBytes());
+		static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(RAW_SECRET.getBytes());
 		static final Date PAST = new Date(
 			((System.currentTimeMillis() - 60 * 60 * 1000) / 1000) * 1000);
 		static final Date FUTURE = new Date(
@@ -60,7 +60,6 @@ class TokenConverterTest {
 		static String createValidToken() {
 			return Jwts.builder()
 				.subject(USER_ID.toString())
-				.claim("name", NAME)
 				.issuedAt(PAST)
 				.expiration(FUTURE)
 				.signWith(SECRET_KEY)
