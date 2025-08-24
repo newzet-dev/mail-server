@@ -1,6 +1,5 @@
 package com.newzet.api.common.auth.business;
 
-import java.util.Base64;
 import java.util.Date;
 
 import javax.crypto.SecretKey;
@@ -20,7 +19,7 @@ public class TokenConverter {
 	private final SecretKey secretKey;
 
 	public TokenConverter(@Value("${jwt.secret}") String secret) {
-		byte[] keyBytes = Base64.getDecoder().decode(secret);
+		byte[] keyBytes = secret.getBytes();
 		this.secretKey = Keys.hmacShaKeyFor(keyBytes);
 	}
 

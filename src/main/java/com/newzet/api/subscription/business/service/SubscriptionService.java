@@ -6,7 +6,6 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.newzet.api.common.util.UuidConverter;
 import com.newzet.api.subscription.business.repository.SubscriptionQueryRepository;
 import com.newzet.api.subscription.business.repository.SubscriptionRepository;
 import com.newzet.api.subscription.domain.Subscription;
@@ -29,7 +28,8 @@ public class SubscriptionService {
 		boolean isSubscribed = subscriptionQueryRepository.isSubscribed(userId, fromDomain,
 			mailingList);
 		if (!isSubscribed) {
-			subscriptionRepository.save(Subscription.create(userId, fromName, fromDomain, mailingList));
+			subscriptionRepository.save(
+				Subscription.create(userId, fromName, fromDomain, mailingList));
 		}
 	}
 
@@ -37,18 +37,17 @@ public class SubscriptionService {
 		List<SubscriptionListWithImageProjection> subscriptionWithImageProjection = subscriptionRepository.getSubscriptionWithImage(
 			userId);
 		List<SubscriptionWithImageResponse> subscriptionWithImageResponseList = subscriptionWithImageProjection.stream()
-			.map(subscription -> new SubscriptionWithImageResponse(subscription.getId(),
-				subscription.getNewsletterName(),
-				subscription.getDomain(), subscription.getImageUrl(), subscription.getStatus(),
-				subscription.getDayOfWeek()))
+			.map(subscription -> new SubscriptionWithImageResponse(subscription.id(),
+				subscription.newsletterName(),
+				subscription.domain(), subscription.imageUrl(), subscription.status(),
+				subscription.dayOfWeek()))
 			.toList();
 
 		return SubscriptionListWithImageResponse.of(subscriptionWithImageResponseList);
 	}
 
-	public void deleteSubscription(String subscriptionId) {
-		UUID convertedSubscriptionId = UuidConverter.convert(subscriptionId);
-		subscriptionRepository.delete(convertedSubscriptionId);
+	public void deleteSubscription(UUID subscriptionId) {
+		subscriptionRepository.delete(subscriptionId);
 	}
 
 	public boolean isSubscribing(UUID userId, String domain, String mailingList) {
