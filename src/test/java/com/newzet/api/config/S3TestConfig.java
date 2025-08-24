@@ -12,9 +12,9 @@ public class S3TestConfig implements BeforeAllCallback {
 
 	@Override
 	public void beforeAll(ExtensionContext context) throws Exception {
-		System.setProperty("spring.cloud.aws.region.static", S3_REGION);
-		System.setProperty("spring.cloud.aws.credentials.access-key", S3_ACCESS_KEY);
-		System.setProperty("spring.cloud.aws.credentials.secret-key", S3_SECRET_KEY);
-		System.setProperty("s3.content-bucket",  S3_CONTENT_BUCKET_NAME);
+		System.setProperty("cloud.aws.region.static", S3_REGION);
+		System.setProperty("cloud.aws.credentials.access-key", S3_ACCESS_KEY);
+		System.setProperty("cloud.aws.credentials.secret-key", S3_SECRET_KEY);
+		System.setProperty("cloud.aws.s3.bucket",  S3_CONTENT_BUCKET_NAME);
 	}
 }
