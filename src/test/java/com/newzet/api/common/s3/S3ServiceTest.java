@@ -5,90 +5,93 @@ import static org.mockito.Mockito.*;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.newzet.api.common.exception.InternalErrorException;
-
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 @ExtendWith(MockitoExtension.class)
 class S3ServiceTest {
 
-	private final String bucketName = "test-bucket";
-	private final String key = "test-object.txt";
+	private final String BUCKET_NAME = "test-bucket";
+	private final String OBJECT_KEY = "test-file.txt";
 	@InjectMocks
 	private S3Service s3Service;
 	@Mock
-	private S3Client s3Client;
+	private AmazonS3 amazonS3; // S3Service가 사용하는 SDK v1 클라이언트
 
-	@Test
-	@DisplayName("성공: S3 객체를 성공적으로 읽어와 문자열로 반환한다")
-	void getContentAsString_Success() throws IOException {
-		// given
-		String expectedContent = "S3 Object Content";
-		byte[] contentBytes = expectedContent.getBytes(StandardCharsets.UTF_8);
+	@Nested
+	@DisplayName("성공 케이스")
+	class SuccessCases {
+		@Test
+		@DisplayName("S3 객체를 성공적으로 읽어와 문자열로 반환한다")
+		void getContentAsString_Success() {
+			// given
+			String expectedContent = "S3 Object Content";
+			byte[] contentBytes = expectedContent.getBytes(StandardCharsets.UTF_8);
 
-		ResponseInputStream<GetObjectResponse> s3ObjectStream = new ResponseInputStream<>(
-			GetObjectResponse.builder().build(),
-			new ByteArrayInputStream(contentBytes)
-		);
+			// S3Object와 그 내용을 Mocking
+			S3Object mockS3Object = new S3Object();
+			S3ObjectInputStream inputStream = new S3ObjectInputStream(
+				new ByteArrayInputStream(contentBytes), null);
+			mockS3Object.setObjectContent(inputStream);
 
-		when(s3Client.getObject(any(GetObjectRequest.class))).thenReturn(s3ObjectStream);
+			when(amazonS3.getObject(any(GetObjectRequest.class))).thenReturn(mockS3Object);
 
-		// when
-		String actualContent = s3Service.getContentAsString(bucketName, key);
+			// when
+			String actualContent = s3Service.getContentAsString(BUCKET_NAME, OBJECT_KEY);
 
-		// then
-		assertEquals(expectedContent, actualContent);
-		verify(s3Client).getObject(any(GetObjectRequest.class));
+			// then
+			assertEquals(expectedContent, actualContent);
+		}
 	}
 
-	@Test
-	@DisplayName("실패: S3에 해당 Key의 객체가 존재하지 않으면 InternalErrorException을 던진다")
-	void getContentAsString_ThrowsNoSuchKeyException() {
-		// given
-		when(s3Client.getObject(any(GetObjectRequest.class)))
-			.thenThrow(NoSuchKeyException.builder().message("Not Found").build());
+	@Nested
+	@DisplayName("실패 케이스")
+	class FailureCases {
+		@Test
+		@DisplayName("S3에 해당 Key의 객체가 없으면 InternalErrorException을 던진다")
+		void getContentAsString_ThrowsNoSuchKeyException() {
+			// given
+			when(amazonS3.getObject(any(GetObjectRequest.class)))
+				.thenThrow(new AmazonS3Exception("The specified key does not exist."));
 
-		// when & then
-		assertThrows(InternalErrorException.class, () -> {
-			s3Service.getContentAsString(bucketName, key);
-		});
-	}
+			// when & then
+			assertThrows(InternalErrorException.class, () -> {
+				s3Service.getContentAsString(BUCKET_NAME, OBJECT_KEY);
+			});
+		}
 
-	@Test
-	@DisplayName("실패: 스트림을 읽는 중 IOException이 발생하면 InternalErrorException을 던진다")
-	void getContentAsString_ThrowsIOException() throws IOException {
-		// given
-		InputStream mockInputStream = mock(InputStream.class);
-		when(mockInputStream.read(any(byte[].class), anyInt(), anyInt()))
-			.thenThrow(new IOException("Failed to read stream"));
+		@Test
+		@DisplayName("스트림을 읽는 중 IOException이 발생하면 InternalErrorException을 던진다")
+		void getContentAsString_ThrowsIOException() throws IOException {
+			// given
+			// S3Object와 InputStream을 각각 Mocking하여 InputStream의 동작을 제어
+			S3Object mockS3Object = mock(S3Object.class);
+			S3ObjectInputStream mockInputStream = mock(S3ObjectInputStream.class);
 
-		ResponseInputStream<GetObjectResponse> s3ObjectStream = new ResponseInputStream<>(
-			GetObjectResponse.builder().build(),
-			mockInputStream
-		);
+			when(amazonS3.getObject(any(GetObjectRequest.class))).thenReturn(mockS3Object);
+			when(mockS3Object.getObjectContent()).thenReturn(mockInputStream);
 
-		when(s3Client.getObject(any(GetObjectRequest.class)))
-			.thenReturn(s3ObjectStream);
-		// when(s3ObjectStream.readAllBytes())
-		// 	.thenThrow(new IOException("Failed to read stream"));
+			// 핵심: InputStream에서 readAllBytes() 호출 시 강제로 IOException 발생
+			when(mockInputStream.readAllBytes()).thenThrow(new IOException("스트림 읽기 실패"));
 
-		// when & then
-		assertThrows(InternalErrorException.class, () -> {
-			s3Service.getContentAsString(bucketName, key);
-		});
+			// when & then
+			assertThrows(InternalErrorException.class, () -> {
+				s3Service.getContentAsString(BUCKET_NAME, OBJECT_KEY);
+			});
+		}
 	}
 }

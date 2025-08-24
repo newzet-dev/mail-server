@@ -5,38 +5,36 @@ import java.nio.charset.StandardCharsets;
 
 import org.springframework.stereotype.Service;
 
+import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.AmazonS3Exception;
+import com.amazonaws.services.s3.model.GetObjectRequest;
+import com.amazonaws.services.s3.model.S3Object;
+import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.newzet.api.common.exception.InternalErrorException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import software.amazon.awssdk.core.ResponseInputStream;
-import software.amazon.awssdk.services.s3.S3Client;
-import software.amazon.awssdk.services.s3.model.GetObjectRequest;
-import software.amazon.awssdk.services.s3.model.GetObjectResponse;
-import software.amazon.awssdk.services.s3.model.NoSuchKeyException;
 
 @Service
 @RequiredArgsConstructor
 @Slf4j
 public class S3Service {
-	private final S3Client s3Client;
+	private final AmazonS3 amazonS3;
 
 	public String getContentAsString(String bucketName, String key) {
-		GetObjectRequest getObjectRequest = GetObjectRequest.builder()
-			.bucket(bucketName)
-			.key(key)
-			.build();
+		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
 
-		try {
-			ResponseInputStream<GetObjectResponse> s3Object = s3Client.getObject(
-				getObjectRequest);
-			byte[] contentBytes = s3Object.readAllBytes(); // InputStream의 모든 byte를 읽어와 UTF-8 문자열로 변환
+		try (S3Object s3Object = amazonS3.getObject(getObjectRequest);
+			 S3ObjectInputStream inputStream = s3Object.getObjectContent()) {
+
+			byte[] contentBytes = inputStream.readAllBytes();
 			return new String(contentBytes, StandardCharsets.UTF_8);
-		} catch (NoSuchKeyException e) { // 파일이 존재하지 않을 경우 예외 처리
-			log.error("S3에 해당 파일이 존재하지 않습니다. Key: {}", key);
+
+		} catch (AmazonS3Exception e) {
+			log.error("S3에서 객체를 가져오는 중 오류가 발생했습니다. Key: {}", key, e);
 			throw new InternalErrorException("아티클을 불러오는 과정에서 에러가 발생하였습니다.");
 		} catch (IOException e) {
-			log.error("S3 파일 내용을 읽는 중 오류가 발생했습니다.", e);
+			log.error("S3 파일 내용을 읽는 중 I/O 오류가 발생했습니다.", e);
 			throw new InternalErrorException("아티클을 불러오는 과정에서 에러가 발생하였습니다.");
 		}
 	}
