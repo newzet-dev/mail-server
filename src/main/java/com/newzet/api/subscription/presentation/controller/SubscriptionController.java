@@ -1,5 +1,7 @@
 package com.newzet.api.subscription.presentation.controller;
 
+import java.util.UUID;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,6 +10,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.newzet.api.common.auth.annotation.Login;
+import com.newzet.api.common.auth.annotation.RequireAuth;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.response.ResponseCode;
 import com.newzet.api.common.response.SuccessResponse;
@@ -29,6 +32,7 @@ public class SubscriptionController {
 	@GetMapping
 	@Operation(summary = "뉴스레터 구독 목록 조회",
 		description = "유저의 뉴스레터 구독 목록을 조회한다.")
+	@RequireAuth
 	public ResponseEntity<SuccessResponse<SubscriptionListWithImageResponse>> getSubscriptionList(
 		@Login AuthUser authUser) {
 		SubscriptionListWithImageResponse subscriptionListWithImage = subscriptionService.getSubscriptionWithImage(
@@ -43,8 +47,9 @@ public class SubscriptionController {
 	@DeleteMapping("/{subscriptionId}")
 	@Operation(summary = "뉴스레터 구독 삭제",
 		description = "유저의 뉴스레터 구독을 삭제한다.")
+	@RequireAuth
 	public ResponseEntity<SuccessResponse<String>> deleteSubscription(
-		@PathVariable String subscriptionId) {
+		@PathVariable UUID subscriptionId) {
 		subscriptionService.deleteSubscription(subscriptionId);
 		SuccessResponse<String> response = SuccessResponse.create(
 			ResponseCode.SUCCESS, "뉴스레터 구독 삭제 성공", "empty");

@@ -12,11 +12,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 
 import com.newzet.api.config.PostgresTestContainerConfig;
+import com.newzet.api.config.db.QuerydslConfig;
 import com.newzet.api.subscription.domain.Subscription;
+import com.newzet.api.subscription.jpa.repository.SubscriptionJpaQueryRepository;
 import com.newzet.api.subscription.jpa.repository.SubscriptionRepositoryImpl;
 
 @DataJpaTest
-@Import({SubscriptionRepositoryImpl.class})
+@Import({SubscriptionRepositoryImpl.class, QuerydslConfig.class, SubscriptionJpaQueryRepository.class})
 @ExtendWith({PostgresTestContainerConfig.class})
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 public class SubscriptionRepositoryImplTest {

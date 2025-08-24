@@ -19,16 +19,18 @@ import lombok.RequiredArgsConstructor;
 public class SubscriptionRepositoryImpl implements SubscriptionRepository {
 
 	private final SubscriptionJpaRepository subscriptionJpaRepository;
+	private final SubscriptionJpaQueryRepository subscriptionJpaQueryRepository;
 
 	@Override
 	public Subscription save(Subscription subscription) {
 		SubscriptionEntity subscriptionEntity = SubscriptionEntityMapper.toEntity(subscription);
-		return SubscriptionEntityMapper.toDomain(subscriptionJpaRepository.save(subscriptionEntity));
+		return SubscriptionEntityMapper.toDomain(
+			subscriptionJpaRepository.save(subscriptionEntity));
 	}
 
 	@Override
 	public List<SubscriptionListWithImageProjection> getSubscriptionWithImage(UUID userId) {
-		return subscriptionJpaRepository.getSubscriptionWithImage(userId);
+		return subscriptionJpaQueryRepository.getSubscriptionWithImage(userId);
 	}
 
 	@Override
