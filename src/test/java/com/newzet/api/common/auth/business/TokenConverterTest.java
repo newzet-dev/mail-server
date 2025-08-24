@@ -51,7 +51,7 @@ class TokenConverterTest {
 		static final UUID USER_ID = UUID.randomUUID();
 		static final String RAW_SECRET = "testsecretkeymustbelongerthan256bitstomakeitwork00000";
 		static final String SECRET = Base64.getEncoder().encodeToString(RAW_SECRET.getBytes());
-		static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(RAW_SECRET.getBytes());
+		static final SecretKey SECRET_KEY = Keys.hmacShaKeyFor(SECRET.getBytes());
 		static final Date PAST = new Date(
 			((System.currentTimeMillis() - 60 * 60 * 1000) / 1000) * 1000);
 		static final Date FUTURE = new Date(
