@@ -44,6 +44,7 @@ public class UserinfoController {
 	}
 
 	@GetMapping("/info/init")
+	@RequireAuth
 	@Operation(summary = "유저정보 등록 여부 확인",
 		description = "유저정보 등록 여부를 확인한다.")
 	public SuccessResponse<UserinfoInitResponse> checkUserInitializeCompleted(@Login AuthUser authUser) {
