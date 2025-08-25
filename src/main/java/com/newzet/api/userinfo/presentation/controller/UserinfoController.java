@@ -61,7 +61,7 @@ public class UserinfoController {
 		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 수정 성공", null);
 	}
 
-	@GetMapping("/info/mail/exists")
+	@GetMapping("/info/mail/exist")
 	@Operation(summary = "메일 중복조회",
 		description = "메일이 사용 가능한지 조회한다. 휴면유저/탈퇴한 유저의 메일도 사용 불가.")
 	public SuccessResponse<UniqueMailResponse> checkEmailUniqueness(
