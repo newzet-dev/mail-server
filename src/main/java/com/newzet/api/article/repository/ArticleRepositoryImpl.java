@@ -52,11 +52,7 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 		int processedArticles = 0;
 
 		for (ArticleEntity entityToSave : entitiesToSave) {
-			try {
-				entityManager.persist(entityToSave);
-			} catch (Exception e) {
-				log.error("Failed to persist ArticleEntity: {}", entityToSave, e);
-			}
+			entityManager.persist(entityToSave);
 			result.add(entityToSave.toEntityDto());
 			processedArticles++;
 			if (processedArticles % BATCH_SIZE == 0) {

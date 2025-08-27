@@ -83,33 +83,27 @@ public class ArticleRedisBatchConsumerImpl extends RedisBatchConsumer<Article>
 		AtomicInteger failCount = new AtomicInteger(0);
 		AtomicInteger cacheHitCount = new AtomicInteger(0);
 
-		try {
-			Map<String, ArticleEntityDto> uniqueArticlesMap = removeBatchDuplicates(articles,
-				duplicateCount, failCount);
+		Map<String, ArticleEntityDto> uniqueArticlesMap = removeBatchDuplicates(articles,
+			duplicateCount, failCount);
 
-			if (uniqueArticlesMap.isEmpty()) {
-				log.info("No articles to process after batch deduplication");
-				return;
-			}
-
-			BatchSaveData saveData = identifyUniqueArticlesWithBatch(uniqueArticlesMap,
-				duplicateCount, cacheHitCount, failCount);
-
-			List<ArticleEntityDto> savedArticles = saveToDatabaseOptimized(saveData.toSave(),
-				successCount, failCount);
-
-			updateRedisCacheAsync(saveData.toCache());
-
-			sendFCMAsync(savedArticles);
-
-			long duration = System.currentTimeMillis() - startTime;
-			logBatchSummary(articles.size(), successCount.get(), duplicateCount.get(),
-				cacheHitCount.get(), failCount.get(), duration);
-
-		} catch (Exception e) {
-			log.error("Article batch processing failed: {}", e.getMessage(), e);
-			failCount.addAndGet(articles.size());
+		if (uniqueArticlesMap.isEmpty()) {
+			log.info("No articles to process after batch deduplication");
+			return;
 		}
+
+		BatchSaveData saveData = identifyUniqueArticlesWithBatch(uniqueArticlesMap,
+			duplicateCount, cacheHitCount, failCount);
+
+		List<ArticleEntityDto> savedArticles = saveToDatabaseOptimized(saveData.toSave(),
+			successCount, failCount);
+
+		updateRedisCacheAsync(saveData.toCache());
+
+		sendFCMAsync(savedArticles);
+
+		long duration = System.currentTimeMillis() - startTime;
+		logBatchSummary(articles.size(), successCount.get(), duplicateCount.get(),
+			cacheHitCount.get(), failCount.get(), duration);
 	}
 
 	private Map<String, ArticleEntityDto> removeBatchDuplicates(List<Article> articles,
@@ -187,16 +181,10 @@ public class ArticleRedisBatchConsumerImpl extends RedisBatchConsumer<Article>
 			return List.of();
 		}
 
-		try {
-			List<ArticleEntityDto> saved = articleRepository.saveAll(toSave);
-			successCount.addAndGet(saved.size());
-			log.info("Successfully saved {} articles to database", saved.size());
-			return saved;
-		} catch (Exception e) {
-			failCount.addAndGet(toSave.size());
-			log.error("Database save failed for {} articles: {}", toSave.size(), e.getMessage());
-			return List.of();
-		}
+		List<ArticleEntityDto> saved = articleRepository.saveAll(toSave);
+		successCount.addAndGet(saved.size());
+		log.info("Successfully saved {} articles to database", saved.size());
+		return saved;
 	}
 
 	private void updateRedisCacheAsync(Map<String, String> toCache) {
