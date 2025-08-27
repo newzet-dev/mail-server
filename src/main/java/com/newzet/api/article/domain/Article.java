@@ -83,5 +83,23 @@ public class Article {
 	public boolean checkIsUnRead() {
 		return !isRead;
 	}
+
+	public Article share() {
+		return new Article(
+			this.id,
+			this.toUserId,
+			this.fromName,
+			this.fromDomain,
+			this.mailingList,
+			this.title,
+			this.contentUrl,
+			this.imageUrl,
+			this.isRead,
+			this.isLike,
+			true,
+			this.createdAt,
+			this.deletedAt
+		);
+	}
 }
 

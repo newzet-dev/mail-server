@@ -14,6 +14,8 @@ import com.newzet.api.article.business.service.ArticleService;
 import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleLikeListResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
+import com.newzet.api.article.controller.dto.ArticleShareResponse;
+import com.newzet.api.article.orchestrator.ArticleOrchestrator;
 import com.newzet.api.common.auth.annotation.Login;
 import com.newzet.api.common.auth.annotation.RequireAuth;
 import com.newzet.api.common.auth.domain.AuthUser;
@@ -26,11 +28,12 @@ import lombok.RequiredArgsConstructor;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/article")
+@RequestMapping("/api/v1/article")
 @Tag(name = "아티클", description = "아티클 관련 API")
 public class ArticleController {
 
 	private final ArticleService articleService;
+	private final ArticleOrchestrator articleOrchestrator;
 
 	@GetMapping
 	@RequireAuth
@@ -39,8 +42,7 @@ public class ArticleController {
 	public ResponseEntity<SuccessResponse<ArticleListResponse>> getMonthlyArticleList(
 		@RequestParam("y") int year,
 		@RequestParam("m") int month, @Login AuthUser user) {
-		UUID userId = user.getId();
-		ArticleListResponse monthlyArticleList = articleService.getMonthlyArticleList(userId, year,
+		ArticleListResponse monthlyArticleList = articleService.getMonthlyArticleList(user.getId(), year,
 			month);
 
 		SuccessResponse<ArticleListResponse> response = SuccessResponse.create(
@@ -91,5 +93,26 @@ public class ArticleController {
 			ResponseCode.SUCCESS, "좋아요 상태 업데이트 성공", "empty");
 
 		return ResponseEntity.ok(response);
+	}
+
+	@PatchMapping("/share/{articleId}")
+	@RequireAuth
+	@Operation(summary = "아티클 공유 링크 생성",
+		description = "아티클 공유 링크를 생성한다.")
+	public SuccessResponse<ArticleShareResponse> shareArticle(
+		@PathVariable("articleId") UUID articleId) {
+		articleService.shareArticle(articleId);
+		String sharedArticleUrl = articleService.getSharedUrl(articleId);
+		return SuccessResponse.create(
+			ResponseCode.SUCCESS, "아티클 공유 성공", new ArticleShareResponse(sharedArticleUrl));
+	}
+
+	@GetMapping("/share/{articleId}")
+	@Operation(summary = "공유 아티클 조회", description = "공유 아티클을 조회한다.")
+	public SuccessResponse<ArticleContentResponse> getSharedArticle(
+		@PathVariable("articleId") UUID articleId) {
+		ArticleContentResponse response = articleOrchestrator.getSharedArticle(articleId);
+		return SuccessResponse.create(
+			ResponseCode.SUCCESS, "아티클 공유 성공", response);
 	}
 }

@@ -2,9 +2,9 @@ spring:
   lifecycle:
     timeout-per-shutdown: 60s
   datasource:
-    url: jdbc:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?prepareThreshold=0
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    url: jdbc:postgresql://${DB_HOST:localhost:5432}/${DB_NAME:newzet_db}?prepareThreshold=0
+    username: ${DB_USERNAME:newzet}
+    password: ${DB_PASSWORD:newzet}
     driver-class-name: org.postgresql.Driver
     hikari:
       maximum-pool-size: 10
@@ -14,7 +14,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: ${SPRING_JPA_DDL}
+      ddl-auto: none
       jdbc:
         time-zone: Asia/Seoul
     properties:
@@ -23,16 +23,17 @@ spring:
       hibernate.order_inserts: true
       hibernate.order_updates: true
       hibernate.generate_statistics: false #Hibernate에서 성능 통계 정보 생성 여부 (배치처리 확인용)
-    show-sql: ${SPRING_JPA_SHOW_SQL}
+    show-sql: ${SPRING_JPA_SHOW_SQL:true}
 
   data:
     redis:
-      host: ${SPRING_REDIS_HOST}
-      port: ${SPRING_REDIS_PORT}
-      password: ${SPRING_REDIS_PASSWORD}
+      host: ${SPRING_REDIS_HOST:127.0.0.1}
+      port: ${SPRING_REDIS_PORT:16379}
+      password: ${SPRING_REDIS_PASSWORD:newzet}
 
 jwt:
-  secret: ${JWT_SECRET}
+  secret:
+    ${JWT_SECRET}
 
 management:
   endpoints:

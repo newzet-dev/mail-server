@@ -9,9 +9,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
+import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
 import com.newzet.api.article.repository.entity.ArticleEntity;
 import com.newzet.api.article.repository.exception.NoArticleException;
+import com.newzet.api.article.repository.mapper.ArticleEntityMapper;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.PersistenceContext;
@@ -97,5 +99,11 @@ public class ArticleRepositoryImpl implements ArticleRepository {
 
 		articleEntity.updateLike(newLikeStatus);
 		return articleEntity.isLike();
+	}
+
+	@Override
+	public Article save(Article article) {
+		ArticleEntity articleEntity = articleJpaRepository.save(ArticleEntityMapper.toEntity(article));
+		return ArticleEntityMapper.toDomain(articleEntity);
 	}
 }

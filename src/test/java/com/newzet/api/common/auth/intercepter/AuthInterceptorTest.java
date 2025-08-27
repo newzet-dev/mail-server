@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import java.util.Date;
 import java.util.UUID;
 
-import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -15,10 +15,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.web.method.HandlerMethod;
 
 import com.newzet.api.common.auth.annotation.RequireAuth;
-import com.newzet.api.common.auth.business.AuthorizationHeaderParser;
-import com.newzet.api.common.auth.business.TokenConverter;
-import com.newzet.api.common.auth.business.TokenValidator;
-import com.newzet.api.common.auth.domain.Token;
+import com.newzet.api.common.auth.business.AuthTokenProcessor;
 import com.newzet.api.common.auth.interceptor.AuthInterceptor;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -32,19 +29,11 @@ class AuthInterceptorTest {
 	private static final Date PAST = new Date(System.currentTimeMillis() - 60 * 60 * 1000);
 	private static final Date FUTURE = new Date(System.currentTimeMillis() + 60 * 60 * 1000);
 
-	private static final String AUTH_TOKEN_ATTRIBUTE = "AUTH_TOKEN";
-
 	@InjectMocks
 	private AuthInterceptor interceptor;
 
 	@Mock
-	private AuthorizationHeaderParser authorizationHeaderParser;
-
-	@Mock
-	private TokenConverter tokenConverter;
-
-	@Mock
-	private TokenValidator tokenValidator;
+	private AuthTokenProcessor authTokenProcessor;
 
 	@Mock
 	private HttpServletRequest request;
@@ -55,8 +44,12 @@ class AuthInterceptorTest {
 	@Mock
 	private HandlerMethod handlerMethod;
 
+	@Mock
+	private RequireAuth requireAuthAnnotation;
+
 	@Test
-	public void preHandle_whenNotHandlerMethod_returnsTrue() throws Exception {
+	@DisplayName("핸들러가 HandlerMethod 타입이 아니면 true를 반환한다")
+	void whenNotHandlerMethod_thenReturnsTrue() {
 		// Given
 		Object handler = new Object();
 
@@ -64,14 +57,15 @@ class AuthInterceptorTest {
 		boolean result = interceptor.preHandle(request, response, handler);
 
 		// Then
-		Assertions.assertTrue(result);
-		verifyNoInteractions(authorizationHeaderParser, tokenValidator, tokenConverter);
+		assertThat(result).isTrue();
+		verifyNoInteractions(authTokenProcessor);
 	}
 
 	@Test
-	public void preHandle_whenNoRequiredAuth_returnsTrue() {
+	@DisplayName("@RequireAuth 어노테이션이 없으면 true를 반환한다")
+	void whenNoRequireAuthAnnotation_thenReturnsTrue() {
 		// Given
-		when(handlerMethod.hasMethodAnnotation(RequireAuth.class)).thenReturn(false);
+		when(handlerMethod.getMethodAnnotation(RequireAuth.class)).thenReturn(null);
 		when(handlerMethod.getBeanType()).thenReturn((Class)TestController.class);
 
 		// When
@@ -79,57 +73,48 @@ class AuthInterceptorTest {
 
 		// Then
 		assertThat(result).isTrue();
-		verifyNoInteractions(tokenConverter, tokenValidator);
+		verifyNoInteractions(authTokenProcessor);
 	}
 
 	@Test
-	public void preHandle_whenRequiresAuthAnnotation_validateToken() {
+	@DisplayName("어노테이션이 있으면 setTokenInHeader가 호출된다")
+	void whenRequireAuth_thenCallsSetTokenInHeader() {
 		// Given
-		Token token = Token.of(SUBJECT, NAME, PAST, FUTURE);
-		when(handlerMethod.hasMethodAnnotation(RequireAuth.class)).thenReturn(false);
-		when(handlerMethod.getBeanType()).thenReturn((Class)SecuredController.class);
-		when(authorizationHeaderParser.extractAuthHeader(any())).thenReturn("test");
-		when(tokenConverter.toToken(anyString())).thenReturn(token);
-		doNothing().when(tokenValidator).validate(token);
+		// 1. @RequireAuth(optional=false) 상황 모킹
+		when(requireAuthAnnotation.optional()).thenReturn(false);
+		when(handlerMethod.getMethodAnnotation(RequireAuth.class)).thenReturn(
+			requireAuthAnnotation);
+		doNothing().when(authTokenProcessor).setTokenInHeader(request);
 
 		// When
 		boolean result = interceptor.preHandle(request, response, handlerMethod);
 
 		// Then
-		verify(authorizationHeaderParser, times(1)).extractAuthHeader(any());
-		verify(tokenConverter, times(1)).toToken(anyString());
-		verify(tokenValidator, times(1)).validate(token);
-		verify(request, times(1)).setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
 		assertThat(result).isTrue();
+		verify(authTokenProcessor, times(1)).setTokenInHeader(request);
+		verify(authTokenProcessor, never()).setTokenInHeaderOptional(any());
 	}
 
 	@Test
-	public void preHandle_whenRequiresAuthMethodAnnotation_validateToken() {
+	@DisplayName("optional이 true이면 setTokenInHeaderOptional이 호출된다")
+	void whenOptionalAuth_thenCallsSetTokenInHeaderOptional() {
 		// Given
-		Token token = Token.of(SUBJECT, NAME, PAST, FUTURE);
-		when(handlerMethod.hasMethodAnnotation(RequireAuth.class)).thenReturn(true);
-		when(authorizationHeaderParser.extractAuthHeader(any())).thenReturn("test");
-		when(tokenConverter.toToken(anyString())).thenReturn(token);
-		doNothing().when(tokenValidator).validate(token);
+		// 1. @RequireAuth(optional=true) 상황 모킹
+		when(requireAuthAnnotation.optional()).thenReturn(true);
+		when(handlerMethod.getMethodAnnotation(RequireAuth.class)).thenReturn(
+			requireAuthAnnotation);
+		doNothing().when(authTokenProcessor).setTokenInHeaderOptional(request);
 
 		// When
 		boolean result = interceptor.preHandle(request, response, handlerMethod);
 
 		// Then
-		verify(authorizationHeaderParser, times(1)).extractAuthHeader(any());
-		verify(tokenConverter, times(1)).toToken(anyString());
-		verify(tokenValidator, times(1)).validate(token);
-		verify(request, times(1)).setAttribute(AUTH_TOKEN_ATTRIBUTE, token);
 		assertThat(result).isTrue();
+		verify(authTokenProcessor, times(1)).setTokenInHeaderOptional(request);
+		verify(authTokenProcessor, never()).setTokenInHeader(any());
 	}
 
 	private static class TestController {
-		public void testMethod() {
-		}
-	}
-
-	@RequireAuth
-	private static class SecuredController {
 		public void testMethod() {
 		}
 	}

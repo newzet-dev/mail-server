@@ -18,14 +18,13 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 
 import com.newzet.api.article.repository.entity.ArticleEntity;
 import com.newzet.api.article.repository.entity.ArticleEntity.ArticleEntityBuilder;
-import com.newzet.api.category.repository.CategoryEntity;
-import com.newzet.api.category.repository.CategoryJpaRepository;
+import com.newzet.api.category.jpa.CategoryEntity;
+import com.newzet.api.category.jpa.CategoryJpaRepository;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
-import com.newzet.api.newsletter.domain.model.Color;
-import com.newzet.api.newsletter.repository.NewsletterEntity;
-import com.newzet.api.newsletter.repository.NewsletterEntityStatus;
-import com.newzet.api.newsletter.repository.NewsletterJpaRepository;
+import com.newzet.api.newsletter.domain.NewsletterColor;
+import com.newzet.api.newsletter.jpa.entity.NewsletterEntity;
+import com.newzet.api.newsletter.jpa.repository.NewsletterJpaRepository;
 
 import jakarta.persistence.EntityManager;
 
@@ -59,7 +58,7 @@ public class ArticleImageUrlUpdateTest {
 		// Given
 		// === 1. 기본 카테고리 생성 ===
 		CategoryEntity categoryEntity = categoryJpaRepository.save(
-			CategoryEntity.create("category", "imageUrl", "emoji"));
+			new CategoryEntity(null, "category", "imageUrl", "emoji"));
 
 		// === 2. 랜덤 데이터 생성을 위한 준비 ===
 		List<NewsletterEntity> newsletters = new ArrayList<>();
@@ -79,10 +78,8 @@ public class ArticleImageUrlUpdateTest {
 			String imageUrl = "https://cdn.images.com/newsletter/" + i + ".jpg";
 
 			newsletters.add(
-				NewsletterEntity.create("뉴스레터 " + i, categoryEntity, domain,
-					mailingList, i, imageUrl, "", "", NewsletterEntityStatus.REGISTERED.toString(),
-					"",
-					"", Color.DEFAULT)
+				new NewsletterEntity(null, "뉴스레터 " + i, categoryEntity.getId(), domain,
+					mailingList, i, imageUrl, "", "", "", "", "", NewsletterColor.DEFAULT, null)
 			);
 		}
 		newsletterJpaRepository.saveAll(newsletters);
@@ -179,17 +176,17 @@ public class ArticleImageUrlUpdateTest {
 			    SELECT
 			        COUNT(DISTINCT a.id)
 			    FROM
-			        article a, newsletters n
+			        article a, newsletter n
 			    WHERE
 			        ((a.from_domain = n.domain) OR (a.mailing_list IS NOT NULL AND a.mailing_list = n.mailing_list))
 			        AND a.image_url IS NULL
-			        AND a.created_at >= :startDate
-			        AND a.created_at < :endDate
+			        AND a.created_at >= ?1
+			        AND a.created_at < ?2
 			""";
 
 		long expectedUpdateCount = (long)entityManager.createNativeQuery(selectSql)
-			.setParameter("startDate", BATCH_START_DATE)
-			.setParameter("endDate", BATCH_END_DATE)
+			.setParameter(1, BATCH_START_DATE)
+			.setParameter(2, BATCH_END_DATE)
 			.getSingleResult();
 		assertTrue(expectedUpdateCount > 0, "조인 조건에 맞는 업데이트 대상 레코드가 조회되어야 합니다.");
 
@@ -200,7 +197,7 @@ public class ArticleImageUrlUpdateTest {
 			    SET
 			        image_url = n.image_url
 			    FROM
-			        newsletters n
+			        newsletter n
 			    WHERE
 			        ((a.from_domain = n.domain) OR (a.mailing_list IS NOT NULL AND a.mailing_list = n.mailing_list))
 			        AND a.image_url IS NULL

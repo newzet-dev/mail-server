@@ -4,8 +4,6 @@ import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
 
-import com.newzet.api.advertise.business.dto.AdvertiseEntityDto;
-
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
@@ -27,8 +25,4 @@ public class AdvertiseEntity {
 	private UUID id;
 
 	private UUID newsletterId;
-
-	public AdvertiseEntityDto toEntityDto() {
-		return AdvertiseEntityDto.create(id, newsletterId);
-	}
 }
