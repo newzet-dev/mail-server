@@ -56,12 +56,12 @@ public class UserinfoController {
 	@RequireAuth
 	@Operation(summary = "유저정보 수정",
 		description = "유저정보를 수정한다.")
-	public SuccessResponse<Object> updateUserinfo(@Valid @RequestBody UserinfoUpdateRequest request, UUID userId) {
-		userinfoOrchestrator.updateUserinfo(userId, request.email(), request.nickname(), request.userCategory());
+	public SuccessResponse<Object> updateUserinfo(@Valid @RequestBody UserinfoUpdateRequest request, @Login AuthUser authUser) {
+		userinfoOrchestrator.updateUserinfo(authUser.getId(), request.email(), request.nickname(), request.userCategory());
 		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 수정 성공", null);
 	}
 
-	@GetMapping("/info/mail/exists")
+	@GetMapping("/info/mail/exist")
 	@Operation(summary = "메일 중복조회",
 		description = "메일이 사용 가능한지 조회한다. 휴면유저/탈퇴한 유저의 메일도 사용 불가.")
 	public SuccessResponse<UniqueMailResponse> checkEmailUniqueness(
