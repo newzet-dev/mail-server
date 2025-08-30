@@ -5,12 +5,12 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.article.business.batch.ArticleBatchProducer;
 import com.newzet.api.article.business.repository.ArticleRepository;
-import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleDetailResponse;
 import com.newzet.api.article.controller.dto.ArticleLikeListResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
@@ -18,20 +18,29 @@ import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.exception.ShareForbiddenException;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
+import com.newzet.api.common.s3.S3Service;
 import com.newzet.api.common.util.UuidConverter;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ArticleService {
 
 	private final static String ARTICLE_SHARE_PREFIX = "https://app.newzet.me/article";
 	private final ArticleBatchProducer batchProducer;
 	private final ArticleRepository articleRepository;
+	private final S3Service s3Service;
+	private final String contentBucketName;
+
+	public ArticleService(ArticleBatchProducer batchProducer, ArticleRepository articleRepository,
+		S3Service s3Service, @Value("s3.content-bucket") String contentBucketName) {
+		this.batchProducer = batchProducer;
+		this.articleRepository = articleRepository;
+		this.s3Service = s3Service;
+		this.contentBucketName = contentBucketName;
+	}
 
 	public void saveArticleBatch(UUID userId, String fromName, String fromDomain,
 		String mailingList, String imageUrl, String htmlLink, String title) {
@@ -55,19 +64,13 @@ public class ArticleService {
 		return ArticleListResponse.from(getDailyArticleList(articleList));
 	}
 
-	@Transactional
-	public ArticleContentResponse getArticle(String articleId) {
-		UUID convertedArticleId = UuidConverter.convert(articleId);
-		Article article = articleRepository.getById(convertedArticleId).toDomain();
-
+	public Article getArticle(UUID articleId) {
+		Article article = articleRepository.getById(articleId).toDomain();
 		if (article.checkIsUnRead()) { // isRead가 false이면 읽기 처리 수행
 			Article updatedArticle = articleRepository.readArticle(article.getId()).toDomain();
-			return ArticleContentResponse.of(updatedArticle.getTitle(),
-				updatedArticle.getContentUrl(), updatedArticle.isRead());
+			return updatedArticle;
 		}
-
-		return ArticleContentResponse.of(article.getTitle(), article.getContentUrl(),
-			article.isLike());
+		return article;
 	}
 
 	public ArticleLikeListResponse getArticleLikeList(UUID userId) {
@@ -104,9 +107,11 @@ public class ArticleService {
 			.toList();
 	}
 
-	public Article addArticle(UUID userId, String name, String domain, String title, String url, String imageUrl,
+	public Article addArticle(UUID userId, String name, String domain, String title, String url,
+		String imageUrl,
 		String mailingList) {
-		Article article = Article.createNewArticle(userId, name, domain, mailingList, title, url, imageUrl);
+		Article article = Article.createNewArticle(userId, name, domain, mailingList, title, url,
+			imageUrl);
 		return articleRepository.save(article);
 	}
 
