@@ -11,6 +11,7 @@ import com.amazonaws.services.s3.model.GetObjectRequest;
 import com.amazonaws.services.s3.model.S3Object;
 import com.amazonaws.services.s3.model.S3ObjectInputStream;
 import com.newzet.api.common.exception.InternalErrorException;
+import com.newzet.api.config.s3.S3Config;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -20,9 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class S3Service {
 	private final AmazonS3 amazonS3;
+	private final S3Config s3Config;
 
-	public String getContentAsString(String bucketName, String key) {
-		GetObjectRequest getObjectRequest = new GetObjectRequest(bucketName, key);
+	public String getContentAsString(String key) {
+		GetObjectRequest getObjectRequest = new GetObjectRequest(s3Config.getContentBucketName(), key);
 
 		try (S3Object s3Object = amazonS3.getObject(getObjectRequest);
 			 S3ObjectInputStream inputStream = s3Object.getObjectContent()) {
