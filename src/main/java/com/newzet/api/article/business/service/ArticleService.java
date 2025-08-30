@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,29 +17,20 @@ import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.article.exception.ShareForbiddenException;
 import com.newzet.api.article.repository.dto.ArticleWithImageProjection;
-import com.newzet.api.common.s3.S3Service;
 import com.newzet.api.common.util.UuidConverter;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
 @Transactional(readOnly = true)
+@RequiredArgsConstructor
 public class ArticleService {
 
 	private final static String ARTICLE_SHARE_PREFIX = "https://app.newzet.me/article";
 	private final ArticleBatchProducer batchProducer;
 	private final ArticleRepository articleRepository;
-	private final S3Service s3Service;
-	private final String contentBucketName;
-
-	public ArticleService(ArticleBatchProducer batchProducer, ArticleRepository articleRepository,
-		S3Service s3Service, @Value("s3.content-bucket") String contentBucketName) {
-		this.batchProducer = batchProducer;
-		this.articleRepository = articleRepository;
-		this.s3Service = s3Service;
-		this.contentBucketName = contentBucketName;
-	}
 
 	public void saveArticleBatch(UUID userId, String fromName, String fromDomain,
 		String mailingList, String imageUrl, String htmlLink, String title) {
@@ -131,11 +121,5 @@ public class ArticleService {
 			return article;
 		}
 		throw new ShareForbiddenException("공유가 허용되지 않은 아티클입니다.");
-	}
-
-	public String getContentUrl() {
-		//TODO(S3에서 Article 조회)
-		//TODO(getArticle도 바꿔주야함)
-		return "";
 	}
 }
