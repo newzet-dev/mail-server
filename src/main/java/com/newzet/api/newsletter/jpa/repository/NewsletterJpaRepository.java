@@ -11,7 +11,7 @@ import com.newzet.api.newsletter.jpa.entity.NewsletterEntity;
 
 public interface NewsletterJpaRepository extends JpaRepository<NewsletterEntity, UUID> {
 
-	List<NewsletterEntity> findNewsletterListByName(String name);
+	List<NewsletterEntity> findNewsletterListByNameStartingWith(String name);
 
 	List<NewsletterEntity> findNewsletterListByCategoryId(UUID categoryId);
 

@@ -28,7 +28,7 @@ public class NewsletterRepositoryImpl implements NewsletterRepository {
 
 	@Override
 	public List<Newsletter> findNewsLetterListByName(String name) {
-		return jpaRepository.findNewsletterListByName(name).stream()
+		return jpaRepository.findNewsletterListByNameStartingWith(name).stream()
 			.map(NewsletterEntityMapper::toDomain)
 			.toList();
 	}
