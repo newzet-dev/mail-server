@@ -22,8 +22,8 @@ public class ArticleOrchestrator {
 
 	public ArticleContentResponse getSharedArticle(UUID articleId) {
 		Article sharedArticle = articleService.getSharedArticle(articleId);
-		String articleContent = articleService.getContentUrl();
-		return new ArticleContentResponse(sharedArticle.getTitle(), articleContent,
+		String content = s3Service.getContentAsString(sharedArticle.getContentUrl());
+		return new ArticleContentResponse(sharedArticle.getTitle(), content,
 			sharedArticle.isLike());
 	}
 

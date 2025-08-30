@@ -132,10 +132,4 @@ public class ArticleService {
 		}
 		throw new ShareForbiddenException("공유가 허용되지 않은 아티클입니다.");
 	}
-
-	public String getContentUrl() {
-		//TODO(S3에서 Article 조회)
-		//TODO(getArticle도 바꿔주야함)
-		return "";
-	}
 }
