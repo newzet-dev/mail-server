@@ -30,37 +30,37 @@ public class ArticleEntity {
 	@Column(columnDefinition = "UUID", updatable = false, nullable = false)
 	private UUID id;
 
-	@Column(name = "to_user_id")
+	@Column(name = "to_user_id", nullable = false)
 	private UUID toUserId;
 
-	@Column(name = "from_name")
+	@Column(name = "from_name", nullable = false)
 	private String fromName;
 
-	@Column(name = "from_domain")
+	@Column(name = "from_domain", nullable = false)
 	private String fromDomain;
 
 	@Column(name = "mailing_list")
 	private String mailingList;
 
-	@Column(name = "title")
+	@Column(name = "title", nullable = false)
 	private String title;
 
-	@Column(name = "image_url")
+	@Column(name = "image_url", nullable = false)
 	private String imageUrl;
 
-	@Column(name = "content_url")
+	@Column(name = "content_url", nullable = false)
 	private String contentUrl;
 
-	@Column(name = "is_read")
+	@Column(name = "is_read", nullable = false)
 	private boolean isRead;
 
-	@Column(name = "is_like")
+	@Column(name = "is_like", nullable = false)
 	private boolean isLike;
 
-	@Column(name = "is_share")
+	@Column(name = "is_share", nullable = false)
 	private boolean isShare;
 
-	@Column(name = "created_at")
+	@Column(name = "created_at", nullable = false)
 	private LocalDateTime createdAt;
 
 	@Column(name = "deleted_at")
@@ -74,6 +74,7 @@ public class ArticleEntity {
 			.fromDomain(dto.getFromDomain())
 			.mailingList(dto.getMailingList())
 			.title(dto.getTitle())
+			.imageUrl(dto.getImageUrl())
 			.contentUrl(dto.getContentUrl())
 			.isRead(dto.isRead())
 			.isLike(dto.isLike())

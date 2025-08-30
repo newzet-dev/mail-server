@@ -2,8 +2,7 @@ package com.newzet.api.event.jpa.repository;
 
 import static org.assertj.core.api.Assertions.*;
 
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.junit.jupiter.api.DisplayName;
@@ -37,15 +36,15 @@ class EventRepositoryImplTest {
 	@DisplayName("활성화된 이벤트 목록을 우선순위 순으로 정확히 조회한다")
 	void findEventListOrdered_shouldReturnActiveEvents_orderedByPriority() {
 		// given: 테스트 데이터 설정
-		Instant now = Instant.now();
+		LocalDateTime now = LocalDateTime.now();
 
 		// Case 1: 활성화된 이벤트 (우선순위 2) - 조회되어야 함
 		EventEntity activeEvent1 = new EventEntity(
 			null,
 			"https://event.com/active1",
 			"https://image.com/active1.png",
-			now.minus(1, ChronoUnit.DAYS).toString(),
-			now.plus(1, ChronoUnit.DAYS).toString(),
+			now.minusDays(1),
+			now.plusDays(1),
 			2
 		);
 
@@ -54,8 +53,8 @@ class EventRepositoryImplTest {
 			null,
 			"https://event.com/active2",
 			"https://image.com/active2.png",
-			now.minus(2, ChronoUnit.DAYS).toString(),
-			now.plus(2, ChronoUnit.DAYS).toString(),
+			now.minusDays(2),
+			now.plusDays(2),
 			1
 		);
 
@@ -64,8 +63,8 @@ class EventRepositoryImplTest {
 			null,
 			"https://event.com/expired",
 			"https://image.com/expired.png",
-			now.minus(10, ChronoUnit.DAYS).toString(),
-			now.minus(5, ChronoUnit.DAYS).toString(),
+			now.minusDays(10),
+			now.minusDays(5),
 			3
 		);
 
@@ -74,8 +73,8 @@ class EventRepositoryImplTest {
 			null,
 			"https://event.com/upcoming",
 			"https://image.com/upcoming.png",
-			now.plus(5, ChronoUnit.DAYS).toString(),
-			now.plus(10, ChronoUnit.DAYS).toString(),
+			now.plusDays(5),
+			now.plusDays(10),
 			4
 		);
 

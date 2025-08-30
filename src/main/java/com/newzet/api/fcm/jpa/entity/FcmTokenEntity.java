@@ -28,8 +28,8 @@ public class FcmTokenEntity {
 	@Column(nullable = false)
 	private UUID userId;
 
-	@Column(nullable = false)
 	private String fcmToken;
 
+	@Column(nullable = false)
 	private LocalDateTime createdAt;
 }
