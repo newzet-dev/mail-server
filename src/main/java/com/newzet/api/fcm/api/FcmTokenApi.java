@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.newzet.api.common.auth.annotation.Login;
+import com.newzet.api.common.auth.annotation.RequireAuth;
 import com.newzet.api.common.auth.domain.AuthUser;
 import com.newzet.api.common.response.SuccessResponse;
 import com.newzet.api.fcm.api.dto.FcmTokenDeleteRequest;
@@ -16,6 +17,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
 @RequestMapping("/api/v1/fcm")
+@RequireAuth
 @Tag(name = "FCM 토큰 관리", description = "FCM 토큰 관련 API")
 public interface FcmTokenApi {
 
