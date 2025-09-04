@@ -54,6 +54,7 @@ public class ArticleService {
 		return ArticleListResponse.from(getDailyArticleList(articleList));
 	}
 
+	@Transactional
 	public Article getArticle(UUID articleId) {
 		Article article = articleRepository.getById(articleId).toDomain();
 		if (article.checkIsUnRead()) { // isRead가 false이면 읽기 처리 수행
