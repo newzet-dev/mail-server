@@ -27,6 +27,7 @@ public class ArticleOrchestrator {
 			sharedArticle.isLike());
 	}
 
+	@Transactional
 	public ArticleContentResponse getArticle(UUID articleId) {
 		Article article = articleService.getArticle(articleId);
 		String content = s3Service.getContentAsString(article.getContentUrl());

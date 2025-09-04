@@ -24,7 +24,6 @@ import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
-@Transactional(readOnly = true)
 @RequiredArgsConstructor
 public class ArticleService {
 
@@ -39,6 +38,7 @@ public class ArticleService {
 		batchProducer.addToBatch(article);
 	}
 
+	@Transactional(readOnly = true)
 	public ArticleListResponse getMonthlyArticleList(UUID userId, int year, int month) {
 		List<ArticleWithImageProjection> articleListAtYearAndMonth = articleRepository.getMonthlyArticleWithImage(
 			userId, year, month);
@@ -54,7 +54,6 @@ public class ArticleService {
 		return ArticleListResponse.from(getDailyArticleList(articleList));
 	}
 
-	@Transactional
 	public Article getArticle(UUID articleId) {
 		Article article = articleRepository.getById(articleId).toDomain();
 		if (article.checkIsUnRead()) { // isRead가 false이면 읽기 처리 수행
@@ -64,6 +63,7 @@ public class ArticleService {
 		return article;
 	}
 
+	@Transactional(readOnly = true)
 	public ArticleLikeListResponse getArticleLikeList(UUID userId) {
 		List<ArticleDetailResponse> articleList = articleRepository.findLikeArticleWithImage(userId)
 			.stream()
@@ -106,12 +106,14 @@ public class ArticleService {
 		return articleRepository.save(article);
 	}
 
+	@Transactional
 	public Article shareArticle(UUID articleId) {
 		Article article = articleRepository.getById(articleId).toDomain();
 		Article sharedArticle = article.share();
 		return articleRepository.save(sharedArticle);
 	}
 
+	@Transactional(readOnly = true)
 	public String getSharedUrl(UUID articleId) {
 		return String.format("%s/%s", ARTICLE_SHARE_PREFIX, articleId);
 	}
