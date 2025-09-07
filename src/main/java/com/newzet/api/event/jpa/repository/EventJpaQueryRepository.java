@@ -2,7 +2,7 @@ package com.newzet.api.event.jpa.repository;
 
 import static com.newzet.api.event.jpa.entity.QEventEntity.*;
 
-import java.time.Instant;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -21,7 +21,7 @@ public class EventJpaQueryRepository implements EventQueryRepository {
 
 	@Override
 	public List<EventEntity> findEventListOrdered() {
-		String currentTime = Instant.now().toString();
+		LocalDateTime currentTime = LocalDateTime.now();
 
 		return jpaQueryFactory
 			.selectFrom(eventEntity)

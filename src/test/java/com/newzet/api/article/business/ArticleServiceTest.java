@@ -21,7 +21,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.newzet.api.article.business.dto.ArticleEntityDto;
 import com.newzet.api.article.business.repository.ArticleRepository;
 import com.newzet.api.article.business.service.ArticleService;
-import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
 import com.newzet.api.article.controller.dto.DailyArticleResponse;
 import com.newzet.api.article.domain.Article;
@@ -96,7 +95,7 @@ class ArticleServiceTest {
 			.contentUrl("https://")
 			.isRead(true)
 			.build();
-		String articleId = article.getId().toString();
+		UUID articleId = article.getId();
 		when(articleRepository.getById(any(UUID.class)))
 			.thenReturn(ArticleEntityDto.fromDomain(article));
 		when(articleRepository.readArticle(any(UUID.class)))
@@ -104,10 +103,10 @@ class ArticleServiceTest {
 
 		// When
 		assertFalse(article.isRead());
-		ArticleContentResponse articleResponse = articleService.getArticle(articleId);
+		Article findArticle = articleService.getArticle(articleId);
 
 		// Then
-		assertTrue(articleResponse.isLike());
+		assertTrue(findArticle.isRead());
 	}
 
 	@DisplayName("아티클을 처음 조회하는 것이 아닌 경우에 조회 처리를 하지 않는다.")
@@ -118,13 +117,14 @@ class ArticleServiceTest {
 			"domain",
 			"mail-list", "title", "https://", "https://", true, false, false, LocalDateTime.now(),
 			LocalDateTime.now());
-		String articleId = article.getId().toString();
+		UUID articleId = article.getId();
 		when(articleRepository.getById(any(UUID.class)))
 			.thenReturn(ArticleEntityDto.fromDomain(article));
 
 		// When
 		assertTrue(article.isRead());
-		ArticleContentResponse articleResponse = articleService.getArticle(articleId);
+		Article findArticle = articleService.getArticle(articleId);
+		assertTrue(findArticle.isRead());
 
 		// Then
 		verify(articleRepository, never()).readArticle(any(UUID.class));

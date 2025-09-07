@@ -10,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.newzet.api.article.business.batch.ArticleBatchProducer;
 import com.newzet.api.article.business.repository.ArticleRepository;
-import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.controller.dto.ArticleDetailResponse;
 import com.newzet.api.article.controller.dto.ArticleLikeListResponse;
 import com.newzet.api.article.controller.dto.ArticleListResponse;
@@ -26,7 +25,6 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Service
 @RequiredArgsConstructor
-@Transactional(readOnly = true)
 public class ArticleService {
 
 	private final static String ARTICLE_SHARE_PREFIX = "https://app.newzet.me/article";
@@ -40,6 +38,7 @@ public class ArticleService {
 		batchProducer.addToBatch(article);
 	}
 
+	@Transactional(readOnly = true)
 	public ArticleListResponse getMonthlyArticleList(UUID userId, int year, int month) {
 		List<ArticleWithImageProjection> articleListAtYearAndMonth = articleRepository.getMonthlyArticleWithImage(
 			userId, year, month);
@@ -55,21 +54,16 @@ public class ArticleService {
 		return ArticleListResponse.from(getDailyArticleList(articleList));
 	}
 
-	@Transactional
-	public ArticleContentResponse getArticle(String articleId) {
-		UUID convertedArticleId = UuidConverter.convert(articleId);
-		Article article = articleRepository.getById(convertedArticleId).toDomain();
-
+	public Article getArticle(UUID articleId) {
+		Article article = articleRepository.getById(articleId).toDomain();
 		if (article.checkIsUnRead()) { // isRead가 false이면 읽기 처리 수행
 			Article updatedArticle = articleRepository.readArticle(article.getId()).toDomain();
-			return ArticleContentResponse.of(updatedArticle.getTitle(),
-				updatedArticle.getContentUrl(), updatedArticle.isRead());
+			return updatedArticle;
 		}
-
-		return ArticleContentResponse.of(article.getTitle(), article.getContentUrl(),
-			article.isLike());
+		return article;
 	}
 
+	@Transactional(readOnly = true)
 	public ArticleLikeListResponse getArticleLikeList(UUID userId) {
 		List<ArticleDetailResponse> articleList = articleRepository.findLikeArticleWithImage(userId)
 			.stream()
@@ -104,18 +98,22 @@ public class ArticleService {
 			.toList();
 	}
 
-	public Article addArticle(UUID userId, String name, String domain, String title, String url, String imageUrl,
+	public Article addArticle(UUID userId, String name, String domain, String title, String url,
+		String imageUrl,
 		String mailingList) {
-		Article article = Article.createNewArticle(userId, name, domain, mailingList, title, url, imageUrl);
+		Article article = Article.createNewArticle(userId, name, domain, mailingList, title, url,
+			imageUrl);
 		return articleRepository.save(article);
 	}
 
+	@Transactional
 	public Article shareArticle(UUID articleId) {
 		Article article = articleRepository.getById(articleId).toDomain();
 		Article sharedArticle = article.share();
 		return articleRepository.save(sharedArticle);
 	}
 
+	@Transactional(readOnly = true)
 	public String getSharedUrl(UUID articleId) {
 		return String.format("%s/%s", ARTICLE_SHARE_PREFIX, articleId);
 	}
@@ -126,11 +124,5 @@ public class ArticleService {
 			return article;
 		}
 		throw new ShareForbiddenException("공유가 허용되지 않은 아티클입니다.");
-	}
-
-	public String getContentUrl() {
-		//TODO(S3에서 Article 조회)
-		//TODO(getArticle도 바꿔주야함)
-		return "";
 	}
 }

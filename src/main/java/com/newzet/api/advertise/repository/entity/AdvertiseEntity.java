@@ -24,5 +24,6 @@ public class AdvertiseEntity {
 	@Column(columnDefinition = "uuid", updatable = false, nullable = false)
 	private UUID id;
 
+	@Column(nullable = false)
 	private UUID newsletterId;
 }

@@ -5,7 +5,6 @@ import lombok.RequiredArgsConstructor;
 
 @Getter
 @RequiredArgsConstructor
-//TODO: 코드 잘못 던지고 있는 부분 수정
 public enum ResponseCode {
 	SUCCESS(20000),
 	INVALID_ARGUMENTS(40000),

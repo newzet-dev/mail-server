@@ -32,7 +32,6 @@ public class UserinfoEntity {
 	@Column
 	private String email;
 
-	@Column(nullable = false)
 	private String nickname;
 
 	@Enumerated(EnumType.STRING)

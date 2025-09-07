@@ -1,5 +1,6 @@
 package com.newzet.api.event.jpa.entity;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 import org.hibernate.annotations.UuidGenerator;
@@ -32,10 +33,10 @@ public class EventEntity {
 	private String imageUrl;
 
 	@Column(name = "post_start")
-	private String postStart;
+	private LocalDateTime postStart;
 
 	@Column(name = "post_end")
-	private String postEnd;
+	private LocalDateTime postEnd;
 
 	@Column(name = "priority")
 	private Integer priority;

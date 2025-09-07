@@ -12,6 +12,7 @@ import com.newzet.api.fcm.api.dto.FcmTokenDeleteRequest;
 import com.newzet.api.fcm.api.dto.FcmTokenUpsertRequest;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 
@@ -22,13 +23,13 @@ public interface FcmTokenApi {
 	@PostMapping("/token")
 	@Operation(summary = "fcm 토큰 갱신 or 추가",
 		description = "신규 FCM 토큰을 저장한다.")
-	SuccessResponse<Object> createFcmToken(@Login AuthUser authUser,
+	SuccessResponse<Object> createFcmToken(@Parameter(hidden = true) @Login AuthUser authUser,
 		@Valid @RequestBody FcmTokenUpsertRequest request);
 
 	@DeleteMapping("/token")
 	@Operation(summary = "fcm 토큰 삭제",
 		description = "신규 FCM 토큰을 삭제한다.")
 	SuccessResponse<Object> deleteFcmToken(
-		@Login AuthUser authUser,
+		@Parameter(hidden = true) @Login AuthUser authUser,
 		@Valid @RequestBody FcmTokenDeleteRequest request);
 }
