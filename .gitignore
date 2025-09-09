@@ -41,6 +41,7 @@ out/
 /newrelic
 .secrets
 .env
+.env.local
 .env.dev
 .env.redis
 .env.redis.dev

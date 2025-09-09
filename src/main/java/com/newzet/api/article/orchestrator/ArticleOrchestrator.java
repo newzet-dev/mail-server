@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.newzet.api.article.business.service.ArticleService;
 import com.newzet.api.article.controller.dto.ArticleContentResponse;
 import com.newzet.api.article.domain.Article;
-import com.newzet.api.common.s3.S3Service;
+import com.newzet.api.common.storage.StorageService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -18,11 +18,11 @@ import lombok.RequiredArgsConstructor;
 public class ArticleOrchestrator {
 
 	private final ArticleService articleService;
-	private final S3Service s3Service;
+	private final StorageService storageService;
 
 	public ArticleContentResponse getSharedArticle(UUID articleId) {
 		Article sharedArticle = articleService.getSharedArticle(articleId);
-		String content = s3Service.getContentAsString(sharedArticle.getContentUrl());
+		String content = storageService.getContent(sharedArticle.getContentUrl(), sharedArticle.isSaveInStorage());
 		return new ArticleContentResponse(sharedArticle.getTitle(), content,
 			sharedArticle.isLike());
 	}
@@ -30,7 +30,7 @@ public class ArticleOrchestrator {
 	@Transactional
 	public ArticleContentResponse getArticle(UUID articleId) {
 		Article article = articleService.getArticle(articleId);
-		String content = s3Service.getContentAsString(article.getContentUrl());
+		String content = storageService.getContent(article.getContentUrl(), article.isSaveInStorage());
 		return ArticleContentResponse.of(article.getTitle(), content,
 			article.isLike());
 	}

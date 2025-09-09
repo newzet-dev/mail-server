@@ -101,5 +101,9 @@ public class Article {
 			this.deletedAt
 		);
 	}
+
+	public boolean isSaveInStorage() {
+		return contentUrl.endsWith(".html");
+	}
 }
 
