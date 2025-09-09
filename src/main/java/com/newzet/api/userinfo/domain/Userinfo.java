@@ -17,6 +17,9 @@ public class Userinfo {
 	private LocalDateTime deletedAt;
 
 	public void changeEmail(String email) {
+		if (email == null) {
+			return;
+		}
 		this.email = email.trim();
 	}
 
