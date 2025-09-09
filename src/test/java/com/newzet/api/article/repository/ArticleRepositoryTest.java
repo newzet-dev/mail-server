@@ -147,21 +147,6 @@ class ArticleRepositoryTest {
 	}
 
 	@Test
-	void saveAll_WhenExceptionOccurs_ThenShouldNotPropagateException() {
-		// Given
-		List<ArticleEntityDto> dtos = createMockArticleDtos(3);
-
-		doThrow(new RuntimeException("Test exception")).when(entityManager)
-			.persist(any(ArticleEntity.class));
-
-		// When
-		List<ArticleEntityDto> result = articleRepository.saveAll(dtos);
-
-		// Then
-		assertThat(result).hasSize(3);
-	}
-
-	@Test
 	void saveAll_WhenProcessingNullFields_ThenHandleGracefully() {
 		// Given
 		ArticleEntityDto dto = ArticleEntityDto.builder()
@@ -181,26 +166,6 @@ class ArticleRepositoryTest {
 		ArticleEntity capturedEntity = entityCaptor.getValue();
 		assertThat(capturedEntity.getFromName()).isNull();
 		assertThat(capturedEntity.getFromDomain()).isNull();
-	}
-
-	@Test
-	void saveAll_WhenPersistThrowsException_ShouldContinueSavingOthers() {
-		// Given
-		List<ArticleEntityDto> dtos = createMockArticleDtos(3);
-
-		doThrow(new RuntimeException("persist fail"))
-			.doNothing()
-			.doNothing()
-			.when(entityManager).persist(any(ArticleEntity.class));
-
-		// When
-		List<ArticleEntityDto> result = articleRepository.saveAll(dtos);
-
-		// Then
-		assertThat(result).hasSize(3);
-		verify(entityManager, times(3)).persist(any(ArticleEntity.class));
-		verify(entityManager, atLeast(1)).flush();
-		verify(entityManager, atLeast(1)).clear();
 	}
 
 	private List<ArticleEntityDto> createMockArticleDtos(int count) {

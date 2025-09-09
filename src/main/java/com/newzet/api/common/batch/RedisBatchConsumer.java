@@ -15,6 +15,7 @@ import org.springframework.data.redis.connection.stream.Consumer;
 import org.springframework.data.redis.connection.stream.MapRecord;
 import org.springframework.data.redis.connection.stream.ReadOffset;
 import org.springframework.data.redis.connection.stream.StreamOffset;
+import org.springframework.data.redis.connection.stream.StreamReadOptions;
 import org.springframework.data.redis.core.ReactiveRedisTemplate;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.stream.StreamReceiver;
@@ -80,7 +81,14 @@ public abstract class RedisBatchConsumer<T> implements BatchConsumer {
 		if (isProcessing.compareAndSet(false, true)) {
 			executorService = Executors.newSingleThreadExecutor();
 			ackExecutorService = Executors.newSingleThreadExecutor();
-			executorService.submit(this::processBatchesAsync);
+			executorService.submit(() -> {
+				log.info("{} consumer starting... Draining pending messages first.",
+					getProcessorTypeName());
+				drainPendingMessages();
+				log.info("{} pending messages drained. Starting to listen for new messages.",
+					getProcessorTypeName());
+				processBatchesAsync();
+			});
 			log.info("{} batch processor started with configuration: size={}, timeout={}s",
 				getProcessorTypeName(), batchConfig.getBatchSize(),
 				batchConfig.getTimeoutSeconds());
@@ -102,8 +110,44 @@ public abstract class RedisBatchConsumer<T> implements BatchConsumer {
 		}
 	}
 
+	private void drainPendingMessages() {
+		try {
+			Consumer consumer = Consumer.from(getConsumerGroup(), getConsumerName());
+			StreamOffset<String> offset = StreamOffset.create(getStreamKey(),
+				ReadOffset.from("0-0"));
+			StreamReadOptions readOptions = StreamReadOptions.empty()
+				.count(batchConfig.getBatchSize());
+
+			while (isProcessing.get()) {
+				List<MapRecord<String, Object, Object>> rawRecords = redisTemplate.opsForStream()
+					.read(consumer, readOptions, offset);
+
+				if (rawRecords == null || rawRecords.isEmpty()) {
+					break;
+				}
+
+				List<MapRecord<String, String, String>> records = new ArrayList<>();
+				for (MapRecord<String, Object, Object> rawRecord : rawRecords) {
+					Map<String, String> stringMap = new HashMap<>();
+					for (Map.Entry<Object, Object> entry : rawRecord.getValue().entrySet()) {
+						stringMap.put(String.valueOf(entry.getKey()),
+							String.valueOf(entry.getValue()));
+					}
+					records.add(MapRecord.create(rawRecord.getStream(), stringMap)
+						.withId(rawRecord.getId()));
+				}
+
+				log.info("Processing {} pending messages from drain task.", records.size());
+				processBatchWithAck(records);
+			}
+		} catch (Exception e) {
+			log.error("Error draining pending messages for {}: {}", getProcessorTypeName(),
+				e.getMessage(), e);
+		}
+	}
+
 	protected void processBatchesAsync() {
-		log.info("{} batch processing thread initialized", getProcessorTypeName());
+		log.info("{} batch processing thread initialized for new messages", getProcessorTypeName());
 
 		try {
 			StreamReceiver.StreamReceiverOptions<String, MapRecord<String, String, String>> options =
@@ -163,33 +207,36 @@ public abstract class RedisBatchConsumer<T> implements BatchConsumer {
 			}
 		}
 
-		processBatchItems(items);
-
-		CompletableFuture.runAsync(() -> {
-			List<String> ackedMessageIds = new ArrayList<>();
-
-			for (MapRecord<String, String, String> record : records) {
-				String messageId = record.getId().getValue();
-				try {
-					redisTemplate.opsForStream()
-						.acknowledge(getStreamKey(), getConsumerGroup(), messageId);
-					ackedMessageIds.add(messageId);
-				} catch (Exception e) {
-					log.warn("Ack failed for {} message {}, skipping for now: {}",
-						getProcessorTypeName(), messageId, e.getMessage());
+		try {
+			processBatchItems(items);
+			CompletableFuture.runAsync(() -> {
+				List<String> ackedMessageIds = new ArrayList<>();
+				for (MapRecord<String, String, String> record : records) {
+					try {
+						redisTemplate.opsForStream()
+							.acknowledge(getStreamKey(), getConsumerGroup(), record.getId());
+						ackedMessageIds.add(record.getId().getValue());
+					} catch (Exception e) {
+						log.warn("Ack failed for {} message {}, skipping for now: {}",
+							getProcessorTypeName(), record.getId(), e.getMessage());
+					}
 				}
-			}
 
-			if (!ackedMessageIds.isEmpty()) {
-				try {
-					redisTemplate.opsForStream()
-						.delete(getStreamKey(), ackedMessageIds.toArray(new String[0]));
-				} catch (Exception e) {
-					log.error("Failed to delete acked {} messages: {}", getProcessorTypeName(),
-						e.getMessage(), e);
+				if (!ackedMessageIds.isEmpty()) {
+					try {
+						redisTemplate.opsForStream()
+							.delete(getStreamKey(), ackedMessageIds.toArray(new String[0]));
+					} catch (Exception e) {
+						log.error("Failed to delete acked {} messages: {}", getProcessorTypeName(),
+							e.getMessage(), e);
+					}
 				}
-			}
-		}, ackExecutorService);
+			}, ackExecutorService);
+		} catch (Exception e) {
+			log.error(
+				"{} batch processing failed. Messages will not be acknowledged and will be retried.",
+				getProcessorTypeName(), e);
+		}
 	}
 
 	@PreDestroy
