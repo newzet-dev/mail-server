@@ -10,6 +10,7 @@ import com.newzet.api.category.business.service.CategoryService;
 import com.newzet.api.category.domain.Category;
 import com.newzet.api.usercategory.business.service.UserCategoryService;
 import com.newzet.api.usercategory.domain.UserCategory;
+import com.newzet.api.userinfo.business.service.AuthUserService;
 import com.newzet.api.userinfo.business.service.UserinfoService;
 import com.newzet.api.userinfo.domain.Userinfo;
 import com.newzet.api.userinfo.presentation.dto.UniqueMailResponse;
@@ -25,6 +26,7 @@ public class UserinfoOrchestrator {
 	private final UserinfoService userinfoService;
 	private final UserCategoryService userCategoryService;
 	private final CategoryService categoryService;
+	private final AuthUserService authUserService;
 
 	@Transactional(readOnly = true)
 	public UserinfoWithCategoryListResponse getUserinfoWithCategoryList(UUID userId) {
@@ -58,5 +60,6 @@ public class UserinfoOrchestrator {
 	@Transactional
 	public void deleteUserinfo(UUID userId) {
 		userinfoService.deleteUserinfoById(userId);
+		authUserService.deleteAuthUser(userId);
 	}
 }
