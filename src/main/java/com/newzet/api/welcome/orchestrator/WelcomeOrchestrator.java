@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.api.client.util.Value;
+import org.springframework.beans.factory.annotation.Value;
 import com.newzet.api.article.business.service.ArticleService;
 import com.newzet.api.article.domain.Article;
 import com.newzet.api.fcm.business.service.FcmSenderService;
