@@ -71,3 +71,16 @@ cloud:
     credentials:
       access-key: ${S3_ACCESS_KEY}
       secret-key: ${S3_SECRET_KEY}
+
+  supabase:
+    storage:
+      bucket: ${SUPABASE_BUCKET_NAME}
+      endpoint-url: ${SUPABASE_ENDPOINT_URL}
+      region: ${SUPABASE_REGION}
+      credentials:
+        access-key: ${SUPABASE_ACCESS_KEY}
+        secret-key: ${SUPABASE_SECRET_KEY}
+
+newzet:
+  newsletter:
+    id: ${NEWZET_NEWSLETTER_ID}
