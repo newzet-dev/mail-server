@@ -80,3 +80,7 @@ cloud:
       credentials:
         access-key: ${SUPABASE_ACCESS_KEY}
         secret-key: ${SUPABASE_SECRET_KEY}
+
+newzet:
+  newsletter:
+    id: ${NEWZET_NEWSLETTER_ID}
