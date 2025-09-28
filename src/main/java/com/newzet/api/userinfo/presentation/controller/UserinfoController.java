@@ -1,7 +1,5 @@
 package com.newzet.api.userinfo.presentation.controller;
 
-import java.util.UUID;
-
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -76,6 +74,6 @@ public class UserinfoController {
 		description = "유저 정보를 삭제한다.")
 	public SuccessResponse<Object> deleteUserinfo(@Login AuthUser authUser) {
 		userinfoOrchestrator.deleteUserinfo(authUser.getId());
-		return SuccessResponse.create(ResponseCode.SUCCESS, "유저 정보를 삭제한다.", null);
+		return SuccessResponse.create(ResponseCode.SUCCESS, "유저정보 삭제 성공", null);
 	}
 }

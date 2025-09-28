@@ -40,10 +40,11 @@ import com.newzet.api.config.JwtTestConfig;
 import com.newzet.api.config.PostgresTestContainerConfig;
 import com.newzet.api.config.RedisTestContainerConfig;
 import com.newzet.api.config.S3TestConfig;
+import com.newzet.api.config.SupabaseConfig;
 import com.newzet.api.fcm.orchestrator.FcmSenderOrchestrator;
 
 @ExtendWith({RedisTestContainerConfig.class, PostgresTestContainerConfig.class,
-	JwtTestConfig.class, FirebaseTestConfig.class, S3TestConfig.class})
+	JwtTestConfig.class, FirebaseTestConfig.class, S3TestConfig.class, SupabaseConfig.class})
 @SpringBootTest
 @ComponentScan(basePackages = {"com.newzet.api.article", "com.newzet.api.common"})
 class ArticleRedisBatchProcessorIntegrationTest {
@@ -274,7 +275,8 @@ class ArticleRedisBatchProcessorIntegrationTest {
 	}
 
 	private Article createArticleDto(UUID userId, String title) {
-		return Article.createNewArticle(userId, "Newsletter", "example.com", "daily", "imageUrl@a.com", title,
+		return Article.createNewArticle(userId, "Newsletter", "example.com", "daily",
+			"imageUrl@a.com", title,
 			"https://example.com/" + title.toLowerCase().replace(' ', '-'));
 	}
 }
