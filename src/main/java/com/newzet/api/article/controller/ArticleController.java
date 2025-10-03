@@ -52,7 +52,7 @@ public class ArticleController {
 	}
 
 	@GetMapping("/{articleId}")
-	// @RequireAuth
+	@RequireAuth
 	@Operation(summary = "아티클 단건 조회",
 		description = "유저가 구독한 뉴스레터의 아티클을 조회한다.")
 	public ResponseEntity<SuccessResponse<ArticleContentResponse>> getArticle(
