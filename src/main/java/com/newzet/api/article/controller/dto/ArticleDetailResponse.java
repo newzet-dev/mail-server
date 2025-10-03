@@ -3,6 +3,8 @@ package com.newzet.api.article.controller.dto;
 import java.time.LocalDateTime;
 import java.util.UUID;
 
+import com.newzet.api.common.util.UtcTimeZoneConverter;
+
 public record ArticleDetailResponse(
 	String id,
 	String newsletterName,
@@ -15,7 +17,7 @@ public record ArticleDetailResponse(
 	public static ArticleDetailResponse of(UUID id, String newsletterName, String newsletterImgUrl,
 		String title, boolean isRead, LocalDateTime createdAt) {
 		return new ArticleDetailResponse(id.toString(), newsletterName, newsletterImgUrl, title,
-			isRead, createdAt.toString());
+			isRead, UtcTimeZoneConverter.toKst(createdAt).toString());
 	}
 
 	public int getDay() {

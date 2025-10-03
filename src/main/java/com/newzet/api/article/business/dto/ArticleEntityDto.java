@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 import com.newzet.api.article.domain.Article;
+import com.newzet.api.common.util.UtcTimeZoneConverter;
 
 import lombok.Builder;
 import lombok.Getter;
@@ -56,8 +57,8 @@ public class ArticleEntityDto {
 			isRead,
 			isLike,
 			isShare,
-			createdAt,
-			deletedAt
+			UtcTimeZoneConverter.toKst(createdAt),
+			UtcTimeZoneConverter.toKst(deletedAt)
 		);
 	}
 }
